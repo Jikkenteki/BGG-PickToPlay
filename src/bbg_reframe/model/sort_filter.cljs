@@ -24,19 +24,24 @@
 (defn rating-for-number-of-players
   "Returns a rating based on the best and recommended percentages"
   [game num-players]
-  (let [_ (println (:name game) num-players)
+  (let [;_ (println (:name game) num-players)
         percentages
         (map
          (fn [pl]
            (double (/ (+  (* 2 (pl :best-votes)) (pl :recommended-votes))
                       (+ 0.0001 (* 2 (pl :best-votes)) (pl :recommended-votes) (pl :not-recommended-votes)))))
          (:votes game))
-        _ (println percentages)]
+        ;_ (println percentages)
+        ]
     ;; Assuming all games have rating for 1 player
     ;; 1 2 3 4 4+ (5 perc)
     (if (> (count percentages) num-players)
       (nth percentages (dec num-players))
       (last percentages))))
+
+(def sorting-fun
+  {:rating game-better?
+   :time game-shorter?})
 
 ;; 
 ;; Filters
@@ -57,7 +62,7 @@
 (defn is-playable-with-num-of-players
   [num threshold]
   (fn [game]
-    (> (rating-for-number-of-players game num) threshold)))
+    (>= (rating-for-number-of-players game num) threshold)))
 
 (defn playingtime-between? [min max]
   (fn [game]
@@ -95,9 +100,21 @@
 
   (db/make-db)
   (def db-mem (all-games))
+  db-mem
   (def game (last db-mem))
   game
   (pp/pp)
+
+  ((fn [sorter]
+     (take 15 (sort sorter db-mem)))
+   (get sorting-fun :time))
+
+  (take 5 (vals db/local-storage-db))
+  (keys db/local-storage-db)
+  db/local-storage-db
+
+  db/local-storage-db
+  (take 15 (sort game-better? db-mem))
 
   (map
    (juxt :name :rating)

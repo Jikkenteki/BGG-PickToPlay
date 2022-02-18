@@ -166,7 +166,7 @@
 
 (def n 7.8226)
 
-(def all-fields ["id" "name" "rating" "playingtime" "minplayers" "maxplayers"])
+(def all-fields ["id" "name" "rating" "playability" "playingtime" "minplayers" "maxplayers"])
 
 
 ;; (def local-storage-db
@@ -8633,6 +8633,7 @@
       :recommended-perc 0.06060606060606061,
       :not-recommended-votes 31,
       :not-recommended-perc 0.9393939393939394}]}})
+
 
 (comment
   ;; (def collection (g/read-collection-from-file))

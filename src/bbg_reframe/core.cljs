@@ -22,6 +22,7 @@
 (defn init []
   (set-item! "resources/db.clj" (str local-storage-db))
   (re-frame/dispatch [::events/initialize-db])
+  (re-frame/dispatch [::events/update-form :sort-id "rating"])
   (dev-setup)
   (mount-root))
 
