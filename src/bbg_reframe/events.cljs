@@ -9,3 +9,19 @@
  (fn-traced [_ _]
             db/default-db))
 
+
+(re-frame/reg-event-db
+ ::field
+ (fn-traced 
+  [db [_ field]]
+  (let [
+        new-fields 
+        (if (some #(= field %) (:fields db))
+          (filter #(not= field %) (:fields db))
+          (conj (:fields db) field))
+        ]
+        (assoc db :fields new-fields))
+  ))    
+              
+        
+

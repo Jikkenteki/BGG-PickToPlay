@@ -5,7 +5,6 @@
    [bbg-reframe.events :as events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
-
    [bbg-reframe.model.db :refer [local-storage-db]]
    [bbg-reframe.model.localstorage :refer [set-item!]]))
 
@@ -25,3 +24,4 @@
   (re-frame/dispatch [::events/initialize-db])
   (dev-setup)
   (mount-root))
+
