@@ -41,7 +41,10 @@
 
 (def sorting-fun
   {:rating game-better?
-   :time game-shorter?})
+   :time game-shorter?
+   :rating-time game-shorter-and-better?})
+
+(map name (keys sorting-fun))
 
 ;; 
 ;; Filters

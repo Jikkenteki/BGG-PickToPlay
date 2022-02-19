@@ -168,33 +168,6 @@
 
 (def all-fields ["id" "name" "rating" "playability" "playingtime" "minplayers" "maxplayers"])
 
-
-;; (def local-storage-db
-;;   {"102794"
-;;    {:id "102794",
-;;     :name "Caverna: The Cave Farmers",
-;;     :rating 7.8226,
-;;     :my-rating nil,
-;;     :minplayers 1,
-;;     :maxplayers 7,
-;;     :playingtime 210},
-;;    "2389"
-;;    {:id "2389",
-;;     :name "Othello",
-;;     :rating 5.93526,
-;;     :my-rating 7,
-;;     :minplayers 2,
-;;     :maxplayers 2,
-;;     :playingtime 30},
-;;    "29714"
-;;    {:id "29714",
-;;     :name "Die Siedler von Catan: Kartenspiel – Zauberer & Drachen",
-;;     :rating 5.82529,
-;;     :my-rating 7,
-;;     :minplayers 2,
-;;     :maxplayers 2,
-;;     :playingtime 90}})
-
 (def local-storage-db
   {"102794"
    {:id "102794",

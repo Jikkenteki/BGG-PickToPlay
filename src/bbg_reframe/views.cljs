@@ -4,7 +4,7 @@
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
    [bbg-reframe.model.db :refer [all-fields]]
-   [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players]]
+   [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun]]
    [goog.string :as gstring]
    [goog.string.format]))
 
@@ -58,8 +58,6 @@
           (game-div game fields-sorted players))
         result)]]]))
 
-(def sort-options ["rating" "time"])
-
 (defn select
   [id options]
   (let [value (re-frame/subscribe [::subs/form id])]
@@ -91,7 +89,7 @@
      [:h1
       "BGG "]
      (fields-div @fields)
-     (select :sort-id sort-options)
+     (select :sort-id (map name (keys sorting-fun)))
      (slider :take "Take" 1 25 1)
      (slider :higher-than "Rating higher than" 0 10 0.1)
      (slider :players "For number of players" 1 10 1)
