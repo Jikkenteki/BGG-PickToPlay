@@ -1,10 +1,9 @@
 (ns bbg-reframe.db
-  (:require [bbg-reframe.model.db :refer [read-db]]
-            [bbg-reframe.model.sort-filter :refer [game-better?]]))
+  (:require [bbg-reframe.model.db :refer [read-db]]))
 
 (def default-db
   {:collection (read-db)
-   :result (take 25 (sort game-better? (vals (read-db))))
+   :result nil
    :fields ["name"]
    :form {:sort-id "rating"
           :take "10"

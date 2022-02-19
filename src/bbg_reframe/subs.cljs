@@ -1,7 +1,6 @@
 (ns bbg-reframe.subs
   (:require
-   [re-frame.core :as re-frame]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun]]))
+   [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  ::result

@@ -14,8 +14,9 @@
 
 (re-frame/reg-event-db
  ::field
- (fn [db [_ field]]
-   (let [new-fields
+ (fn [db [_ field e]]
+   (let [_ (println e field)
+         new-fields
          (if (some #(= field %) (:fields db))
            (filter #(not= field %) (:fields db))
            (conj (:fields db) field))]
@@ -24,25 +25,25 @@
 (re-frame/reg-event-db
  ::update-form
  (fn [db [_ id val]]
-   (let [new-db (assoc-in db [:form id] val)
-        ;;  _ (println (read-string (get-in new-db [:form :higher-than])))
-         new-db2
-         (assoc new-db
+   (let [updated-db (assoc-in db [:form id] val)
+         new-db
+         (assoc updated-db
                 :result
-                ((fn [sorter]
-                   (take (read-string (get-in new-db [:form :take]))
-                         (sort sorter
-                               (filter
-                                (and-filters
-                                 (with-number-of-players? (read-string (get-in new-db [:form :players])))
-                                 (rating-higher-than? (read-string (get-in new-db [:form :higher-than])))
-                                 (playingtime-between? 0 (read-string (get-in new-db [:form :time-limit])))
-                                 (is-playable-with-num-of-players
-                                  (get-in new-db [:form :players])
-                                  (get-in new-db [:form :threshold])))
-                                (vals (db :collection))))))
-                 (get sorting-fun (keyword (get-in new-db [:form :sort-id])))))]
-     new-db2)))
+                (take (read-string (get-in updated-db [:form :take]))
+                      (sort (get sorting-fun (keyword (get-in updated-db [:form :sort-id])))
+                            (filter
+                             (and-filters
+                              (with-number-of-players?
+                                (read-string (get-in updated-db [:form :players])))
+                              (rating-higher-than?
+                               (read-string (get-in updated-db [:form :higher-than])))
+                              (playingtime-between?
+                               0 (read-string (get-in updated-db [:form :time-limit])))
+                              (is-playable-with-num-of-players
+                               (get-in updated-db [:form :players])
+                               (get-in updated-db [:form :threshold])))
+                             (vals (db :collection))))))]
+     new-db)))
 
 
 
