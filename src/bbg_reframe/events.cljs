@@ -1,15 +1,24 @@
 (ns bbg-reframe.events
   (:require
    [re-frame.core :as re-frame]
-   [bbg-reframe.db :as db]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between?]]
-   [clojure.tools.reader.edn :refer [read-string]]))
+   [clojure.tools.reader.edn :refer [read-string]]
+   [bbg-reframe.model.db :refer [read-db]]))
 
 (re-frame/reg-event-db
  ::initialize-db
  (fn-traced [_ _]
-            db/default-db))
+            ;; db/default-db
+            {:collection (read-db)
+             :result nil
+             :fields ["name"]
+             :form {:sort-id "rating"
+                    :take "10"
+                    :higher-than "7"
+                    :players "4"
+                    :threshold "0.8"
+                    :time-limit "120"}}))
 
 
 (re-frame/reg-event-db
