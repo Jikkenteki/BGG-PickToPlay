@@ -41,7 +41,6 @@
                    (game (keyword field)))])
           fields)]))
 
-
 (defn result-div
   [result fields players]
   (let [fields-sorted (filter (fn [f] (some #(= f %) fields)) all-fields)]
@@ -59,23 +58,22 @@
         result)]]]))
 
 (defn select
-  [id options]
+  [id label options]
   (let [value (re-frame/subscribe [::subs/form id])]
-    [:div "Sort by "
+    [:div
+     [:label label]
      [:select {:value @value
                :on-change #(re-frame/dispatch [::events/update-form
                                                id
                                                (-> % .-target .-value)])}
       (map (fn [o] [:option {:key o :value o} o]) options)]]))
 
-
-;; <div class= "slidecontainer" >
-;; <input type= "range" min= "1" max= "100" value= "50" class= "slider" id= "myRange" >
-;; </div>
 (defn slider
   [id label min max step]
   (let [value (re-frame/subscribe [::subs/form id])]
-    [:div [:label label " " @value]
+    [:div
+     [:label label " " @value]
+     [:br]
      [:input {:type "range" :min min :max max :step step :value @value :id id
               :onChange #(re-frame/dispatch [::events/update-form
                                              id
@@ -89,7 +87,7 @@
      [:h1
       "BGG "]
      (fields-div @fields)
-     (select :sort-id (map name (keys sorting-fun)))
+     (select :sort-id "Sort by " (map name (keys sorting-fun)))
      (slider :take "Take" 1 25 1)
      (slider :higher-than "Rating higher than" 0 10 0.1)
      (slider :players "For number of players" 1 10 1)
