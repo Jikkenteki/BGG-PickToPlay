@@ -1,5 +1,6 @@
 (ns bbg-reframe.model.sort-filter
   (:require [bbg-reframe.model.db :as db]
+            [bbg-reframe.model.data :as data]
             [clojure.string :as s]
             [clojure.pprint :as pp]
             [clojure.tools.reader.edn :refer [read-string]]))
@@ -112,11 +113,11 @@
      (take 15 (sort sorter db-mem)))
    (get sorting-fun :time))
 
-  (take 5 (vals db/local-storage-db))
-  (keys db/local-storage-db)
-  db/local-storage-db
+  (take 5 (vals data/local-storage-db))
+  (keys data/local-storage-db)
+  data/local-storage-db
 
-  db/local-storage-db
+  data/local-storage-db
   (take 15 (sort game-better? db-mem))
 
   (map
