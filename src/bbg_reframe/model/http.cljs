@@ -1,15 +1,25 @@
 (ns bbg-reframe.model.http
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]))
+            [cljs.pprint :refer [pprint]]
+            [cljs.core.async :refer [<!]]
+            [bbg-reframe.model.db :refer [xml-to-clj]]))
 
+(def xml-str (atom ""))
 (defn get-xml  
-  [game-id]
-  (go (:body (<! (http/get (str "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+  [xml-atom game-id]
+  (go (reset! xml-atom (:body (<! (http/get (str "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
                                 ;; parameters
                                   {:with-credentials? false
-                                   :query-params {}})))))
+                                   :query-params {}}))))))
 (comment
+  (def xml-str (atom ""))
+  (reset! xml-str "Hello")
+  @xml-str
+  (xml-to-clj @xml-str true)
+  (def xml (get-xml "2651"))
+  (pprint @xml-str)
+
   (go ((prn "Calling")
        (prn  (:body (<! (http/get "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/2651"
                                 ;; parameters
@@ -25,9 +35,10 @@
   (prn 1)
 
   (-> (js/fetch "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/2651"
-      (.then #(.html %))
-      (.then prn)))
+                (.then #(.html %))
+                (.then prn)))
 
-  
 
-  (prn 1))
+
+  (prn 1)
+  )

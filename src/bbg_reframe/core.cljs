@@ -2,6 +2,8 @@
   (:require
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
+   [day8.re-frame.http-fx]
+
    [bbg-reframe.events :as events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]

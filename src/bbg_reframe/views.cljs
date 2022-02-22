@@ -15,6 +15,8 @@
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
 
+(def xml-atom (atom "<a>A</a>"))
+
 (defn field-div
   [fields field]
   ^{:key (random-uuid)}
@@ -85,13 +87,16 @@
                                              id
                                              (-> % .-target .-value)])}]]))
 
+
 (defn main-panel []
-  (let [result (re-frame/subscribe [::subs/result])
+  (let [_ (get-xml xml-atom "2651")
+                   result (re-frame/subscribe [::subs/result])
         fields (re-frame/subscribe [::subs/fields])
         players (re-frame/subscribe [::subs/form :players])]
     [:div
      [:h1
       "BGG "]
+     [:button {:on-click #(re-frame/dispatch [::events/handler-with-http])} "Get"]
      (fields-div @fields)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))
      (slider :take "Take" 1 25 1)
@@ -100,17 +105,25 @@
      (slider :threshold "Playability threshold" 0 0.95 0.05)
      (slider :time-limit "Time limit" 0 500 10)
      (result-div @result @fields @players)
-     [:pre 
-     "XML 2651"
-      
+     [:pre
+      "XML 2651"
+
 ;; (clojure.string/replace "sdfsdafsa [ fas a  ] faf afa" #"[\[\]]" "")
 
 
       ;; (with-out-str (pprint (xml-to-clj "<boardgames termsofuse=\"https://boardgamegeek.com/xmlapi/termsofuse\">\n\t\t\t\t\t<boardgame objectid=\"2651\">\n\t\t\t<yearpublished>2004</yearpublished>\n\t\t\t<minplayers>2</minplayers>\n\t\t\t<maxplayers>6</maxplayers>\n\t\t\t<playingtime>120</playingtime>\n\t\t\t<minplaytime>120</minplaytime>\n\t\t\t<maxplaytime>120</maxplaytime>\n\t\t\t<age>12</age>\n\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Alta Tensão</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Alta Tensao</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Alta Tensión</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Alta Tensión (Reenergizado)</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Alta Tensione</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Funkenschlag</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Funkenschlag (Recharged Version)</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Haute Tension</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Hoogspanning</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Hoogspanning (Recharged Versie)</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Megawatts</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Nagyfeszültség</name>\n\t\t\t\t\t\t\t<name primary=\"true\" sortindex=\"1\">Power Grid</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Power Grid (Recharged Version)</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Power Grid (Versao Energizada)</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Reţeaua Energetică</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Vysoké Napětí</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Wysokie Napięcie</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Wysokie Napięcie: Doładowana Wersja</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">Энергосеть</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">เกมโรงไฟฟ้า</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">電力会社</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">電力会社 充電完了！</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">電力公司</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">파워그리드</name>\n\t\t\t\t\t\t\t<name  sortindex=\"1\">파워그리드 재충전</name>\n\t\t\t\t\t\t\t\t\t\n\t\t\t</boardgame>\n\t</boardgames>\n")))
       ;; (with-out-str 
-        (pprint 
-         (xml-to-clj 
-          (get-xml "2651") false))
+
+
+      (with-out-str
+        (pprint
+         (xml-to-clj  @xml-atom  false)))
+
+      
+
+      ;; (pprint
+      ;;  (xml-to-clj
+      ;;   (get-xml xml-atom "2651") false))
         ;; )
 
       ;; (xml-test (get-xml))

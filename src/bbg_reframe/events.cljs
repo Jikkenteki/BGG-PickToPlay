@@ -2,9 +2,12 @@
   (:require
    [re-frame.core :as re-frame]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
+   [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between?]]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.db :refer [read-db]]))
+   [bbg-reframe.model.db :refer [read-db]]
+   [tubax.core :refer [xml->clj]]
+   ))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -55,4 +58,27 @@
      new-db)))
 
 
+(re-frame/reg-event-fx                             ;; note the trailing -fx
+  ::handler-with-http                      ;; usage:  (dispatch [:handler-with-http])
+  (fn [{:keys [db]} _]                    ;; the first param will be "world"
+    {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
+     :http-xhrio {:method          :get
+                  :uri             "https://boardgamegeek.com/xmlapi2/plays?username=ddmits&id=167791"
+                  :timeout         8000                                           ;; optional see API docs
+                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                  :on-success      [::good-http-result]
+                  :on-failure      [::bad-http-result]}}))
 
+(re-frame/reg-event-db
+ ::good-http-result
+ (fn [db [_ response]]
+   (println "SUCCESS")
+   (println (xml->clj response))
+   db))
+
+(re-frame/reg-event-db
+ ::bad-http-result
+ (fn [db [_ response]]
+   (println "BAD")
+   (println response)
+   db))
