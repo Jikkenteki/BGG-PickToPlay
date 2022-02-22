@@ -7,7 +7,7 @@
    [clojure.tools.reader.edn :refer [read-string]]
    [bbg-reframe.model.db :refer [read-db]]
    [tubax.core :refer [xml->clj]]
-   ))
+   [cljs.pprint :refer [pprint]]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -73,7 +73,7 @@
  ::good-http-result
  (fn [db [_ response]]
    (println "SUCCESS")
-   (println (xml->clj response))
+   (pprint (xml->clj response))
    db))
 
 (re-frame/reg-event-db

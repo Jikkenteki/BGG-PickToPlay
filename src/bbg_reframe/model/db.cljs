@@ -69,12 +69,9 @@
   ;; (Thread/sleep 1000)
   (-> (xml->clj (str "https://boardgamegeek.com/xmlapi/boardgame/" game-id))
       :content
-      first))
+      first)
+  (println "api-read-game not implemented"))
 
-(defn xml-to-clj [xml-string strict?]
-  (xml->clj xml-string 
-            {:strict strict?}
-            ))
 
 (comment  
   (api-read-game "2651")
@@ -191,6 +188,5 @@
   (def collection (vals db))
 
   (take 2 collection)
-  (clojure.pprint/pp)
   ;
   )
