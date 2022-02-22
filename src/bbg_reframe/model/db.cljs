@@ -1,8 +1,7 @@
 (ns bbg-reframe.model.db
-  (:require [tubax.core :refer [xml->clj]]
-            [clojure.pprint :as pp]
+  (:require [clojure.pprint :as pp]
             [clojure.tools.reader.edn :refer [read-string]]
-            [bbg-reframe.model.localstorage :refer [get-item]]))
+            [bbg-reframe.model.localstorage :refer [slurp spit]]))
 
 ;; 
 ;; Fields accessors from API XML
@@ -28,7 +27,7 @@
                    :content
                    first
                    :content
-                   (nth 2)
+                   (second)
                    :attrs
                    :value
                    read-string)]
@@ -65,28 +64,19 @@
 ;; 
 ;; Game api
 ;; 
+
 (defn api-read-game [game-id]
   ;; (Thread/sleep 1000)
-  (-> (xml->clj (str "https://boardgamegeek.com/xmlapi/boardgame/" game-id))
-      :content
-      first)
+  ;; (-> (xml->clj (str "https://boardgamegeek.com/xmlapi/boardgame/" game-id))
+  ;;     :content
+  ;;     first)
   (println "api-read-game not implemented"))
 
 
 (comment  
   (api-read-game "2651")
 )
-;; 
-;; Dummy implementations
-;; 
-(defn spit
-  [fname data]
-  (println "spit: Not implemented!"))
 
-(defn slurp
-  "Uses local storage"
-  [fname]
-  (get-item fname))
 
 
 
@@ -103,12 +93,20 @@
 ;; 
 ;; Collection API 
 ;; 
-(defn fetch-collection-and-write-to-file [user-name]
-  (spit "resources/collection.clj"
-        (xml->clj (str "https://boardgamegeek.com/xmlapi/collection/" user-name))))
+;; (defn fetch-collection-and-write-to-file [user-name]
+;;   (spit "resources/collection.clj"
+;;         (xml->clj (str "https://boardgamegeek.com/xmlapi/collection/" user-name))))
 
 (defn read-collection-from-file []
   (:content (read-string (slurp "resources/collection.clj"))))
+
+(comment 
+  (+ 1 1)
+  (read-collection-from-file)
+  (get-item "resources/games.clj")
+  ;
+
+  )
 
 ;; 
 ;; Functions for numbers of players
@@ -141,8 +139,8 @@
 (defn- collection-game->game
   [games collection-game]
   (let [game-id (game-id collection-game)
-        votes (map votes-best-rating-per-players
-                   (polls-with-num-of-players-for-game (games game-id)))]
+        votes (into [] (map votes-best-rating-per-players
+                           (polls-with-num-of-players-for-game (games game-id))))]
     {:id game-id
      :name (game-name collection-game)
      :rating (game-rating collection-game)

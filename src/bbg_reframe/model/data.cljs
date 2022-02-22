@@ -4,7 +4,7 @@
   {"102794"
    {:id "102794",
     :name "Caverna: The Cave Farmers",
-    :rating 7.8226,
+    :rating 7.99782,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 7,
@@ -69,7 +69,7 @@
    "2389"
    {:id "2389",
     :name "Othello",
-    :rating 5.93526,
+    :rating 6.11269,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 2,
@@ -99,7 +99,7 @@
    "29714"
    {:id "29714",
     :name "Die Siedler von Catan: Kartenspiel – Zauberer & Drachen",
-    :rating 5.82529,
+    :rating 6.62587,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 2,
@@ -129,7 +129,7 @@
    "213893"
    {:id "213893",
     :name "Yamataï",
-    :rating 6.80805,
+    :rating 7.21548,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -173,7 +173,7 @@
    "77130"
    {:id "77130",
     :name "Sid Meier's Civilization: The Board Game",
-    :rating 7.1421,
+    :rating 7.39826,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -217,7 +217,7 @@
    "229853"
    {:id "229853",
     :name "Teotihuacan: City of Gods",
-    :rating 7.64083,
+    :rating 7.92348,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -261,7 +261,7 @@
    "93"
    {:id "93",
     :name "El Grande",
-    :rating 7.57596,
+    :rating 7.74911,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -312,7 +312,7 @@
    "40692"
    {:id "40692",
     :name "Small World",
-    :rating 7.14857,
+    :rating 7.24245,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 5,
@@ -363,7 +363,7 @@
    "17133"
    {:id "17133",
     :name "Railways of the World",
-    :rating 7.37996,
+    :rating 7.68493,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 6,
@@ -421,7 +421,7 @@
    "9216"
    {:id "9216",
     :name "Goa",
-    :rating 7.28343,
+    :rating 7.57577,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -465,7 +465,7 @@
    "3"
    {:id "3",
     :name "Samurai",
-    :rating 7.23619,
+    :rating 7.45456,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 4,
@@ -509,7 +509,7 @@
    "432"
    {:id "432",
     :name "6 nimmt!",
-    :rating 6.80603,
+    :rating 6.93254,
     :my-rating 6.5,
     :minplayers 2,
     :maxplayers 10,
@@ -595,7 +595,7 @@
    "172386"
    {:id "172386",
     :name "Mombasa",
-    :rating 7.54967,
+    :rating 7.87169,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -639,7 +639,7 @@
    "277018"
    {:id "277018",
     :name "Kanban Menu",
-    :rating 5.51842,
+    :rating 6.46562,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -690,7 +690,7 @@
    "96613"
    {:id "96613",
     :name "Alcatraz: The Scapegoat",
-    :rating 5.86039,
+    :rating 6.31819,
     :my-rating 7,
     :minplayers 3,
     :maxplayers 4,
@@ -734,7 +734,7 @@
    "117914"
    {:id "117914",
     :name "Milestones",
-    :rating 5.92906,
+    :rating 6.57681,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -778,7 +778,7 @@
    "50"
    {:id "50",
     :name "Lost Cities",
-    :rating 7.09473,
+    :rating 7.19397,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 2,
@@ -808,7 +808,7 @@
    "97842"
    {:id "97842",
     :name "Last Will",
-    :rating 6.92089,
+    :rating 7.18345,
     :my-rating 8.2,
     :minplayers 2,
     :maxplayers 5,
@@ -859,7 +859,7 @@
    "54138"
    {:id "54138",
     :name "Imperial 2030",
-    :rating 7.17348,
+    :rating 7.66976,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 6,
@@ -917,7 +917,7 @@
    "176494"
    {:id "176494",
     :name "Isle of Skye: From Chieftain to King",
-    :rating 7.26018,
+    :rating 7.41781,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -968,7 +968,7 @@
    "45315"
    {:id "45315",
     :name "Dungeon Lords",
-    :rating 7.14422,
+    :rating 7.38064,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 4,
@@ -1012,7 +1012,7 @@
    "111426"
    {:id "111426",
     :name "Terra Evolution: Tree of Life",
-    :rating 5.49809,
+    :rating 5.51696,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -1063,7 +1063,7 @@
    "9625"
    {:id "9625",
     :name "Struggle of Empires",
-    :rating 6.88596,
+    :rating 7.51826,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 7,
@@ -1128,7 +1128,7 @@
    "28720"
    {:id "28720",
     :name "Brass: Lancashire",
-    :rating 7.96447,
+    :rating 8.18341,
     :my-rating 9.5,
     :minplayers 2,
     :maxplayers 4,
@@ -1172,7 +1172,7 @@
    "36218"
    {:id "36218",
     :name "Dominion",
-    :rating 7.49709,
+    :rating 7.60864,
     :my-rating 9.5,
     :minplayers 2,
     :maxplayers 4,
@@ -1216,7 +1216,7 @@
    "109276"
    {:id "109276",
     :name "Kanban: Driver's Edition",
-    :rating 7.29259,
+    :rating 7.82046,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -1260,7 +1260,7 @@
    "34887"
    {:id "34887",
     :name "Revolution!",
-    :rating 6.33454,
+    :rating 6.72046,
     :my-rating nil,
     :minplayers 3,
     :maxplayers 4,
@@ -1304,7 +1304,7 @@
    "145219"
    {:id "145219",
     :name "Craftsmen",
-    :rating 5.73278,
+    :rating 6.63518,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -1355,7 +1355,7 @@
    "220308"
    {:id "220308",
     :name "Gaia Project",
-    :rating 8.17551,
+    :rating 8.46999,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -1399,7 +1399,7 @@
    "234"
    {:id "234",
     :name "Hannibal: Rome vs. Carthage",
-    :rating 7.16231,
+    :rating 7.79804,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 2,
@@ -1429,7 +1429,7 @@
    "276025"
    {:id "276025",
     :name "Maracaibo",
-    :rating 7.78827,
+    :rating 8.18703,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -1473,7 +1473,7 @@
    "118"
    {:id "118",
     :name "Modern Art",
-    :rating 7.25693,
+    :rating 7.44228,
     :my-rating 8.5,
     :minplayers 3,
     :maxplayers 5,
@@ -1524,7 +1524,7 @@
    "6472"
    {:id "6472",
     :name "A Game of Thrones",
-    :rating 6.88766,
+    :rating 7.1958,
     :my-rating 7,
     :minplayers 3,
     :maxplayers 5,
@@ -1575,7 +1575,7 @@
    "70149"
    {:id "70149",
     :name "Ora et Labora",
-    :rating 7.37043,
+    :rating 7.69904,
     :my-rating 8,
     :minplayers 1,
     :maxplayers 4,
@@ -1619,7 +1619,7 @@
    "146508"
    {:id "146508",
     :name "T.I.M.E Stories",
-    :rating 7.30937,
+    :rating 7.49048,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -1663,7 +1663,7 @@
    "12333"
    {:id "12333",
     :name "Twilight Struggle",
-    :rating 8.11084,
+    :rating 8.27727,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 2,
@@ -1694,7 +1694,7 @@
    {:id "29717",
     :name
     "Die Siedler von Catan: Kartenspiel – Wissenschaft & Fortschritt",
-    :rating 5.91318,
+    :rating 7.06567,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 2,
@@ -1724,7 +1724,7 @@
    "165022"
    {:id "165022",
     :name "€uro Crisis",
-    :rating 5.57569,
+    :rating 6.9876,
     :my-rating 9,
     :minplayers 3,
     :maxplayers 4,
@@ -1768,7 +1768,7 @@
    "31260"
    {:id "31260",
     :name "Agricola",
-    :rating 7.8055,
+    :rating 7.92223,
     :my-rating 9.5,
     :minplayers 1,
     :maxplayers 5,
@@ -1819,7 +1819,7 @@
    "35677"
    {:id "35677",
     :name "Le Havre",
-    :rating 7.71065,
+    :rating 7.86632,
     :my-rating 9.5,
     :minplayers 1,
     :maxplayers 5,
@@ -1870,7 +1870,7 @@
    "760"
    {:id "760",
     :name "Battle Line",
-    :rating 7.20785,
+    :rating 7.41424,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 2,
@@ -1900,7 +1900,7 @@
    "24480"
    {:id "24480",
     :name "The Pillars of the Earth",
-    :rating 7.09236,
+    :rating 7.28141,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 4,
@@ -1944,7 +1944,7 @@
    "66188"
    {:id "66188",
     :name "Fresco",
-    :rating 7.04546,
+    :rating 7.27307,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -1988,7 +1988,7 @@
    "8217"
    {:id "8217",
     :name "San Juan",
-    :rating 7.10119,
+    :rating 7.24618,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 4,
@@ -2032,7 +2032,7 @@
    "161936"
    {:id "161936",
     :name "Pandemic Legacy: Season 1",
-    :rating 8.43891,
+    :rating 8.59017,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -2076,7 +2076,7 @@
    "176396"
    {:id "176396",
     :name "Quadropolis",
-    :rating 7.01814,
+    :rating 7.26531,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -2120,7 +2120,7 @@
    "91873"
    {:id "91873",
     :name "Strasbourg",
-    :rating 6.50674,
+    :rating 7.16743,
     :my-rating 7,
     :minplayers 3,
     :maxplayers 5,
@@ -2171,7 +2171,7 @@
    "229220"
    {:id "229220",
     :name "Santa Maria",
-    :rating 7.03795,
+    :rating 7.51615,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -2215,7 +2215,7 @@
    "25292"
    {:id "25292",
     :name "Merchants & Marauders",
-    :rating 7.13476,
+    :rating 7.40316,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -2259,7 +2259,7 @@
    "9674"
    {:id "9674",
     :name "Ingenious",
-    :rating 6.93788,
+    :rating 7.11519,
     :my-rating 8,
     :minplayers 1,
     :maxplayers 4,
@@ -2303,7 +2303,7 @@
    "21385"
    {:id "21385",
     :name "Carcassonne: Expansion 4 – The Tower",
-    :rating 6.28098,
+    :rating 6.58664,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 6,
@@ -2361,7 +2361,7 @@
    "169786"
    {:id "169786",
     :name "Scythe",
-    :rating 8.06148,
+    :rating 8.21597,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 5,
@@ -2412,7 +2412,7 @@
    "178044"
    {:id "178044",
     :name "Small Star Empires",
-    :rating 5.89251,
+    :rating 7.16272,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -2456,7 +2456,7 @@
    "154203"
    {:id "154203",
     :name "Imperial Settlers",
-    :rating 7.20171,
+    :rating 7.37039,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -2500,7 +2500,7 @@
    "182874"
    {:id "182874",
     :name "Grand Austria Hotel",
-    :rating 7.60507,
+    :rating 7.88102,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -2544,7 +2544,7 @@
    "34499"
    {:id "34499",
     :name "Race for the Galaxy: The Gathering Storm",
-    :rating 7.68298,
+    :rating 8.08994,
     :my-rating 9,
     :minplayers 1,
     :maxplayers 5,
@@ -2595,7 +2595,7 @@
    "66589"
    {:id "66589",
     :name "Navegador",
-    :rating 7.19276,
+    :rating 7.54211,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -2646,7 +2646,7 @@
    "94480"
    {:id "94480",
     :name "Pantheon",
-    :rating 6.10616,
+    :rating 6.73202,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -2690,7 +2690,7 @@
    "14996"
    {:id "14996",
     :name "Ticket to Ride: Europe",
-    :rating 7.42401,
+    :rating 7.54383,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 5,
@@ -2741,7 +2741,7 @@
    "14105"
    {:id "14105",
     :name "Commands & Colors: Ancients",
-    :rating 7.35119,
+    :rating 7.77271,
     :my-rating 7.5,
     :minplayers 2,
     :maxplayers 2,
@@ -2771,7 +2771,7 @@
    "6249"
    {:id "6249",
     :name "Alhambra",
-    :rating 6.91497,
+    :rating 7.0296,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 6,
@@ -2829,7 +2829,7 @@
    "167791"
    {:id "167791",
     :name "Terraforming Mars",
-    :rating 8.27166,
+    :rating 8.41561,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 5,
@@ -2880,7 +2880,7 @@
    "96913"
    {:id "96913",
     :name "Lancaster",
-    :rating 7.01949,
+    :rating 7.40484,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -2931,7 +2931,7 @@
    "128621"
    {:id "128621",
     :name "Viticulture",
-    :rating 7.25929,
+    :rating 7.55427,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 6,
@@ -2989,7 +2989,7 @@
    "62219"
    {:id "62219",
     :name "Dominant Species",
-    :rating 7.61368,
+    :rating 7.835,
     :my-rating 7.5,
     :minplayers 2,
     :maxplayers 6,
@@ -3047,7 +3047,7 @@
    "155426"
    {:id "155426",
     :name "Castles of Mad King Ludwig",
-    :rating 7.37323,
+    :rating 7.54007,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -3091,7 +3091,7 @@
    "121408"
    {:id "121408",
     :name "Trains",
-    :rating 6.84785,
+    :rating 7.15069,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -3135,7 +3135,7 @@
    "9217"
    {:id "9217",
     :name "Saint Petersburg",
-    :rating 7.08169,
+    :rating 7.287,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -3179,7 +3179,7 @@
    "120677"
    {:id "120677",
     :name "Terra Mystica",
-    :rating 7.96119,
+    :rating 8.1186,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 5,
@@ -3230,7 +3230,7 @@
    "146886"
    {:id "146886",
     :name "La Granja",
-    :rating 7.31215,
+    :rating 7.65056,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -3274,7 +3274,7 @@
    "1465"
    {:id "1465",
     :name "Wizard",
-    :rating 6.68037,
+    :rating 6.93805,
     :my-rating 8,
     :minplayers 3,
     :maxplayers 6,
@@ -3332,7 +3332,7 @@
    "63628"
    {:id "63628",
     :name "The Manhattan Project",
-    :rating 7.04523,
+    :rating 7.34496,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 5,
@@ -3383,7 +3383,7 @@
    "193738"
    {:id "193738",
     :name "Great Western Trail",
-    :rating 8.12109,
+    :rating 8.29107,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -3427,7 +3427,7 @@
    "2655"
    {:id "2655",
     :name "Hive",
-    :rating 7.18716,
+    :rating 7.32262,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 2,
@@ -3457,7 +3457,7 @@
    "2651"
    {:id "2651",
     :name "Power Grid",
-    :rating 7.73668,
+    :rating 7.84043,
     :my-rating 9.5,
     :minplayers 2,
     :maxplayers 6,
@@ -3515,7 +3515,7 @@
    "30549"
    {:id "30549",
     :name "Pandemic",
-    :rating 7.48343,
+    :rating 7.58474,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -3559,7 +3559,7 @@
    "278"
    {:id "278",
     :name "Catan Card Game",
-    :rating 6.52463,
+    :rating 6.70993,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 2,
@@ -3589,7 +3589,7 @@
    "136223"
    {:id "136223",
     :name "Village: Inn",
-    :rating 6.96663,
+    :rating 7.83888,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -3640,7 +3640,7 @@
    "24270"
    {:id "24270",
     :name "Hoyuk",
-    :rating 5.59809,
+    :rating 6.14819,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 5,
@@ -3691,7 +3691,7 @@
    "42"
    {:id "42",
     :name "Tigris & Euphrates",
-    :rating 7.52466,
+    :rating 7.69656,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 4,
@@ -3735,7 +3735,7 @@
    "121921"
    {:id "121921",
     :name "Robinson Crusoe: Adventures on the Cursed Island",
-    :rating 7.64309,
+    :rating 7.81252,
     :my-rating 7.5,
     :minplayers 1,
     :maxplayers 4,
@@ -3779,7 +3779,7 @@
    "22279"
    {:id "22279",
     :name "Alhambra: The Treasure Chamber",
-    :rating 5.91722,
+    :rating 7.06683,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 6,
@@ -3837,7 +3837,7 @@
    "160495"
    {:id "160495",
     :name "ZhanGuo",
-    :rating 6.8089,
+    :rating 7.57325,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -3881,7 +3881,7 @@
    "102680"
    {:id "102680",
     :name "Trajan",
-    :rating 7.51298,
+    :rating 7.75843,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -3925,7 +3925,7 @@
    "192661"
    {:id "192661",
     :name "Mysterium: Hidden Signs",
-    :rating 6.84794,
+    :rating 7.79931,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 7,
@@ -3990,7 +3990,7 @@
    "27833"
    {:id "27833",
     :name "Steam",
-    :rating 7.25869,
+    :rating 7.57768,
     :my-rating 9,
     :minplayers 3,
     :maxplayers 5,
@@ -4041,7 +4041,7 @@
    "181796"
    {:id "181796",
     :name "The Prodigals Club",
-    :rating 6.5337,
+    :rating 7.30457,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -4092,7 +4092,7 @@
    "181304"
    {:id "181304",
     :name "Mysterium",
-    :rating 7.14098,
+    :rating 7.27798,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 7,
@@ -4157,7 +4157,7 @@
    "22664"
    {:id "22664",
     :name "Phase 10 Masters Edition",
-    :rating 5.53248,
+    :rating 5.72648,
     :my-rating 4,
     :minplayers 2,
     :maxplayers 6,
@@ -4215,7 +4215,7 @@
    "210108"
    {:id "210108",
     :name "Grand Bazaar",
-    :rating 0,
+    :rating 9.66667,
     :my-rating 10,
     :minplayers 3,
     :maxplayers 4,
@@ -4259,7 +4259,7 @@
    "161970"
    {:id "161970",
     :name "Alchemists",
-    :rating 7.44546,
+    :rating 7.66721,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -4303,7 +4303,7 @@
    "10630"
    {:id "10630",
     :name "Memoir '44",
-    :rating 7.37966,
+    :rating 7.55594,
     :my-rating 6.5,
     :minplayers 2,
     :maxplayers 8,
@@ -4375,7 +4375,7 @@
    "9209"
    {:id "9209",
     :name "Ticket to Ride",
-    :rating 7.3035,
+    :rating 7.41179,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 5,
@@ -4426,7 +4426,7 @@
    "21763"
    {:id "21763",
     :name "Mr. Jack",
-    :rating 6.83035,
+    :rating 6.99933,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -4456,7 +4456,7 @@
    "12"
    {:id "12",
     :name "Ra",
-    :rating 7.3107,
+    :rating 7.48138,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 5,
@@ -4507,7 +4507,7 @@
    "154246"
    {:id "154246",
     :name "La Isla",
-    :rating 6.52332,
+    :rating 6.87269,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -4551,7 +4551,7 @@
    "13"
    {:id "13",
     :name "Catan",
-    :rating 6.96507,
+    :rating 7.13098,
     :my-rating 6,
     :minplayers 3,
     :maxplayers 4,
@@ -4595,7 +4595,7 @@
    "104006"
    {:id "104006",
     :name "Village",
-    :rating 7.34084,
+    :rating 7.51418,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -4639,7 +4639,7 @@
    "157354"
    {:id "157354",
     :name "Five Tribes",
-    :rating 7.63288,
+    :rating 7.78082,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -4683,7 +4683,7 @@
    "161417"
    {:id "161417",
     :name "Red7",
-    :rating 6.71765,
+    :rating 6.89574,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -4727,7 +4727,7 @@
    "43018"
    {:id "43018",
     :name "Agricola: Farmers of the Moor",
-    :rating 7.44405,
+    :rating 8.06963,
     :my-rating 9,
     :minplayers 1,
     :maxplayers 5,
@@ -4778,7 +4778,7 @@
    "196340"
    {:id "196340",
     :name "Yokohama",
-    :rating 7.48242,
+    :rating 7.8421,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -4822,7 +4822,7 @@
    "159507"
    {:id "159507",
     :name "Urban Panic",
-    :rating 5.50568,
+    :rating 5.572,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 4,
@@ -4866,7 +4866,7 @@
    "15987"
    {:id "15987",
     :name "Arkham Horror",
-    :rating 7.04899,
+    :rating 7.24899,
     :my-rating 8,
     :minplayers 1,
     :maxplayers 8,
@@ -4938,7 +4938,7 @@
    "34585"
    {:id "34585",
     :name "Keltis",
-    :rating 6.1937,
+    :rating 6.41524,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 4,
@@ -4982,7 +4982,7 @@
    "171623"
    {:id "171623",
     :name "The Voyages of Marco Polo",
-    :rating 7.63777,
+    :rating 7.83774,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 4,
@@ -5026,7 +5026,7 @@
    "25613"
    {:id "25613",
     :name "Through the Ages: A Story of Civilization",
-    :rating 7.67179,
+    :rating 7.90089,
     :my-rating 9.8,
     :minplayers 2,
     :maxplayers 4,
@@ -5070,7 +5070,7 @@
    "40210"
    {:id "40210",
     :name "Race for the Galaxy: Rebel vs Imperium",
-    :rating 7.3582,
+    :rating 7.93384,
     :my-rating 9,
     :minplayers 1,
     :maxplayers 6,
@@ -5129,7 +5129,7 @@
    {:id "22766",
     :name
     "Die Siedler von Catan: Das Kartenspiel – 10th Anniversary Special Edition Tin Box",
-    :rating 5.84621,
+    :rating 7.56535,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -5159,7 +5159,7 @@
    "156061"
    {:id "156061",
     :name "Imperialism: Road to Domination",
-    :rating 5.59237,
+    :rating 6.37794,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 4,
@@ -5203,7 +5203,7 @@
    "148949"
    {:id "148949",
     :name "Istanbul",
-    :rating 7.41771,
+    :rating 7.56669,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -5254,7 +5254,7 @@
    "325"
    {:id "325",
     :name "Catan: Seafarers",
-    :rating 6.92726,
+    :rating 7.15043,
     :my-rating nil,
     :minplayers 3,
     :maxplayers 4,
@@ -5298,7 +5298,7 @@
    "22821"
    {:id "22821",
     :name "Twilight Imperium: Third Edition – Shattered Empire",
-    :rating 7.68957,
+    :rating 8.57981,
     :my-rating nil,
     :minplayers 3,
     :maxplayers 8,
@@ -5370,7 +5370,7 @@
    "247763"
    {:id "247763",
     :name "Underwater Cities",
-    :rating 7.77432,
+    :rating 8.10471,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -5414,7 +5414,7 @@
    "34635"
    {:id "34635",
     :name "Stone Age",
-    :rating 7.43791,
+    :rating 7.55221,
     :my-rating 7.5,
     :minplayers 2,
     :maxplayers 4,
@@ -5458,7 +5458,7 @@
    "29715"
    {:id "29715",
     :name "Die Siedler von Catan: Kartenspiel – Handel & Wandel",
-    :rating 5.93755,
+    :rating 7.02956,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -5488,7 +5488,7 @@
    "1"
    {:id "1",
     :name "Die Macher",
-    :rating 7.09943,
+    :rating 7.61548,
     :my-rating 8,
     :minplayers 3,
     :maxplayers 5,
@@ -5539,7 +5539,7 @@
    "124361"
    {:id "124361",
     :name "Concordia",
-    :rating 7.96677,
+    :rating 8.12174,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -5590,7 +5590,7 @@
    "43015"
    {:id "43015",
     :name "Hansa Teutonica",
-    :rating 7.42332,
+    :rating 7.68575,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -5641,7 +5641,7 @@
    "21790"
    {:id "21790",
     :name "Thurn and Taxis",
-    :rating 6.94341,
+    :rating 7.09775,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -5685,7 +5685,7 @@
    "107529"
    {:id "107529",
     :name "Kingdom Builder",
-    :rating 6.82216,
+    :rating 6.95692,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -5729,7 +5729,7 @@
    "157403"
    {:id "157403",
     :name "Black Fleet",
-    :rating 6.60666,
+    :rating 7.00969,
     :my-rating 7,
     :minplayers 3,
     :maxplayers 4,
@@ -5773,7 +5773,7 @@
    "926"
    {:id "926",
     :name "Catan: Cities & Knights",
-    :rating 7.18358,
+    :rating 7.45348,
     :my-rating nil,
     :minplayers 3,
     :maxplayers 4,
@@ -5817,7 +5817,7 @@
    "144733"
    {:id "144733",
     :name "Russian Railroads",
-    :rating 7.52734,
+    :rating 7.76177,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -5861,7 +5861,7 @@
    "133632"
    {:id "133632",
     :name "Mythotopia",
-    :rating 6.16458,
+    :rating 6.82088,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -5905,7 +5905,7 @@
    "126163"
    {:id "126163",
     :name "Tzolk'in: The Mayan Calendar",
-    :rating 7.7388,
+    :rating 7.88791,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -5949,7 +5949,7 @@
    "2591"
    {:id "2591",
     :name "Carcassonne: The River",
-    :rating 6.73705,
+    :rating 7.00605,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 5,
@@ -6000,7 +6000,7 @@
    "175914"
    {:id "175914",
     :name "Food Chain Magnate",
-    :rating 7.83585,
+    :rating 8.1167,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -6051,7 +6051,7 @@
    "555"
    {:id "555",
     :name "The Princes of Florence",
-    :rating 7.28238,
+    :rating 7.52525,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -6102,7 +6102,7 @@
    "28143"
    {:id "28143",
     :name "Race for the Galaxy",
-    :rating 7.6509,
+    :rating 7.75719,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 4,
@@ -6146,7 +6146,7 @@
    "11"
    {:id "11",
     :name "Bohnanza",
-    :rating 6.93418,
+    :rating 7.04224,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 7,
@@ -6211,7 +6211,7 @@
    "8051"
    {:id "8051",
     :name "Attika",
-    :rating 6.65557,
+    :rating 6.9919,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 4,
@@ -6255,7 +6255,7 @@
    "96848"
    {:id "96848",
     :name "Mage Knight Board Game",
-    :rating 7.87784,
+    :rating 8.09722,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -6299,7 +6299,7 @@
    "122515"
    {:id "122515",
     :name "Keyflower",
-    :rating 7.58502,
+    :rating 7.77717,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 6,
@@ -6357,7 +6357,7 @@
    "25554"
    {:id "25554",
     :name "Notre Dame",
-    :rating 7.10053,
+    :rating 7.33247,
     :my-rating 7.5,
     :minplayers 2,
     :maxplayers 5,
@@ -6408,7 +6408,7 @@
    "55697"
    {:id "55697",
     :name "Power Struggle",
-    :rating 6.33023,
+    :rating 6.97648,
     :my-rating 8,
     :minplayers 3,
     :maxplayers 5,
@@ -6459,7 +6459,7 @@
    "24181"
    {:id "24181",
     :name "Imperial",
-    :rating 7.22021,
+    :rating 7.60782,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 6,
@@ -6517,7 +6517,7 @@
    "166372"
    {:id "166372",
     :name "Artificium",
-    :rating 5.6608,
+    :rating 6.02243,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 6,
@@ -6575,7 +6575,7 @@
    "40834"
    {:id "40834",
     :name "Dominion: Intrigue",
-    :rating 7.55099,
+    :rating 7.70723,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 6,
@@ -6633,7 +6633,7 @@
    "19600"
    {:id "19600",
     :name "Antike",
-    :rating 6.62748,
+    :rating 7.07821,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 6,
@@ -6691,7 +6691,7 @@
    "86246"
    {:id "86246",
     :name "Drum Roll",
-    :rating 6.20217,
+    :rating 6.88636,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 4,
@@ -6735,7 +6735,7 @@
    "236457"
    {:id "236457",
     :name "Architects of the West Kingdom",
-    :rating 7.58498,
+    :rating 7.80246,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 5,
@@ -6786,7 +6786,7 @@
    "18602"
    {:id "18602",
     :name "Caylus",
-    :rating 7.57211,
+    :rating 7.7498,
     :my-rating 9,
     :minplayers 2,
     :maxplayers 5,
@@ -6837,7 +6837,7 @@
    "128882"
    {:id "128882",
     :name "The Resistance: Avalon",
-    :rating 7.3802,
+    :rating 7.5594,
     :my-rating nil,
     :minplayers 5,
     :maxplayers 10,
@@ -6923,7 +6923,7 @@
    "5405"
    {:id "5405",
     :name "Carcassonne: Expansion 2 – Traders & Builders",
-    :rating 7.35647,
+    :rating 7.6107,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 6,
@@ -6981,7 +6981,7 @@
    "126042"
    {:id "126042",
     :name "Nations",
-    :rating 7.33405,
+    :rating 7.62666,
     :my-rating 8,
     :minplayers 1,
     :maxplayers 5,
@@ -7032,7 +7032,7 @@
    "156566"
    {:id "156566",
     :name "Lords of Xidit",
-    :rating 6.73228,
+    :rating 7.1203,
     :my-rating nil,
     :minplayers 3,
     :maxplayers 5,
@@ -7083,7 +7083,7 @@
    "176920"
    {:id "176920",
     :name "Mission: Red Planet (Second Edition)",
-    :rating 7.13038,
+    :rating 7.43908,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 6,
@@ -7141,7 +7141,7 @@
    "29716"
    {:id "29716",
     :name "Die Siedler von Catan: Kartenspiel – Politik & Intrige",
-    :rating 5.92158,
+    :rating 6.97963,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -7171,7 +7171,7 @@
    "20551"
    {:id "20551",
     :name "Shogun",
-    :rating 7.26089,
+    :rating 7.53169,
     :my-rating 8,
     :minplayers 3,
     :maxplayers 5,
@@ -7222,7 +7222,7 @@
    "478"
    {:id "478",
     :name "Citadels",
-    :rating 6.96947,
+    :rating 7.07873,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 8,
@@ -7294,7 +7294,7 @@
    "3076"
    {:id "3076",
     :name "Puerto Rico",
-    :rating 7.8342,
+    :rating 7.96435,
     :my-rating 9.5,
     :minplayers 3,
     :maxplayers 5,
@@ -7345,7 +7345,7 @@
    "216132"
    {:id "216132",
     :name "Clans of Caledonia",
-    :rating 7.72386,
+    :rating 7.98565,
     :my-rating nil,
     :minplayers 1,
     :maxplayers 4,
@@ -7389,7 +7389,7 @@
    "173346"
    {:id "173346",
     :name "7 Wonders Duel",
-    :rating 7.98375,
+    :rating 8.10804,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -7419,7 +7419,7 @@
    "98778"
    {:id "98778",
     :name "Hanabi",
-    :rating 6.9708,
+    :rating 7.06945,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 5,
@@ -7470,7 +7470,7 @@
    "72125"
    {:id "72125",
     :name "Eclipse",
-    :rating 7.6787,
+    :rating 7.87442,
     :my-rating 7.5,
     :minplayers 2,
     :maxplayers 6,
@@ -7528,7 +7528,7 @@
    "73439"
    {:id "73439",
     :name "Troyes",
-    :rating 7.55423,
+    :rating 7.74867,
     :my-rating 8.5,
     :minplayers 1,
     :maxplayers 4,
@@ -7572,7 +7572,7 @@
    "164928"
    {:id "164928",
     :name "Orléans",
-    :rating 7.88439,
+    :rating 8.07523,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -7616,7 +7616,7 @@
    "144592"
    {:id "144592",
     :name "Bruxelles 1893",
-    :rating 7.0771,
+    :rating 7.63455,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 5,
@@ -7667,7 +7667,7 @@
    "71"
    {:id "71",
     :name "Civilization",
-    :rating 7.06176,
+    :rating 7.49645,
     :my-rating 6,
     :minplayers 2,
     :maxplayers 7,
@@ -7732,7 +7732,7 @@
    "43111"
    {:id "43111",
     :name "Chaos in the Old World",
-    :rating 7.40428,
+    :rating 7.67538,
     :my-rating 7,
     :minplayers 3,
     :maxplayers 4,
@@ -7776,7 +7776,7 @@
    "2448"
    {:id "2448",
     :name "Kalah",
-    :rating 5.80506,
+    :rating 5.93729,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 2,
@@ -7806,7 +7806,7 @@
    "215"
    {:id "215",
     :name "Tichu",
-    :rating 7.3132,
+    :rating 7.57635,
     :my-rating 9,
     :minplayers 4,
     :maxplayers 4,
@@ -7850,7 +7850,7 @@
    "2993"
    {:id "2993",
     :name "Carcassonne: Expansion 1 – Inns & Cathedrals",
-    :rating 7.41071,
+    :rating 7.62764,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 6,
@@ -7908,7 +7908,7 @@
    "51811"
    {:id "51811",
     :name "Dominion: Seaside",
-    :rating 7.73318,
+    :rating 8.03449,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 4,
@@ -7952,7 +7952,7 @@
    "822"
    {:id "822",
     :name "Carcassonne",
-    :rating 7.30719,
+    :rating 7.41728,
     :my-rating 7.5,
     :minplayers 2,
     :maxplayers 5,
@@ -8003,7 +8003,7 @@
    "37111"
    {:id "37111",
     :name "Battlestar Galactica: The Board Game",
-    :rating 7.56426,
+    :rating 7.73999,
     :my-rating 9,
     :minplayers 3,
     :maxplayers 6,
@@ -8061,7 +8061,7 @@
    "29718"
    {:id "29718",
     :name "Die Siedler von Catan: Kartenspiel – Ritter & Händler",
-    :rating 5.86707,
+    :rating 6.92055,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -8091,7 +8091,7 @@
    "203624"
    {:id "203624",
     :name "Mea Culpa",
-    :rating 5.60074,
+    :rating 6.19992,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 4,
@@ -8135,7 +8135,7 @@
    "31784"
    {:id "31784",
     :name "Carcassonne: Expansion 5 – Abbey & Mayor",
-    :rating 6.6552,
+    :rating 7.12662,
     :my-rating nil,
     :minplayers 2,
     :maxplayers 6,
@@ -8193,7 +8193,7 @@
    "84876"
    {:id "84876",
     :name "The Castles of Burgundy",
-    :rating 8.00668,
+    :rating 8.12637,
     :my-rating 8.5,
     :minplayers 2,
     :maxplayers 4,
@@ -8237,7 +8237,7 @@
    "12493"
    {:id "12493",
     :name "Twilight Imperium: Third Edition",
-    :rating 7.55591,
+    :rating 7.82391,
     :my-rating 8.5,
     :minplayers 3,
     :maxplayers 6,
@@ -8295,7 +8295,7 @@
    "372"
    {:id "372",
     :name "Schotten Totten",
-    :rating 7.01068,
+    :rating 7.32489,
     :my-rating 8,
     :minplayers 2,
     :maxplayers 2,
@@ -8325,7 +8325,7 @@
    "157096"
    {:id "157096",
     :name "Historia",
-    :rating 6.28001,
+    :rating 6.88636,
     :my-rating 8.5,
     :minplayers 1,
     :maxplayers 6,
@@ -8383,7 +8383,7 @@
    "22038"
    {:id "22038",
     :name "Warrior Knights",
-    :rating 6.41183,
+    :rating 6.86507,
     :my-rating 7,
     :minplayers 2,
     :maxplayers 6,
@@ -8437,4 +8437,5 @@
       :recommended-votes 2,
       :recommended-perc 0.06060606060606061,
       :not-recommended-votes 31,
-      :not-recommended-perc 0.9393939393939394}]}})
+      :not-recommended-perc 0.9393939393939394}]}}
+)

@@ -7,7 +7,7 @@
    [bbg-reframe.events :as events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
-   [bbg-reframe.model.localstorage :refer [set-item!]]
+   [bbg-reframe.model.localstorage :refer [item-exists? spit]]
    [bbg-reframe.model.data :refer [local-storage-db]]))
 
 
@@ -22,7 +22,10 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (set-item! "resources/db.clj" (str local-storage-db))
+  (if (item-exists? "resources/db.clj")
+    (println "Using local storage data")
+    (spit "resources/db.clj" (str local-storage-db))
+    )
   (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::events/update-form :sort-id "rating"])
   (dev-setup)

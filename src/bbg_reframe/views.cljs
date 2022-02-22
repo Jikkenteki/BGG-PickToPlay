@@ -92,7 +92,7 @@
     [:div
      [:h1
       "BGG "]
-     [:button {:on-click #(re-frame/dispatch [::events/handler-with-http])} "Test Get Console"]
+     [:button {:on-click #(re-frame/dispatch [::events/fetch-collection "ddmits"])} "Fetch collection and write to Local storage"]
      (fields-div @fields)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))
      (slider :take "Take" 1 25 1)

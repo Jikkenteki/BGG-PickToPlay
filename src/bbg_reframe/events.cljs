@@ -7,7 +7,8 @@
    [clojure.tools.reader.edn :refer [read-string]]
    [bbg-reframe.model.db :refer [read-db]]
    [tubax.core :refer [xml->clj]]
-   [cljs.pprint :refer [pprint]]))
+   [cljs.pprint :refer [pprint]]
+   [bbg-reframe.model.localstorage :refer [spit]]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -69,11 +70,30 @@
                   :on-success      [::good-http-result]
                   :on-failure      [::bad-http-result]}}))
 
+(re-frame/reg-event-fx                             ;; note the trailing -fx
+  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
+  (fn [{:keys [db]} [_ user-name]]                    ;; the first param will be "world"
+    {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
+     :http-xhrio {:method          :get
+                  :uri             (str "https://boardgamegeek.com/xmlapi/collection/" user-name)
+                  :timeout         8000                                           ;; optional see API docs
+                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                  :on-success      [::success-fetch-collection]
+                  :on-failure      [::bad-http-result]}}))
+
+
 (re-frame/reg-event-db
  ::good-http-result
  (fn [db [_ response]]
    (println "SUCCESS")
    (pprint (xml->clj response))
+   db))
+
+(re-frame/reg-event-db
+ ::success-fetch-collection
+ (fn [db [_ response]]
+   (println "SUCCESS")
+   (spit "resources/collection.clj" (with-out-str (pprint (xml->clj response))))
    db))
 
 (re-frame/reg-event-db
