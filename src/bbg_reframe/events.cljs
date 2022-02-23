@@ -5,10 +5,10 @@
    [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between?]]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.db :refer [read-db]]
+   [bbg-reframe.model.db :refer [read-db game-id read-collection-from-file]]
    [tubax.core :refer [xml->clj]]
    [cljs.pprint :refer [pprint]]
-   [bbg-reframe.model.localstorage :refer [spit]]))
+   [bbg-reframe.model.localstorage :refer [spit item-exists?]]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -81,6 +81,17 @@
                   :on-success      [::success-fetch-collection]
                   :on-failure      [::bad-http-result]}}))
 
+(re-frame/reg-event-fx                             ;; note the trailing -fx
+  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
+  (fn [{:keys [db]} [_ game-id]]                    ;; the first param will be "world"
+    {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
+     :http-xhrio {:method          :get
+                  :uri             (str "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+                  :timeout         8000                                           ;; optional see API docs
+                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                  :on-success      [::success-fetch-game]
+                  :on-failure      [::bad-http-result]}}))
+
 
 (re-frame/reg-event-db
  ::good-http-result
@@ -89,12 +100,47 @@
    (pprint (xml->clj response))
    db))
 
-(re-frame/reg-event-db
+;; change to fx and use dispatch later to add all games
+
+(re-frame/reg-event-fx
  ::success-fetch-collection
- (fn [db [_ response]]
+ (fn [_ [_ response]]
    (println "SUCCESS")
    (spit "resources/collection.clj" (with-out-str (pprint (xml->clj response))))
-   db))
+   (let [collection (drop-while item-exists? (read-collection-from-file))
+         _ (println (count collection))
+        ;;  _ (println  (map game-id collection))
+        ;;  _ (mapv #(println "id: " %) (map game-id collection))
+         event {:dispatch-later (mapv  
+                                 (fn [g-id] {:ms 1000 :dispatch [::fetch-game g-id]}) 
+                                 collection)}] 
+   event)))
+
+(comment 
+(def collection ["1" "2" "3"])
+{:dispatch-later (mapv 
+ (fn [g-id] {:ms 1000 :dispatch [:evfetch-gameent-id g-id]})
+ collection     
+ )}
+  
+  (drop-while odd? [1 2 3 4 5])
+
+)
+
+(re-frame/reg-event-db
+ ::success-fetch-game
+ (fn [db [_ response]]
+   (let [_  (println "SUCCESS")
+    game (->> response
+        xml->clj
+        :content
+        first)
+         game-id (game-id game)
+   _ (spit (str "resources/game" game-id ".clj") (with-out-str (pprint game)))]
+   db)))
+;; => nil
+
+   
 
 (re-frame/reg-event-db
  ::bad-http-result

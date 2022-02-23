@@ -6,7 +6,7 @@
 ;; 
 ;; Fields accessors from API XML
 ;; 
-(defn- game-id [game]
+(defn game-id [game]
   (get-in game [:attrs :objectid]))
 
 (defn- game-my-rating [collection-game]
