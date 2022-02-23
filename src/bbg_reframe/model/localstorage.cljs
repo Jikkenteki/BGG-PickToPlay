@@ -10,7 +10,26 @@
   [key]
   (.getItem (.-localStorage js/window) key))
 
+
+(defn item-exists?
+  "Checks if `key' exists in browser's localStorage."
+  [key]
+  (.hasOwnProperty (.-localStorage js/window) key))
+
 (defn remove-item!
   "Remove the browser's localStorage value for the given `key`"
   [key]
   (.removeItem (.-localStorage js/window) key))
+
+;; 
+;; slurp and spit implementations using local storage
+;; 
+(defn spit
+  "Uses local storage for saving the data into the file"
+  [fname data]
+  (set-item! fname data))
+
+(defn slurp
+  "Uses local storage for retrieving the file"
+  [fname]
+  (get-item fname))

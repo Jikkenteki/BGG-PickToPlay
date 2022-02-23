@@ -3,15 +3,23 @@
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
-  ;;  [bbg-reframe.model.db :refer [all-fields]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun]]
-  ;;  [goog.string :as gstring]
-  ;;  [goog.string.format])
-   ))
+   [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun]]
+   [goog.string :as gstring]
+   [goog.string.format]
+   ["sax" :as sax]
+   [bbg-reframe.model.db :refer [all-fields]]))
+
+
+; required for tubax to work
+(js/goog.exportSymbol "sax" sax)
+
+
+
 
 (defn game-div
   [game]
-  (let [_ (println game)]
+  (let [;_ (println game)
+        ]
     ^{:key (random-uuid)}
     [:p (:name game)]))
 
@@ -45,6 +53,8 @@
                                                                  id
                                                                  (-> % .-target .-value)])}]
       [:span.range-slider-ticket-value @value]]]))
+
+
 
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])]

@@ -22,9 +22,11 @@
      (/ (:rating g2) (:playingtime g2))))
 
 (defn rating-for-number-of-players
-  "Returns a rating based on the best and recommended percentages"
+  "Returns a rating based on the best and recommended percentages
+   if votes are not availabe returns 1"
   [game num-players]
-  (let [;_ (println (:name game) num-players)
+  (if (:votes game)
+   (let [;_ (println (:name game) num-players)
         percentages
         (map
          (fn [votes]
@@ -37,7 +39,8 @@
     ;; 1 2 3 4 4+ (5 perc)
     (if (> (count percentages) num-players)
       (nth percentages (dec num-players))
-      (last percentages))))
+      (last percentages)))
+    1.0))
 
 (def sorting-fun
   {:rating game-better?
@@ -112,11 +115,11 @@
      (take 15 (sort sorter db-mem)))
    (get sorting-fun :time))
 
-  (take 5 (vals db/local-storage-db))
-  (keys db/local-storage-db)
-  db/local-storage-db
+  (take 5 (vals data/local-storage-db))
+  (keys data/local-storage-db)
+  data/local-storage-db
 
-  db/local-storage-db
+  data/local-storage-db
   (take 15 (sort game-better? db-mem))
 
   (map

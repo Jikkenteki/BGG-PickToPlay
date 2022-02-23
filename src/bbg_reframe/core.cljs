@@ -2,11 +2,12 @@
   (:require
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
+   [day8.re-frame.http-fx]
+
    [bbg-reframe.events :as events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
-   [bbg-reframe.model.db :refer [local-storage-db]]
-   [bbg-reframe.model.localstorage :refer [set-item!]]))
+   [bbg-reframe.model.localstorage :refer [item-exists?]]))
 
 
 (defn dev-setup []
@@ -20,9 +21,12 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (set-item! "resources/db.clj" (str local-storage-db))
+  (if (item-exists? "ls-games")
+    (println "Using local storage data")
+    (re-frame/dispatch [::events/fetch-collection "ddmits"]))
   (re-frame/dispatch [::events/initialize-db])
-  (re-frame/dispatch [::events/update-form :sort-id "rating"])
+  (re-frame/dispatch [::events/update-result])
   (dev-setup)
   (mount-root))
 
+    ;;  [:button {:on-click #(re-frame/dispatch [::events/fetch-collection "ddmits"])} "Fetch collection and write to Local storage"]
