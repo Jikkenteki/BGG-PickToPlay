@@ -6,7 +6,7 @@
 ;; 
 ;; Fields accessors from API XML
 ;; 
-(defn- game-id [game]
+(defn game-id [game]
   (get-in game [:attrs :objectid]))
 
 (defn with-tag?
@@ -78,7 +78,7 @@
   ;; (-> (xml->clj (str "https://boardgamegeek.com/xmlapi/boardgame/" game-id))
   ;;     :content
   ;;     first)
-  (println "api-read-game not implemented"))
+  (println "api-read-game not implemented" game-id))
 
 
 (comment
@@ -87,12 +87,12 @@
 
 
 
-(defn get-games-and-write-to-file [collection]
-  (spit "resources/games.clj"
-        (reduce
-         #(assoc %1 (get-in %2 [:attrs :objectid]) %2)
-         {}
-         (map api-read-game (map game-id collection)))))
+;; (defn get-games-and-write-to-file [collection]
+;;   (spit "resources/games.clj"
+;;         (reduce
+;;          #(assoc %1 (get-in %2 [:attrs :objectid]) %2)
+;;          {}
+;;          (map api-read-game (map game-id collection)))))
 
 (defn read-games-from-file []
   (read-string (slurp "resources/games.clj")))

@@ -5,10 +5,9 @@
    [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between?]]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.db :refer [read-db game-id read-collection-from-file collection-game->game game-votes]]
+   [bbg-reframe.model.db :refer [read-db game-id collection-game->game game-votes]]
    [tubax.core :refer [xml->clj]]
-   [cljs.pprint :refer [pprint]]
-   [bbg-reframe.model.localstorage :refer [spit item-exists?]]))
+   [bbg-reframe.model.localstorage :refer [spit]]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -66,17 +65,6 @@
 
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
- ::handler-with-http                      ;; usage:  (dispatch [:handler-with-http])
- (fn [{:keys [db]} _]                    ;; the first param will be "world"
-   {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
-    :http-xhrio {:method          :get
-                 :uri             "https://boardgamegeek.com/xmlapi2/plays?username=ddmits&id=167791"
-                 :timeout         8000                                           ;; optional see API docs
-                 :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
-                 :on-success      [::good-http-result]
-                 :on-failure      [::bad-http-result]}}))
-
-(re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  (fn [{:keys [db]} [_ user-name]]                    ;; the first param will be "world"
    {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
@@ -97,14 +85,6 @@
                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                  :on-success      [::success-fetch-game]
                  :on-failure      [::bad-http-result]}}))
-
-
-(re-frame/reg-event-db
- ::good-http-result
- (fn [db [_ response]]
-   (println "SUCCESS")
-   (pprint (xml->clj response))
-   db))
 
 
 (re-frame/reg-event-fx
