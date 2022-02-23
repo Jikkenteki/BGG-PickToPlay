@@ -7,8 +7,7 @@
    [bbg-reframe.events :as events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
-   [bbg-reframe.model.localstorage :refer [item-exists? spit]]
-   [bbg-reframe.model.data :refer [local-storage-db]]))
+   [bbg-reframe.model.localstorage :refer [item-exists?]]))
 
 
 (defn dev-setup []
@@ -26,7 +25,7 @@
     (println "Using local storage data")
     (re-frame/dispatch [::events/fetch-collection "ddmits"]))
   (re-frame/dispatch [::events/initialize-db])
-  (re-frame/dispatch [::events/update-form :sort-id "rating"])
+  (re-frame/dispatch [::events/update-result])
   (dev-setup)
   (mount-root))
 

@@ -6,31 +6,44 @@
 ;; 
 ;; Fields accessors from API XML
 ;; 
-(defn game-id [game]
+(defn- game-id [game]
   (get-in game [:attrs :objectid]))
 
+(defn with-tag?
+  [tag-name]
+  (fn [{:keys [tag]}]
+    (= tag tag-name)))
+
+(defn- game-stats [collection-game]
+  (->> collection-game
+       :content
+       (filter (with-tag? :stats))
+       first))
+
+(defn- game-attributes [collection-game]
+  (:attrs (game-stats collection-game)))
+
 (defn- game-my-rating [collection-game]
-  (let [rating (-> collection-game
-                   :content
-                   (nth 4)
-                   :content
-                   first
-                   :attrs
-                   :value
-                   read-string)]
+  (let [rating (->> (game-stats collection-game)
+                    :content
+                    (filter (with-tag? :rating))
+                    first
+                    :attrs
+                    :value
+                    read-string)]
     (if (number? rating) rating nil)))
 
 (defn- game-rating [collection-game]
-  (let [rating (-> collection-game
-                   :content
-                   (nth 4)
-                   :content
-                   first
-                   :content
-                   (second)
-                   :attrs
-                   :value
-                   read-string)]
+  (let [rating (->> (game-stats collection-game)
+                    :content
+                    (filter (with-tag? :rating))
+                    first
+                    :content
+                    (filter (with-tag? :average))
+                    first
+                    :attrs
+                    :value
+                    read-string)]
     (if (number? rating) rating nil)))
 
 (defn- game-name [collection-game]
@@ -40,11 +53,6 @@
       :content
       first))
 
-(defn- game-attributes [collection-game]
-  (-> collection-game
-      :content
-      (nth 4)
-      :attrs))
 
 (defn- game-attribute [collection-game]
   (fn [key]
@@ -73,9 +81,8 @@
   (println "api-read-game not implemented"))
 
 
-(comment  
-  (api-read-game "2651")
-)
+(comment
+  (api-read-game "2651"))
 
 
 
@@ -130,24 +137,24 @@
 ;; 
 (defn  collection-game->game
   [collection-game]
-     {:id (game-id collection-game)
-     :name (game-name collection-game)
-     :rating (game-rating collection-game)
-     :my-rating (game-my-rating collection-game)
-     :minplayers ((game-attribute collection-game) :minplayers)
-     :maxplayers ((game-attribute collection-game) :maxplayers)
-     :playingtime ((game-attribute collection-game) :playingtime)})
+  {:id (game-id collection-game)
+   :name (game-name collection-game)
+   :rating (game-rating collection-game)
+   :my-rating (game-my-rating collection-game)
+   :minplayers ((game-attribute collection-game) :minplayers)
+   :maxplayers ((game-attribute collection-game) :maxplayers)
+   :playingtime ((game-attribute collection-game) :playingtime)})
 
 (defn game-votes
   [game]
-  (into [] (map votes-best-rating-per-players 
+  (into [] (map votes-best-rating-per-players
                 (polls-with-num-of-players-for-game game))))
 
 (defn- collection-game-games->game
   [games collection-game]
   (let [game-id (game-id collection-game)
         votes (into [] (map votes-best-rating-per-players
-                           (polls-with-num-of-players-for-game (games game-id))))]
+                            (polls-with-num-of-players-for-game (games game-id))))]
     {:id game-id
      :name (game-name collection-game)
      :rating (game-rating collection-game)
@@ -166,7 +173,7 @@
     (spit "resources/db.clj" (with-out-str (pp/pprint all-db)))))
 
 (comment
-  (reduce #(assoc %1 (:id %2) %2) {} [{:id 1} {:id 2} ])
+  (reduce #(assoc %1 (:id %2) %2) {} [{:id 1} {:id 2}])
   ;
   )
 (defn make-db

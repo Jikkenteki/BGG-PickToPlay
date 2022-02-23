@@ -2,8 +2,7 @@
 ;;   (:require [bbg-reframe.model.db :refer [read-db]]))
 
 ;; (def default-db
-;;   {:collection (read-db)
-;;    :result nil
+;;   {:result nil
 ;;    :fields ["name"]
 ;;    :form {:sort-id "rating"
 ;;           :take "10"
