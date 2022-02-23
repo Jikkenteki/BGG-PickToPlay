@@ -29,9 +29,9 @@
    (let [;_ (println (:name game) num-players)
         percentages
         (map
-         (fn [pl]
-           (double (/ (+  (* 2 (pl :best-votes)) (pl :recommended-votes))
-                      (+ 0.0001 (* 2 (pl :best-votes)) (pl :recommended-votes) (pl :not-recommended-votes)))))
+         (fn [votes]
+           (double (/ (+  (* 1.5 (votes :best-votes)) (votes :recommended-votes))
+                      (+ 0.0001 (* 1.5 (votes :best-votes)) (votes :recommended-votes) (votes :not-recommended-votes)))))
          (:votes game))
         ;_ (println percentages)
         ]

@@ -22,12 +22,12 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (when (item-exists? "ls-games")
+  (if (item-exists? "ls-games")
     (println "Using local storage data")
-    ;; (spit "resources/db.clj" (str local-storage-db))
-    )
+    (re-frame/dispatch [::events/fetch-collection "ddmits"]))
   (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::events/update-form :sort-id "rating"])
   (dev-setup)
   (mount-root))
 
+    ;;  [:button {:on-click #(re-frame/dispatch [::events/fetch-collection "ddmits"])} "Fetch collection and write to Local storage"]
