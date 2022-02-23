@@ -7,22 +7,21 @@
    [bbg-reframe.model.sort-filter :refer [sorting-fun]]
   ;;  [goog.string :as gstring]
   ;;  [goog.string.format])
-))
+   ))
 
 (defn game-div
   [game]
   (let [_ (println game)]
     ^{:key (random-uuid)}
-    [:p (:name game)])
-  )
+    [:p (:name game)]))
 
 (defn result-div
   [result]
-   [:div.pl-6.flex-initial.overflow-auto
-     (map
-      (fn [game]
-        (game-div game))
-      result)])
+  [:div.pl-6.flex-auto.overflow-auto
+   (map
+    (fn [game]
+      (game-div game))
+    result)])
 
 (defn select
   [id label options]
@@ -38,19 +37,21 @@
 (defn slider
   [id label min max step]
   (let [value (re-frame/subscribe [::subs/form id])]
-    [:div.flex.justify-between
-     [:label label " " @value]
-     [:input {:type "range" :min min :max max :step step :value @value :id id
-              :onChange #(re-frame/dispatch [::events/update-form
-                                             id
-                                             (-> % .-target .-value)])}]]))
+    [:div.flex.justify-between.mb-1
+     [:label label]
+     [:div.flex
+      [:input.range.my-auto.mr-2 {:type "range" :min min :max max :step step :value @value :id id
+                                  :onChange #(re-frame/dispatch [::events/update-form
+                                                                 id
+                                                                 (-> % .-target .-value)])}]
+      [:span.range-slider-ticket-value @value]]]))
 
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])]
-    [:div.container.p-3.flex.flex-col.max-h-screen
-     [:h1.text-3xl.font-bold.mb-2 
+    [:div.container.p-3.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+     [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
-      [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]    
+      [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
      (slider :take "Take" 1 25 1)
      (slider :higher-than "Rating higher than" 0 10 0.1)
      (slider :players "For number of players" 1 10 1)
