@@ -4,7 +4,7 @@
 (def default-db
   {:collection (read-db)
    :result nil
-   :fields ["name"]
+  ;;  :fields ["name"]
    :form {:sort-id "rating"
           :take "10"
           :higher-than "7"
