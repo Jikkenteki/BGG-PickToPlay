@@ -22,9 +22,9 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (if (item-exists? "resources/db.clj")
+  (when (item-exists? "ls-games")
     (println "Using local storage data")
-    (spit "resources/db.clj" (str local-storage-db))
+    ;; (spit "resources/db.clj" (str local-storage-db))
     )
   (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::events/update-form :sort-id "rating"])

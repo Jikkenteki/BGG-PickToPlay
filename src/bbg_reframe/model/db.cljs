@@ -100,14 +100,6 @@
 (defn read-collection-from-file []
   (:content (read-string (slurp "resources/collection.clj"))))
 
-(comment 
-  (+ 1 1)
-  (read-collection-from-file)
-  (get-item "resources/games.clj")
-  ;
-
-  )
-
 ;; 
 ;; Functions for numbers of players
 ;; 
@@ -136,7 +128,22 @@
 ;; 
 ;; API - DB
 ;; 
-(defn- collection-game->game
+(defn  collection-game->game
+  [collection-game]
+     {:id (game-id collection-game)
+     :name (game-name collection-game)
+     :rating (game-rating collection-game)
+     :my-rating (game-my-rating collection-game)
+     :minplayers ((game-attribute collection-game) :minplayers)
+     :maxplayers ((game-attribute collection-game) :maxplayers)
+     :playingtime ((game-attribute collection-game) :playingtime)})
+
+(defn game-votes
+  [game]
+  (into [] (map votes-best-rating-per-players 
+                (polls-with-num-of-players-for-game game))))
+
+(defn- collection-game-games->game
   [games collection-game]
   (let [game-id (game-id collection-game)
         votes (into [] (map votes-best-rating-per-players
@@ -152,12 +159,16 @@
 
 (defn- make-db-from-collection-and-games
   [collection games]
-  (let [all (map #(collection-game->game games %) collection)
+  (let [all (map #(collection-game-games->game games %) collection)
         all-db (reduce
                 #(assoc %1 (:id %2) %2)
                 {} all)]
     (spit "resources/db.clj" (with-out-str (pp/pprint all-db)))))
 
+(comment
+  (reduce #(assoc %1 (:id %2) %2) {} [{:id 1} {:id 2} ])
+  ;
+  )
 (defn make-db
   []
   (make-db-from-collection-and-games
@@ -166,7 +177,7 @@
 
 (defn read-db
   []
-  (read-string (slurp "resources/db.clj")))
+  (read-string (slurp "ls-games")))
 
 (def all-fields ["id" "name" "rating" "playability" "playingtime" "minplayers" "maxplayers"])
 

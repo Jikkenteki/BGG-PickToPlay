@@ -5,7 +5,7 @@
    [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between?]]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.db :refer [read-db game-id read-collection-from-file]]
+   [bbg-reframe.model.db :refer [read-db game-id read-collection-from-file collection-game->game game-votes]]
    [tubax.core :refer [xml->clj]]
    [cljs.pprint :refer [pprint]]
    [bbg-reframe.model.localstorage :refer [spit item-exists?]]))
@@ -22,7 +22,8 @@
                     :higher-than "7"
                     :players "4"
                     :threshold "0.8"
-                    :time-limit "120"}}))
+                    :time-limit "120"}
+             :games (read-db)}))
 
 
 (re-frame/reg-event-db
@@ -55,7 +56,10 @@
                               (is-playable-with-num-of-players
                                (get-in updated-db [:form :players])
                                (get-in updated-db [:form :threshold])))
-                             (vals (db :collection))))))]
+                            ;;  (vals (db :collection))
+                             (vals (get db :games))
+                             ))))]
+     
      new-db)))
 
 
@@ -100,51 +104,68 @@
    (pprint (xml->clj response))
    db))
 
-;; change to fx and use dispatch later to add all games
+
+;; (defn- ls-name [game]
+;;   (str "resources/game" (game-id game) ".clj"))
 
 (re-frame/reg-event-fx
  ::success-fetch-collection
- (fn [_ [_ response]]
-   (println "SUCCESS")
-   (spit "resources/collection.clj" (with-out-str (pprint (xml->clj response))))
-   (let [collection (drop-while item-exists? (read-collection-from-file))
-         _ (println (count collection))
+ (fn [cofx [_ response]]
+   (println "SUCCESS: collection fetched ")
+  ;;  (spit "resources/collection.clj" (with-out-str (pprint (xml->clj response))))
+   (let [collection (:content (xml->clj response))
+         games (map collection-game->game collection)
+         indexed-games (reduce
+                #(assoc %1 (:id %2) %2)
+                {} games)
+        ;;  collection-to-be-fetched (drop-while #(item-exists? (ls-name %)) collection)
+         collection-to-be-fetched collection
+         _ (println (count collection-to-be-fetched))
         ;;  _ (println  (map game-id collection))
         ;;  _ (mapv #(println "id: " %) (map game-id collection))
-         event {:dispatch-later (mapv  
-                                 (fn [g-id] {:ms 1000 :dispatch [::fetch-game g-id]}) 
-                                 collection)}] 
-   event)))
+         new-db (assoc (:db cofx) :games indexed-games)
+         _ (spit "ls-games"indexed-games)
+        ] 
+   {:dispatch [::update-form :sort-id "rating"]
+    :dispatch-later (mapv 
+                     (fn [g-id delay] {:ms delay :dispatch [::fetch-game g-id]}) 
+                     (map game-id collection-to-be-fetched)
+                     (map #(* % 500) (range (count collection-to-be-fetched))))
+    :db new-db})))
 
 (comment 
 (def collection ["1" "2" "3"])
 {:dispatch-later (mapv 
- (fn [g-id] {:ms 1000 :dispatch [:evfetch-gameent-id g-id]})
- collection     
+ (fn [g-id delay] {:ms delay :dispatch [:eve g-id]})
+ collection     (map #(* % 500) (range (count collection)))
  )}
   
+  (map #(* % 500) (range (count collection)))
+
   (drop-while odd? [1 2 3 4 5])
 
 )
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  ::success-fetch-game
- (fn [db [_ response]]
-   (let [_  (println "SUCCESS")
-    game (->> response
-        xml->clj
-        :content
-        first)
+ (fn [cofx [_ response]]
+   (let [game (->> response
+                   xml->clj
+                   :content
+                   first)
+         votes (game-votes game)
          game-id (game-id game)
-   _ (spit (str "resources/game" game-id ".clj") (with-out-str (pprint game)))]
-   db)))
-;; => nil
-
-   
+         _  (println "SUCCESS" game-id)
+        ;;  _ (spit (str "resources/game" game-id ".clj") (with-out-str (pprint game)))
+         new-db (assoc-in (cofx :db) [:games game-id :votes] votes)
+         _ (spit "ls-games" (:games new-db))]
+   {:dispatch [::update-form :sort-id "rating"]
+    :db new-db})))
+ 
 
 (re-frame/reg-event-db
  ::bad-http-result
  (fn [db [_ response]]
-   (println "BAD")
-   (println response)
+   (println "BAD REQUEST")
+   (println "Response: "response)
    db))

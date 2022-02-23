@@ -1,6 +1,5 @@
 (ns bbg-reframe.model.sort-filter
   (:require [bbg-reframe.model.db :as db]
-            [bbg-reframe.model.data :as data]
             [clojure.string :as s]
             [clojure.pprint :as pp]
             [clojure.tools.reader.edn :refer [read-string]]))
@@ -23,9 +22,11 @@
      (/ (:rating g2) (:playingtime g2))))
 
 (defn rating-for-number-of-players
-  "Returns a rating based on the best and recommended percentages"
+  "Returns a rating based on the best and recommended percentages
+   if votes are not availabe returns 1"
   [game num-players]
-  (let [;_ (println (:name game) num-players)
+  (if (:votes game)
+   (let [;_ (println (:name game) num-players)
         percentages
         (map
          (fn [pl]
@@ -38,7 +39,8 @@
     ;; 1 2 3 4 4+ (5 perc)
     (if (> (count percentages) num-players)
       (nth percentages (dec num-players))
-      (last percentages))))
+      (last percentages)))
+    1.0))
 
 (def sorting-fun
   {:rating game-better?
