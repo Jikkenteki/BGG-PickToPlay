@@ -54,11 +54,16 @@
                                                                  (-> % .-target .-value)])}]
       [:span.range-slider-ticket-value @value]]]))
 
-
+;; (defn fn-queue
+;;   []
+;;   (let [result (re-frame/subscribe [::subs/result])]
+;;     (re-frame/dispatch [::events/update-queue
+;;                         @result])))
 
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])]
     [:div.container.p-3.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+    ;;  (fn-queue)
      [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]

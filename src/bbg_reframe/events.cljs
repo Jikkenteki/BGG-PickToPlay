@@ -5,6 +5,7 @@
    [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between?]]
    [clojure.tools.reader.edn :refer [read-string]]
+   [clojure.set :refer [union]]
    [bbg-reframe.model.db :refer [read-db game-id collection-game->game game-votes]]
    [tubax.core :refer [xml->clj]]
    [bbg-reframe.model.localstorage :refer [spit]]))
@@ -21,7 +22,11 @@
                     :players "4"
                     :threshold "0.8"
                     :time-limit "120"}
-             :games (read-db)}))
+             :games (read-db)
+             :queue #{}
+             :loaded #{}
+             :delay 0
+             :fetches 0}))
 
 
 ;; (re-frame/reg-event-db
@@ -36,26 +41,23 @@
 
 (re-frame/reg-event-fx
  ::update-result
- (fn [cofx _]
-   (let [updated-db (:db cofx)
-         new-db
-         (assoc updated-db
-                :result
-                (take (read-string (get-in updated-db [:form :take]))
-                      (sort (get sorting-fun (keyword (get-in updated-db [:form :sort-id])))
+ (fn [{:keys [db]} _]
+   (let [result (take (read-string (get-in db [:form :take]))
+                      (sort (get sorting-fun (keyword (get-in db [:form :sort-id])))
                             (filter
                              (and-filters
                               (with-number-of-players?
-                                (read-string (get-in updated-db [:form :players])))
+                                (read-string (get-in db [:form :players])))
                               (rating-higher-than?
-                               (read-string (get-in updated-db [:form :higher-than])))
+                               (read-string (get-in db [:form :higher-than])))
                               (playingtime-between?
-                               0 (read-string (get-in updated-db [:form :time-limit])))
+                               0 (read-string (get-in db [:form :time-limit])))
                               (is-playable-with-num-of-players
-                               (get-in updated-db [:form :players])
-                               (get-in updated-db [:form :threshold])))
-                             (vals (get updated-db :games))))))]
-     {:db new-db})))
+                               (get-in db [:form :players])
+                               (get-in db [:form :threshold])))
+                             (vals (get db :games)))))]
+     {:db (assoc db :result result)
+      :dispatch [::update-queue (map :id result)]})))
 
 (re-frame/reg-event-fx
  ::update-form
@@ -141,3 +143,26 @@
    (println "BAD REQUEST")
    (println "Response: " response)
    db))
+
+(re-frame/reg-event-fx
+ ::update-queue
+ (fn [{:keys [db] {:keys [queue loaded delay]} :db} [_ results]]
+   (let [delay-between-fetch 1000
+         to-fetch (drop-while #((union loaded queue) %) results)
+         new-queue (reduce #(conj %1 %2) queue to-fetch)]
+     {:db (assoc db :queue new-queue :delay (+ delay (* delay-between-fetch (count new-queue))))
+      :dispatch-later (mapv
+                       (fn [g-id delay] {:ms delay :dispatch [::fetch-game-mock g-id]})
+                       to-fetch
+                       (map #(+ (* % delay-between-fetch) (* 1000 (count queue))) (range (count to-fetch))))})))
+
+(re-frame/reg-event-fx
+ ::fetch-game-mock
+ (fn [{:keys [db] {:keys [queue loaded fetches]} :db} [_ id]]
+   (let [new-queue (disj queue id)]
+     (println "Fetching" id)
+     {:db (assoc db
+                 :queue new-queue
+                 :loaded (conj loaded id)
+                 :delay  (* 1000 (count new-queue))
+                 :fetches (inc fetches))})))
