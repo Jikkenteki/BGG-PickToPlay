@@ -17,19 +17,23 @@
 
 
 (defn game-div
-  [game]
+  [game players]
   (let [;_ (println game)
-        ]
+        playability (gstring/format "%.2f" (rating-for-number-of-players
+                                            game players))]
     ^{:key (random-uuid)}
-    [:p (:name game)]))
+    [:p  playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "
+     (:name game)]))
 
 (defn result-div
   [result]
-  [:div.pl-6.flex-auto.overflow-auto
-   (map
-    (fn [game]
-      (game-div game))
-    result)])
+  (let [players @(re-frame/subscribe [::subs/form :players])]
+    [:div.pl-6.flex-auto.overflow-auto
+     (map
+      (fn [game]
+        (game-div game players))
+      result)]))
+
 
 (defn select
   [id label options]
@@ -67,7 +71,7 @@
      [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
-     (slider :take "Take" 1 25 1)
+     (slider :take "Take" 1 100 1)
      (slider :higher-than "Rating higher than" 0 10 0.1)
      (slider :players "For number of players" 1 10 1)
      (slider :threshold "Playability threshold" 0 0.95 0.05)

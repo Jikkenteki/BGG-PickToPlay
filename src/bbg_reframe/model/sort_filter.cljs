@@ -11,6 +11,8 @@
 ;; 
 ;; Sorters
 ;; 
+(declare rating-for-number-of-players)
+
 (defn game-better? [g1 g2]
   (> (:rating g1) (:rating g2)))
 
@@ -21,31 +23,39 @@
   (> (/ (:rating g1) (:playingtime g1))
      (/ (:rating g2) (:playingtime g2))))
 
+(defn game-more-playable?
+  [num-players]
+  (fn
+    [g1 g2]
+    (> (* (:rating g1) (rating-for-number-of-players g1 num-players))
+       (* (:rating g2) (rating-for-number-of-players g2 num-players)))))
+
 (defn rating-for-number-of-players
   "Returns a rating based on the best and recommended percentages
    if votes are not availabe returns 1"
   [game num-players]
   (if (:votes game)
-   (let [;_ (println (:name game) num-players)
-        percentages
-        (map
-         (fn [votes]
-           (double (/ (+  (* 1.5 (votes :best-votes)) (votes :recommended-votes))
-                      (+ 0.0001 (* 1.5 (votes :best-votes)) (votes :recommended-votes) (votes :not-recommended-votes)))))
-         (:votes game))
+    (let [;_ (println (:name game) num-players)
+          percentages
+          (map
+           (fn [votes]
+             (double (/ (+  (* 1.5 (votes :best-votes)) (votes :recommended-votes))
+                        (+ 0.0001 (* 1.5 (votes :best-votes)) (votes :recommended-votes) (votes :not-recommended-votes)))))
+           (:votes game))
         ;_ (println percentages)
-        ]
+          ]
     ;; Assuming all games have rating for 1 player
     ;; 1 2 3 4 4+ (5 perc)
-    (if (> (count percentages) num-players)
-      (nth percentages (dec num-players))
-      (last percentages)))
+      (if (> (count percentages) num-players)
+        (nth percentages (dec num-players))
+        (last percentages)))
     1.0))
 
 (def sorting-fun
   {:rating game-better?
    :time game-shorter?
-   :rating-time game-shorter-and-better?})
+   :rating-time game-shorter-and-better?
+   :playable game-more-playable?})
 
 (map name (keys sorting-fun))
 
