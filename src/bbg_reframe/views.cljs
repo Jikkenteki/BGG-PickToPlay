@@ -46,6 +46,14 @@
                                                (-> % .-target .-value)])}
       (map (fn [o] [:option {:key o :value o} o]) options)]]))
 
+(defn custom-select
+  [id label options]
+  (let [value (re-frame/subscribe [::subs/form id])]
+    [:div.flex
+     [:p label]
+     [:div.border-2.w-24.ml-2.pl-1.border-orange-900
+      [:p @value]]]))
+
 (defn slider
   [id label min max step]
   (let [value (re-frame/subscribe [::subs/form id])]
@@ -79,4 +87,5 @@
      (slider :time-limit "Time limit" 10 500 10)
      [:h3 "Games " (when @loading " loading...")]
      (result-div @result)
-     (select :sort-id "Sort by " (map name (keys sorting-fun)))]))
+     (select :sort-id "Sort by " (map name (keys sorting-fun)))
+     (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))]))
