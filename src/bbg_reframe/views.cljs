@@ -6,14 +6,13 @@
    [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun]]
    [goog.string :as gstring]
    [goog.string.format]
-   ["sax" :as sax]
-   [bbg-reframe.model.db :refer [all-fields]]))
+   ["sax" :as sax]))
 
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
 
-(def DEBUG false)
+(def SHOW_PLAYABILITY true)
 
 
 (defn game-div
@@ -23,7 +22,7 @@
                                             game players))]
     ^{:key (random-uuid)}
     [:p  
-     (when DEBUG (str playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
+     (when SHOW_PLAYABILITY (str playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
      (:name game)]))
 
 (defn result-div
@@ -77,7 +76,7 @@
      (slider :higher-than "Rating higher than" 0 10 0.1)
      (slider :players "For number of players" 1 10 1)
      (slider :threshold "Playability threshold" 0 0.95 0.05)
-     (slider :time-limit "Time limit" 0 500 10)
+     (slider :time-limit "Time limit" 10 500 10)
      [:h3 "Games " (when @loading " loading...")]
      (result-div @result)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))]))

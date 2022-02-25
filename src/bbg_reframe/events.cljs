@@ -7,7 +7,8 @@
    [clojure.tools.reader.edn :refer [read-string]]
    [bbg-reframe.model.db :refer [read-db game-id collection-game->game game-votes]]
    [tubax.core :refer [xml->clj]]
-   [bbg-reframe.model.localstorage :refer [spit]]))
+   [bbg-reframe.model.localstorage :refer [spit]]
+   [clojure.string :refer [split]]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -109,13 +110,6 @@
                  :loading false)})))
 
 
-(re-frame/reg-event-fx
- ::bad-http-result
- (fn [_ [_ response]]
-   (println "BAD REQUEST")
-   (println "Response: " response)
-   {:dispatch [::fetch-next-from-queue]}))
-
 (def delay-between-fetch 100)
 
 (re-frame/reg-event-fx
@@ -129,8 +123,7 @@
                            (remove #(queue %))
                            (remove #(fetching %)))]
      {:db (assoc db 
-                 :queue (reduce #(conj %1 %2) queue new-to-fetch)
-                 :loading true)
+                 :queue (reduce #(conj %1 %2) queue new-to-fetch))
       :dispatch [::fetch-next-from-queue]})))
 
 (re-frame/reg-event-fx
@@ -151,13 +144,30 @@
            [:dispatch [::fetch-next-from-queue]]]})))
 
 (re-frame/reg-event-fx
+ ::bad-http-result
+ (fn [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
+   (println "BAD REQUEST")
+   (println "Response: " response)
+   (let [uri (:uri response)
+         game-id (last (split uri \/)) 
+         _ (println game-id)] 
+     {:db {assoc db 
+           :queue (conj queue game-id)
+           :fetching (disj fetching game-id) }
+      :dispatch [::fetch-next-from-queue]})))
+
+(re-frame/reg-event-fx
  ::fetch-next-from-queue
  (fn [{:keys [db] {:keys [queue fetching]} :db} _]
    (if (empty? queue)
-     {:db (assoc db :loading false)}
-     (let [fetch-now (first queue)]
+     (if (empty? fetching)
+       {:db (assoc db :loading false)}
+       {})
+     (let [fetch-now (first queue)
+           _ (println "fetching " fetch-now)]
        {:db (assoc db
                    :queue (disj queue fetch-now)
-                   :fetching (conj fetching fetch-now))
+                   :fetching (conj fetching fetch-now)
+                   :loading true)
         :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
                          :dispatch [::fetch-game fetch-now]}}))))
