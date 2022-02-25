@@ -13,7 +13,7 @@
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
 
-
+(def DEBUG false)
 
 
 (defn game-div
@@ -22,7 +22,8 @@
         playability (gstring/format "%.2f" (rating-for-number-of-players
                                             game players))]
     ^{:key (random-uuid)}
-    [:p  playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "
+    [:p  
+     (when DEBUG (str playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
      (:name game)]))
 
 (defn result-div
@@ -65,7 +66,8 @@
 ;;                         @result])))
 
 (defn main-panel []
-  (let [result (re-frame/subscribe [::subs/result])]
+  (let [result (re-frame/subscribe [::subs/result])
+        loading (re-frame/subscribe [::subs/loading])]
     [:div.container.p-3.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
      [:h1.text-3xl.font-bold.mb-2
@@ -76,6 +78,6 @@
      (slider :players "For number of players" 1 10 1)
      (slider :threshold "Playability threshold" 0 0.95 0.05)
      (slider :time-limit "Time limit" 0 500 10)
-     [:h3 "Games"]
+     [:h3 "Games " (when @loading " loading...")]
      (result-div @result)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))]))

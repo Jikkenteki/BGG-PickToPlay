@@ -17,14 +17,13 @@
              :fields ["name"]
              :form {:sort-id "playable"
                     :take "10"
-                    :higher-than "7"
+                    :higher-than "7.0"
                     :players "4"
                     :threshold "0.8"
-                    :time-limit "120"}
+                    :time-limit "180"}
              :games (read-db)
              :queue #{}
              :fetching #{}
-             :delay 0
              :fetches 0}))
 
 
@@ -45,7 +44,6 @@
          sorting-fun (if (= sort-by "playable")
                        (game-more-playable? (read-string (get-in db [:form :players])))
                        (get sorting-fun (keyword (get-in db [:form :sort-id]))))
-        ;; sorting-fun (get sorting-fun (keyword (get-in db [:form :sort-id])))
          result (take (read-string (get-in db [:form :take]))
                       (sort sorting-fun
                             (filter
@@ -73,7 +71,7 @@
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  (fn [{:keys [db]} [_ user-name]]                    ;; the first param will be "world"
-   {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
+   {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
     :http-xhrio {:method          :get
                  :uri             (str "https://boardgamegeek.com/xmlapi/collection/" user-name)
                  :timeout         8000                                           ;; optional see API docs
@@ -84,35 +82,13 @@
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
  (fn [{:keys [db]} [_ game-id]]                    ;; the first param will be "world"
-   {:db   (assoc db :show-twirly true)   ;; causes the twirly-waiting-dialog to show??
+   {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
     :http-xhrio {:method          :get
                  :uri             (str "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
                  :timeout         8000                                           ;; optional see API docs
                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                  :on-success      [::success-fetch-game]
                  :on-failure      [::bad-http-result]}}))
-
-
-;; (re-frame/reg-event-fx
-;;  ::success-fetch-collection
-;;  (fn [cofx [_ response]]
-;;    (println "SUCCESS: collection fetched ")
-;;    (let [collection (:content (xml->clj response))
-;;          games (map collection-game->game collection)
-;;          indexed-games (reduce
-;;                         #(assoc %1 (:id %2) %2)
-;;                         {} games)
-;;          _ (spit "ls-games" indexed-games)
-;;         ;;  collection-to-be-fetched (drop-while #(item-exists? (ls-name %)) collection)
-;;          collection-to-be-fetched collection
-;;          _ (println (count collection-to-be-fetched))
-;;          new-db (assoc (:db cofx) :games indexed-games)]
-;;      {:dispatch [::update-result]
-;;       :dispatch-later (mapv
-;;                        (fn [g-id delay] {:ms delay :dispatch [::fetch-game g-id]})
-;;                        (map game-id collection-to-be-fetched)
-;;                        (map #(* % 500) (range (count collection-to-be-fetched))))
-;;       :db new-db})))
 
 (re-frame/reg-event-fx
  ::success-fetch-collection
@@ -126,85 +102,36 @@
          _ (spit "ls-games" indexed-games)
         ;;  collection-to-be-fetched (drop-while #(item-exists? (ls-name %)) collection)
          collection-to-be-fetched collection
-         _ (println (count collection-to-be-fetched))
-         new-db (assoc (:db cofx) :games indexed-games)]
+         _ (println (count collection-to-be-fetched))]
      {:dispatch [::update-result]
-      ;; :dispatch-later (mapv
-      ;;                  (fn [g-id delay] {:ms delay :dispatch [::fetch-game g-id]})
-      ;;                  (map game-id collection-to-be-fetched)
-      ;;                  (map #(* % 500) (range (count collection-to-be-fetched))))
-      :db new-db})))
+      :db (assoc (:db cofx) 
+                 :games indexed-games
+                 :loading false)})))
 
 
-(comment
-  (def collection ["1" "2" "3"])
-  {:dispatch-later (mapv
-                    (fn [g-id delay] {:ms delay :dispatch [:eve g-id]})
-                    collection     (map #(* % 500) (range (count collection))))}
-
-  (map #(* % 500) (range (count collection)))
-
-  (drop-while odd? [1 2 3 4 5]))
-
-;; (re-frame/reg-event-fx
-;;  ::success-fetch-game
-;;  (fn [cofx [_ response]]
-;;    (let [game (->> response
-;;                    xml->clj
-;;                    :content
-;;                    first)
-;;          votes (game-votes game)
-;;          game-id (game-id game)
-;;         ;;  _  (println "SUCCESS" game-id)
-;;         ;;  _ (spit (str "resources/game" game-id ".clj") (with-out-str (pprint game)))
-;;          new-db (assoc-in (cofx :db) [:games game-id :votes] votes)
-;;          _ (spit "ls-games" (:games new-db))]
-;;      {:dispatch [::update-result]
-;;       :db new-db})))
-
-
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  ::bad-http-result
- (fn [db [_ response]]
+ (fn [_ [_ response]]
    (println "BAD REQUEST")
    (println "Response: " response)
-   db))
+   {:dispatch [::fetch-next-from-queue]}))
 
 (def delay-between-fetch 100)
 
 (re-frame/reg-event-fx
  ::update-queue
- (fn [{:keys [db] {:keys [queue fetching games delay]} :db} [_ results]]
+ (fn [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
    (let [fetched (into #{} (->> (vals games)
                                 (remove #(nil? (:votes %)))
                                 (map :id)))
          new-to-fetch (->> results
                            (remove #(fetched %))
                            (remove #(queue %))
-                           (remove #(fetching %)))
-         new-queue (reduce #(conj %1 %2) queue new-to-fetch)]
-     {:db (assoc db
-                 :queue new-queue
-                 :delay (+ delay (* delay-between-fetch (count new-queue))))
+                           (remove #(fetching %)))]
+     {:db (assoc db 
+                 :queue (reduce #(conj %1 %2) queue new-to-fetch)
+                 :loading true)
       :dispatch [::fetch-next-from-queue]})))
-
-;; (re-frame/reg-event-fx
-;;  ::fetch-game-mock
-;;  (fn [{:keys [db] {:keys [queue fetches fetching]} :db} [_ id]]
-;;    (let [new-queue (disj queue id)
-;;          fetch-now (first new-queue)
-;;          fetching' (if fetch-now (conj fetching fetch-now) fetching)
-;;          new-queue' (disj new-queue fetch-now)]
-;;      (println "Fetching" id)
-;;      (merge {:db (assoc db
-;;                         :queue new-queue'
-;;                         :fetching fetching'
-;;                         :delay  (* 1000 (count new-queue))
-;;                         :fetches (inc fetches))}
-;;             (if fetch-now
-;;               {:dispatch-later {:ms (* (count fetching) delay-between-fetch)
-;;                                 :dispatch [::fetch-game fetch-now]}}
-;;               {})))))
 
 (re-frame/reg-event-fx
  ::success-fetch-game
@@ -227,10 +154,10 @@
  ::fetch-next-from-queue
  (fn [{:keys [db] {:keys [queue fetching]} :db} _]
    (if (empty? queue)
-     {}
+     {:db (assoc db :loading false)}
      (let [fetch-now (first queue)]
        {:db (assoc db
                    :queue (disj queue fetch-now)
                    :fetching (conj fetching fetch-now))
-        :fx [(when fetch-now [:dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
-                                               :dispatch [::fetch-game fetch-now]}])]}))))
+        :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
+                         :dispatch [::fetch-game fetch-now]}}))))

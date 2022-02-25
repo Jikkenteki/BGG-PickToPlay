@@ -16,3 +16,8 @@
  ::form
  (fn [db [_ id]]
    (get-in db [:form id])))
+
+(re-frame/reg-sub
+ ::loading
+ (fn [db [_ id]]
+   (:loading db)))
