@@ -19,10 +19,10 @@
 
 (re-frame/reg-sub
  ::loading
- (fn [db [_ id]]
+ (fn [db]
    (:loading db)))
 
 (re-frame/reg-sub
- ::error
- (fn [db [_ id]]
+ ::error-msg
+ (fn [db]
    (:error db)))

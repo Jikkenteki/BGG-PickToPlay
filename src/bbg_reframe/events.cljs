@@ -25,7 +25,9 @@
              :games (read-db)
              :queue #{}
              :fetching #{}
-             :fetches 0}))
+             :fetches 0
+             :error nil
+             :cors-running false}))
 
 
 ;; (re-frame/reg-event-db
@@ -72,23 +74,28 @@
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
- (fn [{:keys [db]} [_ user-name]]                    ;; the first param will be "world"
-   {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
-    :http-xhrio {:method          :get
-                 :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user-name)
-                 :timeout         8000                                           ;; optional see API docs
-                 :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
-                 :on-success      [::success-fetch-collection]
-                 :on-failure      [::bad-http-collection]}}))
+ (fn [{:keys [db] {:keys [cors-running]} :db} [_ user-name]]                    ;; the first param will be "world"
+   (if cors-running
+     {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
+      :http-xhrio {:method          :get
+                   :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user-name)
+                   :timeout         8000                                           ;; optional see API docs
+                   :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                   :on-success      [::success-fetch-collection]
+                   :on-failure      [::bad-http-collection]}}
+     {:db (assoc db
+                 :error "CORS server not responding. Trying again in 2 seconds")
+      :dispatch-later {:ms 2000
+                       :dispatch [::fetch-collection user-name]}})))
 
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
- (fn [{:keys [db] {:keys [cors]} :db} [_ game-id]]                    ;; the first param will be "world"
-   (if cors
+ (fn [{:keys [db] {:keys [cors-running]} :db} [_ game-id]]                    ;; the first param will be "world"
+   (if cors-running
      {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
       :http-xhrio {:method          :get
-                   :uri             (str cors-server-uri "/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+                   :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/boardgame/" game-id)
                    :timeout         8000                                           ;; optional see API docs
                    :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                    :on-success      [::success-fetch-game]
@@ -205,12 +212,13 @@
                                           :fetching #{}
                                           :error "CORS server is not responding"
                                           :loading false
-                                          :cors false)}
+                                          :cors-running false)}
      :else {:db (assoc db
                        :queue #{}
                        :fetching #{}
                        :error (:status-text response)
-                       :loading false)})))
+                       :loading false
+                       :cors-running false)})))
 
 (re-frame/reg-event-fx
  ::bad-http-game
@@ -222,10 +230,11 @@
                  :queue #{}
                  :fetching #{}
                  :error "CORS server is not responding"
-                 :loading false)}
+                 :loading false
+                 :cors-running false)}
      (let [uri (:uri response)
            game-id (last (split uri \/))
-           _ (println game-id)]
+           _ (println (str (:status-text response) "Puting " game-id " back in the queue"))]
        {:db {assoc db
              :queue (conj queue game-id)
              :fetching (disj fetching game-id)}
@@ -239,7 +248,7 @@
        {:db (assoc db :loading false)}
        {})
      (let [fetch-now (first queue)
-           _ (println "fetching " fetch-now)]
+           _ (println "fetch-next-from-queue: fetching " fetch-now)]
        {:db (assoc db
                    :queue (disj queue fetch-now)
                    :fetching (conj fetching fetch-now)
