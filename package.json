@@ -5,7 +5,7 @@
     "shadow:watch": "npx shadow-cljs watch app",
     "shadow:release": "npx shadow-cljs release app",
     "build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html",
-    "postcss:build": "postcss TAILWIND_MODE=build src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose",
+    "postcss:release": "postcss TAILWIND_MODE=build src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose",
     "postcss:watch": "postcss TAILWIND_MODE=watch src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose -w",
     "dev": "run-p -l *:watch",
     "release": "run-s *:release"
