@@ -91,5 +91,4 @@
      (result-div @result)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))
      (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))
-    ;;  [:button {:on-click (re-frame/dispatch [::events/fetch-collection "ddmits"])} "Refetch collection"]
-     ]))
+     [:button {:on-click #(re-frame/dispatch [::events/fetch-collection])} "Refetch collection"]]))

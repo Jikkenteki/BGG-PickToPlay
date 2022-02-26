@@ -24,10 +24,8 @@
   (re-frame/dispatch [::events/cors])
   (if (item-exists? "ls-games")
     (println "Using local storage data")
-    (re-frame/dispatch [::events/fetch-collection "ddmits"]))
+    (re-frame/dispatch [::events/fetch-collection]))
   (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::events/update-result])
   (dev-setup)
   (mount-root))
-
-    ;;  [:button {:on-click #(re-frame/dispatch [::events/fetch-collection "ddmits"])} "Fetch collection and write to Local storage"]

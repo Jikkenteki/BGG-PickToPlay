@@ -27,7 +27,8 @@
              :fetching #{}
              :fetches 0
              :error nil
-             :cors-running false}))
+             :cors-running false
+             :user "ddmits"}))
 
 
 ;; (re-frame/reg-event-db
@@ -74,11 +75,11 @@
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
- (fn [{:keys [db] {:keys [cors-running]} :db} [_ user-name]]                    ;; the first param will be "world"
+ (fn [{:keys [db] {:keys [cors-running user]} :db} [_ _]]                    ;; the first param will be "world"
    (if cors-running
      {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
       :http-xhrio {:method          :get
-                   :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user-name)
+                   :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
                    :timeout         8000                                           ;; optional see API docs
                    :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                    :on-success      [::success-fetch-collection]
@@ -86,7 +87,7 @@
      {:db (assoc db
                  :error "CORS server not responding. Trying again in 2 seconds")
       :dispatch-later {:ms 2000
-                       :dispatch [::fetch-collection user-name]}})))
+                       :dispatch [::fetch-collection user]}})))
 
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
@@ -167,7 +168,7 @@
                  :loading false)})))
 
 
-(def delay-between-fetch 1000)
+(def delay-between-fetch 100)
 
 (re-frame/reg-event-fx
  ::update-queue
@@ -203,9 +204,8 @@
 
 (re-frame/reg-event-fx
  ::bad-http-collection
- (fn [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
-   (println "BAD REQUEST")
-   (println "Response: " response)
+ (fn [{:keys [db]} [_ response]]
+   (println "FAILURE: " response)
    (cond
      (= 0 (:status response)) {:db (assoc db
                                           :queue #{}
