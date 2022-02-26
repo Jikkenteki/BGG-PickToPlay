@@ -1,7 +1,7 @@
 (ns bbg-reframe.model.db
   (:require [clojure.pprint :as pp]
             [clojure.tools.reader.edn :refer [read-string]]
-            [bbg-reframe.model.localstorage :refer [slurp spit]]))
+            [bbg-reframe.model.localstorage :refer [spit get-item]]))
 
 ;; 
 ;; Fields accessors from API XML
@@ -99,7 +99,7 @@
 ;;          (map api-read-game (map game-id collection)))))
 
 (defn read-games-from-file []
-  (read-string (slurp "resources/games.clj")))
+  (read-string (get-item "resources/games.clj")))
 
 ;; 
 ;; Collection API 
@@ -109,7 +109,7 @@
 ;;         (xml->clj (str "https://boardgamegeek.com/xmlapi/collection/" user-name))))
 
 (defn read-collection-from-file []
-  (:content (read-string (slurp "resources/collection.clj"))))
+  (:content (read-string (get-item "resources/collection.clj"))))
 
 ;; 
 ;; Functions for numbers of players
@@ -188,9 +188,9 @@
 
 (defn read-db
   []
-  (read-string (slurp "ls-games")))
+  (read-string (get-item "ls-games")))
 
-(def all-fields ["id" "name" "rating" "playability" "playingtime" "minplayers" "maxplayers"])
+;; (def all-fields ["id" "name" "rating" "playability" "playingtime" "minplayers" "maxplayers"])
 
 
 

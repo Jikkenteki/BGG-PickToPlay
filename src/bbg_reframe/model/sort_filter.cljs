@@ -1,12 +1,6 @@
 (ns bbg-reframe.model.sort-filter
-  (:require [bbg-reframe.model.db :as db]
-            [clojure.string :as s]
-            [clojure.pprint :as pp]
+  (:require [clojure.string :as s]
             [clojure.tools.reader.edn :refer [read-string]]))
-
-(defn all-games
-  []
-  (vals (db/read-db)))
 
 ;; 
 ;; Sorters
@@ -66,6 +60,7 @@
   (fn [game]
     (s/includes? (:name game) name)))
 
+
 (defn is-best-with-num-of-players
   [num-players]
   (fn [game]
@@ -74,6 +69,13 @@
         ; remove '+' from the '4+'. 4+ means more than 4.
         (< num-players (read-string (s/join "" (drop-last best-string))))
         (= num-players (read-string best-string))))))
+
+(comment
+  ;;  for linter unused public keyword
+  (has-name "name")
+  (is-best-with-num-of-players 5)
+  ;
+  )
 
 (defn is-playable-with-num-of-players
   [num threshold]
@@ -111,50 +113,3 @@
   (fn [game] (reduce
               #(and %1 %2)
               ((apply juxt filters) game))))
-
-(comment
-
-  (db/make-db)
-  (def db-mem (all-games))
-  db-mem
-  (def game (last db-mem))
-  game
-  (pp/pp)
-
-  ((fn [sorter]
-     (take 15 (sort sorter db-mem)))
-   (get sorting-fun :time))
-
-  (take 5 (vals data/local-storage-db))
-  (keys data/local-storage-db)
-  data/local-storage-db
-
-  data/local-storage-db
-  (take 15 (sort game-better? db-mem))
-
-  (map
-   (juxt :name :rating)
-   (sort game-better?
-         (filter
-          (and-filters
-           (with-number-of-players? 3)
-           (is-best-with-num-of-players 3)
-           (playingtime-between? 0 120)
-           (rating-higher-than? 6))
-          db-mem)))
-
-  (map (juxt :name :id)
-       (sort game-better?
-             (filter
-              (and-filters
-               (with-number-of-players? 5)
-               (is-playable-with-num-of-players 5 0.50)
-               (playingtime-between? 0 240))
-              db-mem)))
-
-  (rating-for-number-of-players game 6)
-  (:votes game)
-  (:name game)
-  (pp/pp)
-  ;
-  )

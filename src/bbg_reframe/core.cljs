@@ -29,3 +29,6 @@
   (re-frame/dispatch [::events/update-result])
   (dev-setup)
   (mount-root))
+
+(comment
+  (init))

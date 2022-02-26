@@ -21,6 +21,8 @@
   [key]
   (.removeItem (.-localStorage js/window) key))
 
+((comment
+   (remove-item! "key")))
 ;; 
 ;; slurp and spit implementations using local storage
 ;; 
@@ -29,7 +31,7 @@
   [fname data]
   (set-item! fname data))
 
-(defn slurp
-  "Uses local storage for retrieving the file"
-  [fname]
-  (get-item fname))
+;; (defn read-ls
+;;   "Uses local storage for retrieving the file"
+;;   [fname]
+;;   (get-item fname))

@@ -48,7 +48,8 @@
 
 (defn custom-select
   [id label options]
-  (let [value (re-frame/subscribe [::subs/form id])]
+  (let [_ options
+        value (re-frame/subscribe [::subs/form id])]
     [:div.flex
      [:p label]
      [:div.border-2.w-24.ml-2.pl-1.border-orange-900
