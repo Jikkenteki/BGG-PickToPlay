@@ -16,8 +16,9 @@
 /.shadow-cljs/
 
 .calva
-.clj-kondo
 .lsp
+/.clj-kondo/*
+!/.clj-kondo/config.edn
 
 # firebase
 .firebase

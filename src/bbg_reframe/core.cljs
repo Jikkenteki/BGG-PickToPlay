@@ -30,4 +30,6 @@
   (dev-setup)
   (mount-root))
 
+(comment
+  (init))
     ;;  [:button {:on-click #(re-frame/dispatch [::events/fetch-collection "ddmits"])} "Fetch collection and write to Local storage"]

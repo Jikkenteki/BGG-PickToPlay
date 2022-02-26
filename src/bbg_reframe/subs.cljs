@@ -7,10 +7,10 @@
  (fn [db]
    (:result db)))
 
-(re-frame/reg-sub
- ::fields
- (fn [db]
-   (:fields db)))
+;; (re-frame/reg-sub
+;;  ::fields
+;;  (fn [db]
+;;    (:fields db)))
 
 (re-frame/reg-sub
  ::form
