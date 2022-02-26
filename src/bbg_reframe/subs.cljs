@@ -21,3 +21,8 @@
  ::loading
  (fn [db [_ id]]
    (:loading db)))
+
+(re-frame/reg-sub
+ ::error
+ (fn [db [_ id]]
+   (:error db)))

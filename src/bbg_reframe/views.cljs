@@ -21,7 +21,7 @@
         playability (gstring/format "%.2f" (rating-for-number-of-players
                                             game players))]
     ^{:key (random-uuid)}
-    [:p  
+    [:p
      (when SHOW_PLAYABILITY (str playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
      (:name game)]))
 
@@ -74,9 +74,11 @@
 
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])
-        loading (re-frame/subscribe [::subs/loading])]
+        loading (re-frame/subscribe [::subs/loading])
+        error (re-frame/subscribe [::subs/error])]
     [:div.container.p-3.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
+     (when @error [:h1 @error])
      [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
@@ -88,4 +90,6 @@
      [:h3 "Games " (when @loading " loading...")]
      (result-div @result)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))
-     (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))]))
+     (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))
+    ;;  [:button {:on-click (re-frame/dispatch [::events/fetch-collection "ddmits"])} "Refetch collection"]
+     ]))

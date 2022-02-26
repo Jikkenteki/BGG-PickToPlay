@@ -68,28 +68,78 @@
    {:db (assoc-in db [:form id] val)
     :dispatch [::update-result]}))
 
+(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  (fn [{:keys [db]} [_ user-name]]                    ;; the first param will be "world"
    {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
     :http-xhrio {:method          :get
-                 :uri             (str "https://boardgamegeek.com/xmlapi/collection/" user-name)
+                 :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user-name)
                  :timeout         8000                                           ;; optional see API docs
                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                  :on-success      [::success-fetch-collection]
-                 :on-failure      [::bad-http-result]}}))
+                 :on-failure      [::bad-http-collection]}}))
+
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
- (fn [{:keys [db]} [_ game-id]]                    ;; the first param will be "world"
-   {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
+ (fn [{:keys [db] {:keys [cors]} :db} [_ game-id]]                    ;; the first param will be "world"
+   (if cors
+     {:db   (assoc db :loading true)   ;; causes the twirly-waiting-dialog to show??
+      :http-xhrio {:method          :get
+                   :uri             (str cors-server-uri "/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+                   :timeout         8000                                           ;; optional see API docs
+                   :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                   :on-success      [::success-fetch-game]
+                   :on-failure      [::bad-http-game]}}
+     {})))
+
+
+
+;; BAD REQUEST
+;; core.cljs:200 Response:  
+;; {:response "<error>
+;;     <message>Rate limit exceeded.</message>                        
+;;                           </error>", 
+;;  :last-method GET, 
+;;                         :last-error Too Many Requests [429], 
+;;                           :failure 
+;;                           :error, 
+;;                           :status-text Too Many Requests, 
+;;                           :status 429, 
+;;                           :uri https://guarded-wildwood-02993.herokuapp.com/https://boardgamegeek.com/xmlapi/collection/ddmits, 
+;;                           :debug-message Http response at 400 or 500 level, 
+;;                           :last-error-code 6}
+
+;; 
+;; 
+;; Checking CORS server
+;; 
+(re-frame/reg-event-fx                             ;; note the trailing -fx
+ ::cors                      ;; usage:  (dispatch [:handler-with-http])
+ (fn [{:keys [db]} _]                    ;; the first param will be "world"
+   {:db   (assoc db :cors-running false)   ;; causes the twirly-waiting-dialog to show??
     :http-xhrio {:method          :get
-                 :uri             (str "http://0.0.0.0:8080/https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+                 :uri             cors-server-uri
                  :timeout         8000                                           ;; optional see API docs
                  :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
-                 :on-success      [::success-fetch-game]
-                 :on-failure      [::bad-http-result]}}))
+                 :on-success      [::success-cors]
+                 :on-failure      [::bad-cors]}}))
+
+(re-frame/reg-event-fx
+ ::success-cors
+ (fn [{:keys [db]} _]
+   (println (str "CORS server at " cors-server-uri " up!"))
+   {:db (assoc db :cors-running true)}))
+
+(re-frame/reg-event-fx
+ ::bad-cors
+ (fn [{:keys [db]} _]
+   (println "CORS server down")
+   {:db (assoc db :error "CORS server down")}))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
 (re-frame/reg-event-fx
  ::success-fetch-collection
@@ -105,12 +155,12 @@
          collection-to-be-fetched collection
          _ (println (count collection-to-be-fetched))]
      {:dispatch [::update-result]
-      :db (assoc (:db cofx) 
+      :db (assoc (:db cofx)
                  :games indexed-games
                  :loading false)})))
 
 
-(def delay-between-fetch 100)
+(def delay-between-fetch 1000)
 
 (re-frame/reg-event-fx
  ::update-queue
@@ -122,7 +172,7 @@
                            (remove #(fetched %))
                            (remove #(queue %))
                            (remove #(fetching %)))]
-     {:db (assoc db 
+     {:db (assoc db
                  :queue (reduce #(conj %1 %2) queue new-to-fetch))
       :dispatch [::fetch-next-from-queue]})))
 
@@ -138,23 +188,48 @@
          new-db (assoc-in db [:games game-id :votes] (game-votes game-received))
          _ (spit "ls-games" (:games new-db))]
      {:db (assoc new-db
+                 :error nil
                  :fetching (disj fetching game-id)
                  :fetches (inc fetches))
       :fx [[:dispatch [::update-result]]
            [:dispatch [::fetch-next-from-queue]]]})))
 
 (re-frame/reg-event-fx
- ::bad-http-result
+ ::bad-http-collection
  (fn [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
    (println "BAD REQUEST")
    (println "Response: " response)
-   (let [uri (:uri response)
-         game-id (last (split uri \/)) 
-         _ (println game-id)] 
-     {:db {assoc db 
-           :queue (conj queue game-id)
-           :fetching (disj fetching game-id) }
-      :dispatch [::fetch-next-from-queue]})))
+   (cond
+     (= 0 (:status response)) {:db (assoc db
+                                          :queue #{}
+                                          :fetching #{}
+                                          :error "CORS server is not responding"
+                                          :loading false
+                                          :cors false)}
+     :else {:db (assoc db
+                       :queue #{}
+                       :fetching #{}
+                       :error (:status-text response)
+                       :loading false)})))
+
+(re-frame/reg-event-fx
+ ::bad-http-game
+ (fn [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
+   (println "BAD REQUEST")
+   (println "Response: " response)
+   (if (= 0 (:status response))
+     {:db (assoc db
+                 :queue #{}
+                 :fetching #{}
+                 :error "CORS server is not responding"
+                 :loading false)}
+     (let [uri (:uri response)
+           game-id (last (split uri \/))
+           _ (println game-id)]
+       {:db {assoc db
+             :queue (conj queue game-id)
+             :fetching (disj fetching game-id)}
+        :dispatch [::fetch-next-from-queue]}))))
 
 (re-frame/reg-event-fx
  ::fetch-next-from-queue

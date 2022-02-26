@@ -21,6 +21,7 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
+  (re-frame/dispatch [::events/cors])
   (if (item-exists? "ls-games")
     (println "Using local storage data")
     (re-frame/dispatch [::events/fetch-collection "ddmits"]))
