@@ -67,11 +67,13 @@
                                                                  (-> % .-target .-value)])}]
       [:span.range-slider-ticket-value @value]]]))
 
-;; (defn fn-queue
-;;   []
-;;   (let [result (re-frame/subscribe [::subs/result])]
-;;     (re-frame/dispatch [::events/update-queue
-;;                         @result])))
+(defn user-panel []
+  (let [user (re-frame/subscribe [::subs/user])]
+    [:div
+     [:label {:for "name"} "BGG user name"]
+     [:input {:type "text" :id "name" :value @user
+              :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
+     [:button {:on-click #(re-frame/dispatch [::events/fetch-collection])} "Fetch collection"]]))
 
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])
@@ -83,6 +85,7 @@
      [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
+     (user-panel)
      (slider :take "Take" 1 100 1)
      (slider :higher-than "Rating higher than" 0 10 0.1)
      (slider :players "For number of players" 1 10 1)
@@ -91,5 +94,4 @@
      [:h3 "Games " (when @loading " loading...")]
      (result-div @result)
      (select :sort-id "Sort by " (map name (keys sorting-fun)))
-     (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))
-     [:button {:on-click #(re-frame/dispatch [::events/fetch-collection])} "Refetch collection"]]))
+     (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))]))
