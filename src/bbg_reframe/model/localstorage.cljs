@@ -21,8 +21,8 @@
   [key]
   (.removeItem (.-localStorage js/window) key))
 
-((comment
-   (remove-item! "key")))
+(comment
+  (remove-item! "ls-key"))
 ;; 
 ;; slurp and spit implementations using local storage
 ;; 
