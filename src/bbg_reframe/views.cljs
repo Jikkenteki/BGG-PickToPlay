@@ -75,10 +75,10 @@
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])
         loading (re-frame/subscribe [::subs/loading])
-        error (re-frame/subscribe [::subs/error])]
+        error-msg (re-frame/subscribe [::subs/error-msg])]
     [:div.container.p-3.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
-     (when @error [:h1 @error])
+     (when @error-msg [:h1 @error-msg])
      [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
