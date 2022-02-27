@@ -9,12 +9,11 @@
    [tubax.core :refer [xml->clj]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [clojure.string :refer [split]]
-  ;;  [bbg-reframe.config :refer [debug?]]
-
    [re-frame.loggers :refer [console]]))
 
 
-(def delay-between-fetch 100)
+(def delay-between-fetches 100)
+(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -90,12 +89,10 @@
  (fn-traced [{:keys [db]} [_ val]]
             {:db (assoc db :games val)}))
 
-(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db] {:keys [cors-running user]} :db} [_ _]]                    ;; the first param will be "world"
-
             (if cors-running
               {:db   (assoc db
                             :loading true
@@ -108,6 +105,7 @@
                             :on-failure      [::bad-http-collection]}}
               {:db (assoc db
                           :error "CORS server not responding. Trying again in 2 seconds")
+               :dispatch [::cors-check]
                :dispatch-later {:ms 2000
                                 :dispatch [::fetch-collection user]}})))
 
@@ -125,6 +123,7 @@
                             :on-failure      [::bad-http-game]}}
               {:db (assoc db
                           :error "CORS server not responding. Trying again in 2 seconds")
+               :dispatch [::cors-check]
                :dispatch-later {:ms 2000
                                 :dispatch [::fetch-game game-id]}})))
 
@@ -150,7 +149,7 @@
 ;; Checking CORS server
 ;; 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
- ::cors                      ;; usage:  (dispatch [:handler-with-http])
+ ::cors-check                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db]} _]                    ;; the first param will be "world"
             {:db   (assoc db :cors-running false)   ;; causes the twirly-waiting-dialog to show??
              :http-xhrio {:method          :get
@@ -225,7 +224,7 @@
                               :games indexed-games
                               :loading false)})))))
 
-(defn- fetched-games-ids
+(defn fetched-games-ids
   [games]
   (into #{} (->> (vals games)
                  (remove #(nil? (:votes %)))
@@ -284,49 +283,81 @@
 
 (re-frame/reg-event-fx
  ::bad-http-game
- (fn-traced [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
-            (console :debug "BAD REQUEST")
-            (console :debug "Response: " response)
-            (if (= 0 (:status response))
-              {:db (assoc db
-                          :queue #{}
-                          :fetching #{}
-                          :error "CORS server is not responding"
-                          :loading false
-                          :cors-running false)}
-              (let [uri (:uri response)
-                    game-id (last (split uri \/))
-                    _ (console :debug (str (:status-text response) "Puting " game-id " back in the queue"))]
-                {:db {assoc db
-                      :queue (conj queue game-id)
-                      :fetching (disj fetching game-id)}
-                 :dispatch [::fetch-next-from-queue]}))))
+ (fn-traced
+  [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
+  (console :debug "BAD REQUEST")
+  (console :debug "Response: " response)
+  (cond (= 0 (:status response))
+        {:db (assoc db
+                    :queue #{}
+                    :fetching #{}
+                    :error "CORS server is not responding"
+                    :loading false
+                    :cors-running false)}
+        (#{500 503} (:status response))
+        ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
+        ;; the server will give you 500 or 503 return codes, reporting that it is too busy.
+        (let [uri (:uri response)
+              game-id (last (split uri \/))
+              _ (console :debug (str (:status-text response) " Puting " game-id " back in the queue"))]
+          {:db {assoc db
+                :queue (conj queue game-id)
+                :fetching (disj fetching game-id)}
+           :dispatch-later {:ms 3000
+                            :dispatch [::fetch-next-from-queue]}})
+        (= 404 (:status response))
+        {:db (assoc db
+                    :queue #{}
+                    :fetching #{}
+                    :error (str "Game not found or bad address!")
+                    :loading false)
+         :dispatch [::fetch-next-from-queue]}
+        :else
+        {:db (assoc db
+                    :queue #{}
+                    :fetching #{}
+                    :error "Problem with BGG??"
+                    :loading false)
+         :dispatch [::fetch-next-from-queue]})))
 
 
 (defn fetch-next-from-queue-handler [{:keys [db] {:keys [queue fetching games]} :db} _]
-  (if (empty? queue)
-    (if (empty? fetching)
-      (let [new-to-fetch (first (->> (keys games)
-                                     (remove #((fetched-games-ids games) %))
-                                     (remove #(queue %))
-                                     (remove #(fetching %))))
-            _ (when new-to-fetch (console :debug "New to fetch: " new-to-fetch))]
-        (if new-to-fetch
-          {:db (assoc db
-                      :loading false
-                      :fetching #{new-to-fetch})
-           :dispatch-later {:ms delay-between-fetch
-                            :dispatch [::fetch-game new-to-fetch]}}
-          {:db (assoc db :loading false)}))
-      {})
-    (let [fetch-now (first queue)
-          _ (console :debug "fetch-next-from-queue: fetching " fetch-now)]
-      {:db (assoc db
-                  :queue (disj queue fetch-now)
-                  :fetching (conj fetching fetch-now)
-                  :loading (if (empty? queue) false true))
-       :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
-                        :dispatch [::fetch-game fetch-now]}})))
+  (if (and (empty? queue) (seq fetching)) ;; non-empty fetching
+    ;; nothing to do; there are still games being fetched
+    {}
+    ;; queue is not empty
+    ;; or
+    ;; fetching is empty
+    ;;
+    ;; CASES:
+    ;;   queue not empty ; fetching not empty
+    ;;   queue not empty ; fetching empty
+    ;;   queue empty     ; fetching empty
+    (let [fetch-now (if (empty? fetching)
+                      (first (->> (keys games)
+                                  (remove #((fetched-games-ids games) %))
+                                  (remove #(queue %))
+                                  (remove #(fetching %)))) ;; will be nil if all fetched
+                      (first queue)) ;; if fetching not empty, queue is not empty
+          ]
+      (when fetch-now
+        (console :debug
+                 (if (empty? fetching)
+                   "New to fetch (background): "
+                   "fetch-next-from-queue: fetching ")
+                 fetch-now))
+      (merge
+       {:db (assoc db
+                   :queue (disj queue fetch-now)
+                   :fetching (if fetch-now
+                               (conj fetching fetch-now)
+                               fetching)
+                   :loading (> (count fetching) 0))}
+       (if fetch-now
+         {:dispatch-later
+          {:ms (* (inc (count fetching)) delay-between-fetches)
+           :dispatch [::fetch-game fetch-now]}}
+         {})))))
 
 (re-frame/reg-event-fx
  ::fetch-next-from-queue

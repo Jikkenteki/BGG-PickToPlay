@@ -23,7 +23,7 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (re-frame/dispatch [::events/cors])
+  (re-frame/dispatch [::events/cors-check])
   (re-frame/dispatch [::events/initialize-db])
   (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))
     (console :log "Using local storage data")
