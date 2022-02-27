@@ -87,8 +87,7 @@
  (fn-traced [{:keys [db]} [_ val]]
             {:db (assoc db :games val)}))
 
-
-(def cors-server-uri "http://172.22.43.94:8080/")
+(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
