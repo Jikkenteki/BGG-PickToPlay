@@ -188,7 +188,7 @@
 
 (defn read-db
   []
-  (read-string (get-item "ls-games")))
+  (read-string (get-item "bgg-games")))
 
 ;; (def all-fields ["id" "name" "rating" "playability" "playingtime" "minplayers" "maxplayers"])
 
