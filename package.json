@@ -3,13 +3,13 @@
   "scripts": {
     "ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
     "shadow:watch": "npx shadow-cljs watch app browser-test karma-test",
+    "ci:release": "npx shadow-cljs compile karma-test && npx karma start --single-run --reporters junit,dots",
     "shadow:release": "npx shadow-cljs release app",
     "build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html",
     "postcss:release": "postcss TAILWIND_MODE=build src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose",
     "postcss:watch": "postcss TAILWIND_MODE=watch src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose -w",
     "dev": "run-p -l *:watch",
-    "release": "run-s *:release",
-    "ci": "npx shadow-cljs compile karma-test && npx karma start --single-run --reporters junit,dots"
+    "release": "run-s *:release"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.4.0",
