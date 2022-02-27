@@ -23,6 +23,8 @@ Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-w
   [React](https://github.com/facebook/react)
 * Build tools
   - CLJS compilation, dependency management, REPL, & hot reload: [`shadow-cljs`](https://github.com/thheller/shadow-cljs)
+  - Test framework: [cljs.test](https://clojurescript.org/tools/testing)
+  - Test runner: [Karma](https://github.com/karma-runner/karma)
 * Development tools
   - Debugging: [CLJS DevTools](https://github.com/binaryage/cljs-devtools),
   [`re-frame-10x`](https://github.com/day8/re-frame-10x)
@@ -45,9 +47,12 @@ Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-w
     - Created on build with either the [dev](#running-the-app) or [prod](#production) profile
     - `js/compiled/`: compiled CLJS (`shadow-cljs`)
       - Not tracked in source control; see [`.gitignore`](.gitignore)
-* [`src/bbg_reframe/`](src/bbg_reframe/): SPA source files (ClojureScript,
+* [`src/test_reframe/`](src/test_reframe/): SPA source files (ClojureScript,
 [re-frame](https://github.com/Day8/re-frame))
-  - [`core.cljs`](src/bbg_reframe/core.cljs): contains the SPA entry point, `init`
+  - [`core.cljs`](src/test_reframe/core.cljs): contains the SPA entry point, `init`
+* [`test/test_reframe/`](test/test_reframe/): test files (ClojureScript,
+[cljs.test](https://clojurescript.org/tools/testing))
+  - Only namespaces ending in `-test` (files `*_test.cljs`) are compiled and sent to the test runner
 * [`.github/workflows/`](.github/workflows/): contains the
 [github actions](https://github.com/features/actions) pipelines.
   - [`test.yaml`](.github/workflows/test.yaml): Pipeline for testing.
@@ -63,7 +68,15 @@ Use your preferred editor or IDE that supports Clojure/ClojureScript development
 1. Install [JDK 8 or later](https://openjdk.java.net/install/) (Java Development Kit)
 2. Install [Node.js](https://nodejs.org/) (JavaScript runtime environment) which should include
    [NPM](https://docs.npmjs.com/cli/npm) or if your Node.js installation does not include NPM also install it.
-5. Clone this repo and open a terminal in the `bbg-reframe` project root directory
+3. Install [Chrome](https://www.google.com/chrome/) or
+[Chromium](https://www.chromium.org/getting-involved/download-chromium) version 59 or later
+(headless test environment)
+    * For Chromium, set the `CHROME_BIN` environment variable in your shell to the command that
+    launches Chromium. For example, in Ubuntu, add the following line to your `.bashrc`:
+        ```bash
+        export CHROME_BIN=chromium-browser
+       ```
+5. Clone this repo and open a terminal in the `test-reframe` project root directory
 
 ### Browser Setup
 
@@ -154,6 +167,35 @@ For example, in Vim / Neovim with `fireplace.vim`
 3. See [`user.cljs`](dev/cljs/user.cljs) for symbols that are immediately accessible in the REPL
 without needing to `require`.
 
+### Running Tests
+
+Build the app with the `prod` profile, start a temporary local web server, launch headless
+Chrome/Chromium, run tests, and stop the web server:
+
+```sh
+npm install
+npm run ci
+```
+
+Please be patient; it may take over 15 seconds to see any output, and over 25 seconds to complete.
+
+Or, for auto-reload:
+```sh
+npm install
+npm run watch
+```
+
+Then in another terminal:
+```sh
+karma start
+```
+
+**Note**: you might need to install first karma-cli: 
+```
+npm install -g karma-cli
+```
+
+
 ### Running `shadow-cljs` Actions
 
 See a list of [`shadow-cljs CLI`](https://shadow-cljs.github.io/docs/UsersGuide.html#_command_line)
@@ -171,14 +213,14 @@ npx shadow-cljs <action> app
 ```
 ### Debug Logging
 
-The `debug?` variable in [`config.cljs`](src/cljs/bbg_reframe/config.cljs) defaults to `true` in
+The `debug?` variable in [`config.cljs`](src/cljs/test_reframe/config.cljs) defaults to `true` in
 [`dev`](#running-the-app) builds, and `false` in [`prod`](#production) builds.
 
 Use `debug?` for logging or other tasks that should run only on `dev` builds:
 
 ```clj
-(ns bbg-reframe.example
-  (:require [bbg-reframe.config :as config])
+(ns test-reframe.example
+  (:require [test-reframe.config :as config])
 
 (when config/debug?
   (println "This message will appear in the browser console only on dev builds."))

@@ -2,7 +2,8 @@
   "name": "bbg-reframe",
   "scripts": {
     "ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
-    "shadow:watch": "npx shadow-cljs watch app",
+    "shadow:watch": "npx shadow-cljs watch app browser-test karma-test",
+    "ci:release": "npx shadow-cljs compile karma-test && npx karma start --single-run --reporters junit,dots",
     "shadow:release": "npx shadow-cljs release app",
     "build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html",
     "postcss:release": "postcss TAILWIND_MODE=build src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose",
@@ -24,6 +25,10 @@
     "postcss-cli": "^9.1.0",
     "postcss-import": "^14.0.2",
     "shadow-cljs": "2.16.12",
-    "tailwindcss": "^3.0.23"
+    "tailwindcss": "^3.0.23",
+    "karma": "6.3.11",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-cljs-test": "0.1.0",
+    "karma-junit-reporter": "2.0.1"
   }
 }

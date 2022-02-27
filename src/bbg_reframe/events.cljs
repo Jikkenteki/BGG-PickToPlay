@@ -302,32 +302,35 @@
                       :fetching (disj fetching game-id)}
                  :dispatch [::fetch-next-from-queue]}))))
 
+
+(defn fetch-next-from-queue-handler [{:keys [db] {:keys [queue fetching games]} :db} _]
+  (if (empty? queue)
+    (if (empty? fetching)
+      (let [new-to-fetch (first (->> (keys games)
+                                     (remove #((fetched-games-ids games) %))
+                                     (remove #(queue %))
+                                     (remove #(fetching %))))
+            _ (when new-to-fetch (console :debug "New to fetch: " new-to-fetch))]
+        (if new-to-fetch
+          {:db (assoc db
+                      :loading false
+                      :fetching #{new-to-fetch})
+           :dispatch-later {:ms delay-between-fetch
+                            :dispatch [::fetch-game new-to-fetch]}}
+          {:db (assoc db :loading false)}))
+      {})
+    (let [fetch-now (first queue)
+          _ (console :debug "fetch-next-from-queue: fetching " fetch-now)]
+      {:db (assoc db
+                  :queue (disj queue fetch-now)
+                  :fetching (conj fetching fetch-now)
+                  :loading (if (empty? queue) false true))
+       :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
+                        :dispatch [::fetch-game fetch-now]}})))
+
 (re-frame/reg-event-fx
  ::fetch-next-from-queue
- (fn [{:keys [db] {:keys [queue fetching games]} :db} _]
-   (if (empty? queue)
-     (if (empty? fetching)
-       (let [new-to-fetch (first (->> (keys games)
-                                      (remove #((fetched-games-ids games) %))
-                                      (remove #(queue %))
-                                      (remove #(fetching %))))
-             _ (when new-to-fetch (console :debug "New to fetch: " new-to-fetch))]
-         (if new-to-fetch
-           {:db (assoc db
-                       :loading false
-                       :fetching #{new-to-fetch})
-            :dispatch-later {:ms delay-between-fetch
-                             :dispatch [::fetch-game new-to-fetch]}}
-           {:db (assoc db :loading false)}))
-       {})
-     (let [fetch-now (first queue)
-           _ (console :debug "fetch-next-from-queue: fetching " fetch-now)]
-       {:db (assoc db
-                   :queue (disj queue fetch-now)
-                   :fetching (conj fetching fetch-now)
-                   :loading (if (empty? queue) false true))
-        :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
-                         :dispatch [::fetch-game fetch-now]}}))))
+ fetch-next-from-queue-handler)
 
 
 (re-frame/reg-event-db
