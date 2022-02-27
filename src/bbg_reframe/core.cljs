@@ -8,7 +8,8 @@
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item]]
-   [clojure.tools.reader.edn :refer [read-string]]))
+   [clojure.tools.reader.edn :refer [read-string]]
+   [re-frame.loggers :refer [console]]))
 
 
 (defn dev-setup []
@@ -25,7 +26,7 @@
   (re-frame/dispatch [::events/cors])
   (re-frame/dispatch [::events/initialize-db])
   (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))
-    (println "Using local storage data")
+    (console :log "Using local storage data")
     (re-frame/dispatch [::events/update-user (get-item "bgg-user")])
     (re-frame/dispatch [::events/update-games (read-string (get-item "bgg-games"))]))
   (re-frame/dispatch [::events/update-result])

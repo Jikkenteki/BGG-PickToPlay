@@ -8,12 +8,13 @@
    [bbg-reframe.model.db :refer [game-id collection-game->game game-votes]]
    [tubax.core :refer [xml->clj]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [clojure.string :refer [split]]))
+   [clojure.string :refer [split]]
+  ;;  [bbg-reframe.config :refer [debug?]]
+
+   [re-frame.loggers :refer [console]]))
 
 
-(def delay-between-fetch 1000)
-
-
+(def delay-between-fetch 100)
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -48,8 +49,10 @@
 
 (re-frame/reg-event-fx
  ::update-result
+;;  [(when debug? re-frame.core/debug)]
  (fn-traced [{:keys [db]} _]
-            (let [sort-by  (get-in db [:form :sort-id])
+            (let [;; _ (console :debug "update")
+                  sort-by  (get-in db [:form :sort-id])
                   sorting-fun (if (= sort-by "playable")
                                 (game-more-playable? (read-string (get-in db [:form :players])))
                                 (get sorting-fun (keyword (get-in db [:form :sort-id]))))
@@ -113,14 +116,17 @@
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db] {:keys [cors-running]} :db} [_ game-id]]                    ;; the first param will be "world"
             (if cors-running
-              {:db   (assoc db :loading true)
+              {;;  :db   (assoc db :loading true)
                :http-xhrio {:method          :get
                             :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/boardgame/" game-id)
                             :timeout         8000                                           ;; optional see API docs
                             :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                             :on-success      [::success-fetch-game]
                             :on-failure      [::bad-http-game]}}
-              {})))
+              {:db (assoc db
+                          :error "CORS server not responding. Trying again in 2 seconds")
+               :dispatch-later {:ms 2000
+                                :dispatch [::fetch-game game-id]}})))
 
 
 
@@ -213,22 +219,24 @@
                                      {} games)
                       _ (set-item! "bgg-games" indexed-games)
                       collection-to-be-fetched collection
-                      _ (println (count collection-to-be-fetched))]
+                      _ (console :debug (count collection-to-be-fetched))]
                   {:dispatch [::update-result]
                    :db (assoc db
                               :games indexed-games
                               :loading false)})))))
 
+(defn- fetched-games-ids
+  [games]
+  (into #{} (->> (vals games)
+                 (remove #(nil? (:votes %)))
+                 (map :id))))
 
 (re-frame/reg-event-fx
  ::update-queue
 ;;  for some strange reason fn-traced does not compile
  (fn [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
-   (let [fetched (into #{} (->> (vals games)
-                                (remove #(nil? (:votes %)))
-                                (map :id)))
-         new-to-fetch (->> results
-                           (remove #(fetched %))
+   (let [new-to-fetch (->> results
+                           (remove #((fetched-games-ids games) %))
                            (remove #(queue %))
                            (remove #(fetching %)))]
      {:db (assoc db
@@ -237,21 +245,24 @@
 
 (re-frame/reg-event-fx
  ::success-fetch-game
- (fn-traced [{:keys [db] {:keys [fetches fetching]} :db} [_ response]]
+ (fn-traced [{:keys [db] {:keys [fetches fetching loading]} :db} [_ response]]
             (let [game-received (->> response
                                      xml->clj
                                      :content
                                      first)
                   game-id (game-id game-received)
-                  _  (println "SUCCESS" game-id)
+                  _  (console :debug "SUCCESS" game-id)
                   new-db (assoc-in db [:games game-id :votes] (game-votes game-received))
                   _ (set-item! "bgg-games" (:games new-db))]
               {:db (assoc new-db
                           :error nil
                           :fetching (disj fetching game-id)
                           :fetches (inc fetches))
-               :fx [[:dispatch [::update-result]]
-                    [:dispatch [::fetch-next-from-queue]]]})))
+               :fx (if loading
+                     [[:dispatch [::update-result]]
+                    ;; [:dispatch [::fetch-next-from-queue]]
+                      ]
+                     [[:dispatch [::fetch-next-from-queue]]])})))
 
 (re-frame/reg-event-fx
  ::bad-http-collection
@@ -285,7 +296,7 @@
                           :cors-running false)}
               (let [uri (:uri response)
                     game-id (last (split uri \/))
-                    _ (println (str (:status-text response) "Puting " game-id " back in the queue"))]
+                    _ (console :debug (str (:status-text response) "Puting " game-id " back in the queue"))]
                 {:db {assoc db
                       :queue (conj queue game-id)
                       :fetching (disj fetching game-id)}
@@ -293,19 +304,31 @@
 
 (re-frame/reg-event-fx
  ::fetch-next-from-queue
- (fn-traced [{:keys [db] {:keys [queue fetching]} :db} _]
-            (if (empty? queue)
-              (if (empty? fetching)
-                {:db (assoc db :loading false)}
-                {})
-              (let [fetch-now (first queue)
-                    _ (println "fetch-next-from-queue: fetching " fetch-now)]
-                {:db (assoc db
-                            :queue (disj queue fetch-now)
-                            :fetching (conj fetching fetch-now)
-                            :loading true)
-                 :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
-                                  :dispatch [::fetch-game fetch-now]}}))))
+ (fn [{:keys [db] {:keys [queue fetching games]} :db} _]
+   (if (empty? queue)
+     (if (empty? fetching)
+       (let [new-to-fetch (first (->> (keys games)
+                                      (remove #((fetched-games-ids games) %))
+                                      (remove #(queue %))
+                                      (remove #(fetching %))))
+             _ (console :debug "New to fetch: " new-to-fetch)]
+         (if new-to-fetch
+           {:db (assoc db
+                       :loading false
+                       :fetching #{new-to-fetch})
+            :dispatch-later {:ms delay-between-fetch
+                             :dispatch [::fetch-game new-to-fetch]}}
+           {:db (assoc db :loading false)}))
+       {})
+     (let [fetch-now (first queue)
+           _ (console :debug "fetch-next-from-queue: fetching " fetch-now)]
+       {:db (assoc db
+                   :queue (disj queue fetch-now)
+                   :fetching (conj fetching fetch-now)
+                   :loading (if (empty? queue) false true))
+        :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
+                         :dispatch [::fetch-game fetch-now]}}))))
+
 
 (re-frame/reg-event-db
  ::toggle-sort-by-button-state
