@@ -8,12 +8,21 @@
    [bbg-reframe.model.db :refer [game-id collection-game->game game-votes]]
    [tubax.core :refer [xml->clj]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [clojure.string :refer [split]]))
+   [clojure.string :refer [split]]
+  ;;  [bbg-reframe.config :refer [debug?]]
+
+   [re-frame.loggers :refer [console]]))
 
 
 (def delay-between-fetch 1000)
 
+;; (defn- debug-msg
+;;   [& args]
+;;   (console :debug args))
 
+(defmacro debug-msg
+  [& body]
+  `(console :debug ~@body))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -48,8 +57,10 @@
 
 (re-frame/reg-event-fx
  ::update-result
+;;  [(when debug? re-frame.core/debug)]
  (fn-traced [{:keys [db]} _]
-            (let [sort-by  (get-in db [:form :sort-id])
+            (let [;; _ (console :debug "update")
+                  sort-by  (get-in db [:form :sort-id])
                   sorting-fun (if (= sort-by "playable")
                                 (game-more-playable? (read-string (get-in db [:form :players])))
                                 (get sorting-fun (keyword (get-in db [:form :sort-id]))))
@@ -244,7 +255,7 @@
                                      :content
                                      first)
                   game-id (game-id game-received)
-                  _  (println "SUCCESS" game-id)
+                  _  (console :debug "SUCCESS" game-id)
                   new-db (assoc-in db [:games game-id :votes] (game-votes game-received))
                   _ (set-item! "bgg-games" (:games new-db))]
               {:db (assoc new-db
