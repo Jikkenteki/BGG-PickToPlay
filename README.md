@@ -1,7 +1,11 @@
 # bbg-reframe
 
-A [re-frame](https://github.com/day8/re-frame) application designed to ... well, that part is up to
-you.
+# HMPWTP aka 'Help me pick what to play'
+
+A [re-frame](https://github.com/day8/re-frame) application for recommending
+games from [Boardgamegeek](https://boardgamegeek.com/).
+
+Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-what-to-play.web.app/)
 
 ## Getting Started
 
