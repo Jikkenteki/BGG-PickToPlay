@@ -82,7 +82,7 @@
   ;; (-> (xml->clj (str "https://boardgamegeek.com/xmlapi/boardgame/" game-id))
   ;;     :content
   ;;     first)
-  (println "api-read-game not implemented" game-id))
+  (throw (js/Error. (str "api-read-game not implemented" game-id))))
 
 
 (comment

@@ -163,13 +163,13 @@
 (re-frame/reg-event-fx
  ::success-cors
  (fn-traced [{:keys [db]} _]
-            (println (str "CORS server at " cors-server-uri " up!"))
+            (console :debug (str "CORS server at " cors-server-uri " up!"))
             {:db (assoc db :cors-running true)}))
 
 (re-frame/reg-event-fx
  ::bad-cors
  (fn-traced [{:keys [db]} _]
-            (println "CORS server down")
+            (console :error "CORS server down")
             {:db (assoc db :error "CORS server down")}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -208,11 +208,11 @@
  (fn-traced [{:keys [db]} [_ response]]
             (let [collection (:content (xml->clj response))]
               (if (error? collection)
-                (let [_ (println (str "ERROR: " collection))]
+                (let [_ (console :debug (str "ERROR: " collection))]
                   {:db (assoc db
                               :error (str "Error reading collection. Invalid user?")
                               :loading false)})
-                (let [_ (println "SUCCESS: collection fetched ")
+                (let [_ (console :debug "SUCCESS: collection fetched ")
                       games (map collection-game->game collection)
                       indexed-games (reduce
                                      #(assoc %1 (:id %2) %2)
@@ -267,7 +267,7 @@
 (re-frame/reg-event-fx
  ::bad-http-collection
  (fn-traced [{:keys [db]} [_ response]]
-            (println "FAILURE: " response)
+            (console :debug "FAILURE: " response)
             (cond
               (= 0 (:status response)) {:db (assoc db
                                                    :queue #{}
@@ -285,8 +285,8 @@
 (re-frame/reg-event-fx
  ::bad-http-game
  (fn-traced [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
-            (println "BAD REQUEST")
-            (println "Response: " response)
+            (console :debug "BAD REQUEST")
+            (console :debug "Response: " response)
             (if (= 0 (:status response))
               {:db (assoc db
                           :queue #{}
@@ -311,7 +311,7 @@
                                       (remove #((fetched-games-ids games) %))
                                       (remove #(queue %))
                                       (remove #(fetching %))))
-             _ (console :debug "New to fetch: " new-to-fetch)]
+             _ (when new-to-fetch (console :debug "New to fetch: " new-to-fetch))]
          (if new-to-fetch
            {:db (assoc db
                        :loading false
