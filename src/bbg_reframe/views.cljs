@@ -48,12 +48,19 @@
 
 (defn custom-select
   [id label options]
-  (let [_ options
-        value (re-frame/subscribe [::subs/form id])]
-    [:div.flex
+  (let [value (re-frame/subscribe [::subs/form id])
+        button-state (re-frame/subscribe [::subs/ui :sort-by-button-state])]
+    [:div.flex.items-center
      [:p label]
-     [:div.border-2.w-24.ml-2.pl-1.border-orange-900
-      [:p @value]]]))
+     [:div.pl-2.relative  (when @button-state
+                            [:div.select-box-above.flex.flex-col
+                             {:style {:height (str (* (count options) 26) "px")
+                                      :top (str "-" (- (* (count options) 24) 7) "px")}
+                              :on-click #(re-frame/dispatch [::events/toggle-sort-by-button-state])}
+                             "hey"])
+      [:div.flex.w-24.button
+       {:on-click #(re-frame/dispatch [::events/toggle-sort-by-button-state])}
+       [:p.my-auto @value]]]]))
 
 (defn slider
   [id label min max step]
@@ -69,19 +76,26 @@
 
 (defn user-panel []
   (let [user (re-frame/subscribe [::subs/user])]
-    [:div
-     [:label {:for "name"} "BGG user name"]
-     [:input {:type "text" :id "name" :value @user
-              :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
-     [:button {:on-click #(re-frame/dispatch [::events/fetch-collection])} "Fetch collection"]]))
+    [:div.flex.items-center.mb-1
+     [:input.ml-1.input-box.min-w-0.grow.h-full {:type "text"
+                                                 :id "name"
+                                                 :value @user
+                                                 :placeholder "Insert BGG username"
+                                                 :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
+     [:button.button.min-w-fit.ml-1 {:class "basis-1/3"
+                                     :on-click #(re-frame/dispatch [::events/fetch-collection])} "Fetch collection"]]))
+
+(defn error-box [error-msg]
+  [:div.error-box
+   [:p error-msg]])
 
 (defn main-panel []
   (let [result (re-frame/subscribe [::subs/result])
         loading (re-frame/subscribe [::subs/loading])
         error-msg (re-frame/subscribe [::subs/error-msg])]
-    [:div.container.p-3.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+    [:div.container.p-1.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
-     (when @error-msg [:h1 @error-msg])
+     (when @error-msg (error-box @error-msg))
      [:h1.text-3xl.font-bold.mb-2
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]

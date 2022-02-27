@@ -33,8 +33,8 @@
              :fetches 0
              :error nil
              :cors-running false
-             :user nil}))
-
+             :user nil
+             :ui {:sort-by-button-state false}}))
 
 ;; (re-frame/reg-event-db
 ;;  ::field
@@ -88,7 +88,7 @@
             {:db (assoc db :games val)}))
 
 
-(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
+(def cors-server-uri "http://172.22.43.94:8080/")
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
@@ -307,3 +307,8 @@
                             :loading true)
                  :dispatch-later {:ms (* (inc (count fetching)) delay-between-fetch)
                                   :dispatch [::fetch-game fetch-now]}}))))
+
+(re-frame/reg-event-db
+ ::toggle-sort-by-button-state
+ (fn [db]
+   (assoc-in db [:ui :sort-by-button-state] (not (get-in db [:ui :sort-by-button-state])))))

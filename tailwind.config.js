@@ -4,5 +4,5 @@ module.exports = {
     files: ["./src/**/*.cljs", "./test/**/*.cljs"],
   },
   theme: {},
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [],
 };
