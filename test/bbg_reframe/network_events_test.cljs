@@ -1,7 +1,7 @@
-(ns bbg-reframe.events-test
+(ns bbg-reframe.network-events-test
   (:require [cljs.test :refer-macros [deftest testing is]]
             ;; [bbg-reframe.core :as core]
-            [bbg-reframe.events
+            [bbg-reframe.network-events
              :refer [fetch-next-from-queue-handler delay-between-fetches
                      fetched-games-ids fetched-game-handler]]))
 
@@ -27,7 +27,7 @@
     (is (= true (get-in response [:db :loading])))
     (is (= #{} (get-in response [:db :queue])))
     (is (= #{"1"} (get-in response [:db :fetching])))
-    (is (= {:dispatch [:bbg-reframe.events/fetch-game "1"]
+    (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "1"]
             :ms delay-between-fetches} (get response :dispatch-later)))))
 
 (deftest test-fetch-next-from-queue-handler-2
@@ -41,7 +41,7 @@
         response (fetch-next-from-queue-handler cofx nil)]
     (is (= false (get-in response [:db :loading])))
     (is (= #{"1"} (get-in response [:db :fetching])))
-    (is (= {:dispatch [:bbg-reframe.events/fetch-game "1"]
+    (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "1"]
             :ms delay-between-fetches} (get response :dispatch-later)))))
 
 (deftest test-fetch-next-from-queue-handler-3
@@ -55,7 +55,7 @@
         response (fetch-next-from-queue-handler cofx nil)]
     (is (= true (get-in response [:db :loading])))
     (is (= #{"1" "2"} (get-in response [:db :fetching])))
-    (is (= {:dispatch [:bbg-reframe.events/fetch-game "1"]
+    (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "1"]
             :ms (* 2 delay-between-fetches)} (get response :dispatch-later)))))
 
 (deftest test-fetch-next-from-queue-handler-4
@@ -72,7 +72,7 @@
     (is (= true (get-in response [:db :loading])))
     (is (= #{"1" "4"} (get-in response [:db :queue])))
     (is (= #{"3" "2"} (get-in response [:db :fetching])))
-    (is (= {:dispatch [:bbg-reframe.events/fetch-game "3"]
+    (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "3"]
             :ms (* 2 delay-between-fetches)} (get response :dispatch-later)))))
 
 (deftest test-fetch-next-from-queue-handler-5
@@ -124,7 +124,7 @@
 
 
 (deftest test-fetched-game-handler-0
-  (testing "with loading true")
+  (testing "with empty queue")
   (let [cofx
         {:db {:queue #{}
               :fetching #{"1" "2" "3"}
@@ -133,9 +133,7 @@
                       "2" {:id "2" :votes {}}
                       "3" {:id "3" :votes {}}
                       "4" {:id "4" :votes {}}}
-              :fetches 5
-              :loading true}
-         }
+              :fetches 5}}
         game-id "3"
         game-votes {"5" "votes"}
         actual (fetched-game-handler cofx game-id game-votes)]
@@ -143,21 +141,19 @@
     (is (= #{"1" "2"} (get-in actual [:db :fetching])))
     (is (= 6 (get-in actual [:db :fetches])))
     (is (= game-votes (get-in actual [:db :games "3" :votes])))
-    (is (= [[:dispatch [:bbg-reframe.events/update-result]]] (get-in actual [:fx])))))
+    (is (= [[:dispatch [:bbg-reframe.network-events/update-result]]] (get-in actual [:fx])))))
 
 (deftest test-fetched-game-handler-1
-  (testing "with loading false")
+  (testing "with non-empty queue")
   (let [cofx
-        {:db {:queue #{}
+        {:db {:queue #{"9"}
               :fetching #{"1" "2" "3"}
               :games {"0" {:id "0" :votes {}}
                       "1" {:id "1" :votes {}}
                       "2" {:id "2" :votes {}}
                       "3" {:id "3" :votes {}}
                       "4" {:id "4" :votes {}}}
-              :fetches 5
-              :loading false}
-         }
+              :fetches 5}}
         game-id "3"
         game-votes {"5" "votes"}
         actual (fetched-game-handler cofx game-id game-votes)]
@@ -165,6 +161,6 @@
     (is (= #{"1" "2"} (get-in actual [:db :fetching])))
     (is (= 6 (get-in actual [:db :fetches])))
     (is (= game-votes (get-in actual [:db :games "3" :votes])))
-    (is (= [[:dispatch [:bbg-reframe.events/fetch-next-from-queue]]] (get-in actual [:fx])))))
+    (is (= [[:dispatch [:bbg-reframe.network-events/fetch-next-from-queue]]] (get-in actual [:fx])))))
 
-           
+

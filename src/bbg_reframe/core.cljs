@@ -5,6 +5,7 @@
    [day8.re-frame.http-fx]
 
    [bbg-reframe.events :as events]
+   [bbg-reframe.network-events :as network-events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item]]
@@ -23,13 +24,13 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (re-frame/dispatch [::events/cors-check])
   (re-frame/dispatch [::events/initialize-db])
+  (re-frame/dispatch [::network-events/cors-check])
   (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))
     (console :log "Using local storage data")
     (re-frame/dispatch [::events/update-user (get-item "bgg-user")])
     (re-frame/dispatch [::events/update-games (read-string (get-item "bgg-games"))]))
-  (re-frame/dispatch [::events/update-result])
+  (re-frame/dispatch [::network-events/update-result])
   (dev-setup)
   (mount-root))
 

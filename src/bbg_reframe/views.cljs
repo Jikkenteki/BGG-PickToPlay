@@ -3,6 +3,7 @@
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
+   [bbg-reframe.network-events :as network-events]
    [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun]]
    [goog.string :as gstring]
    [goog.string.format]
@@ -83,7 +84,7 @@
                                                  :placeholder "Insert BGG username"
                                                  :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
      [:button.button.min-w-fit.ml-1 {:class "basis-1/3"
-                                     :on-click #(re-frame/dispatch [::events/fetch-collection])} "Fetch collection"]]))
+                                     :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
 
 (defn error-box [error-msg]
   [:div.error-box
