@@ -17,18 +17,31 @@
         response (fetch-next-from-queue-handler cofx nil)]
     (is (= {} response))))
 
+(deftest test-fetch-next-from-queue-handler-1
+  (testing "handler when non empty queue and empty fetching")
+  (let [cofx
+        {:db {:queue #{"1"}
+              :fetching #{}
+              :game {}}}
+        response (fetch-next-from-queue-handler cofx nil)]
+    (is (= true (get-in response [:db :loading])))
+    (is (= #{} (get-in response [:db :queue])))
+    (is (= #{"1"} (get-in response [:db :fetching])))
+    (is (= {:dispatch [:bbg-reframe.events/fetch-game "1"]
+            :ms delay-between-fetches} (get response :dispatch-later)))))
+
 (deftest test-fetch-next-from-queue-handler-2
   (testing "handler when empty queue and empty fetching")
   (let [cofx
         {:db {:queue #{}
               :fetching #{}
-              :games {"0" {:votes {}}
-                      "1" {:votes nil}
-                      "2" {:votes {}}}}}
+              :games {"0" {:id "0" :votes {}}
+                      "1" {:id "1" :votes nil} ;; non fetched will be fetched
+                      "2" {:id "2" :votes {}}}}}
         response (fetch-next-from-queue-handler cofx nil)]
     (is (= false (get-in response [:db :loading])))
-    (is (= #{"0"} (get-in response [:db :fetching])))
-    (is (= {:dispatch [:bbg-reframe.events/fetch-game "0"]
+    (is (= #{"1"} (get-in response [:db :fetching])))
+    (is (= {:dispatch [:bbg-reframe.events/fetch-game "1"]
             :ms delay-between-fetches} (get response :dispatch-later)))))
 
 (deftest test-fetch-next-from-queue-handler-3
@@ -36,9 +49,9 @@
   (let [cofx
         {:db {:queue #{"1"}
               :fetching #{"2"}
-              :games {"0" {:votes {}}
-                      "1" {:votes nil}
-                      "2" {:votes nil}}}}
+              :games {"0" {:id "0" :votes {}}
+                      "1" {:id "1" :votes nil}
+                      "2" {:id "2" :votes nil}}}}
         response (fetch-next-from-queue-handler cofx nil)]
     (is (= true (get-in response [:db :loading])))
     (is (= #{"1" "2"} (get-in response [:db :fetching])))

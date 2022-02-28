@@ -1,7 +1,7 @@
 (ns bbg-reframe.events
   (:require
    [re-frame.core :as re-frame]
-   [day8.re-frame.tracing :refer-macros [fn-traced]]
+   [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
    [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable?]]
    [clojure.tools.reader.edn :refer [read-string]]
@@ -9,7 +9,8 @@
    [tubax.core :refer [xml->clj]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [clojure.string :refer [split]]
-   [re-frame.loggers :refer [console]]))
+   [re-frame.loggers :refer [console]]
+   [clojure.set :refer [union]]))
 
 
 (def delay-between-fetches 100)
@@ -96,7 +97,8 @@
             (if cors-running
               {:db   (assoc db
                             :loading true
-                            :error nil)
+                            :error nil
+                            :fetches 0)
                :http-xhrio {:method          :get
                             :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
                             :timeout         8000                                           ;; optional see API docs
@@ -234,16 +236,26 @@
                  (remove #(nil? (:votes %)))
                  (map :id))))
 
+(defn new-to-fetch
+  "Remove from results ids the ids of the fetched games, queue, and fetching"
+  [results games queue fetching]
+  (->> results
+       (remove #((fetched-games-ids games) %))
+       (remove #(queue %))
+       (remove #(fetching %))))
+
 (re-frame/reg-event-fx
  ::update-queue
-;;  for some strange reason fn-traced does not compile
- (fn [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
-   (let [new-to-fetch (->> results
-                           (remove #((fetched-games-ids games) %))
-                           (remove #(queue %))
-                           (remove #(fetching %)))]
+ (fn-traced [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
+   (let [new-to-fetch (new-to-fetch results games queue fetching)]
      {:db (assoc db
-                 :queue (reduce #(conj %1 %2) queue new-to-fetch))
+                 :queue (reduce #(conj %1 %2) queue 
+                                ;; do not queue all ids; just the first one
+                                ;; the rest might not be needed
+                                ;; especially if the results change rapidly
+                                (if (first new-to-fetch) [(first new-to-fetch)] [])
+                                ;; new-to-fetch
+                                ))
       :dispatch [::fetch-next-from-queue]})))
 
 (re-frame/reg-event-fx
@@ -325,38 +337,49 @@
          :dispatch [::fetch-next-from-queue]})))
 
 
-(defn fetch-next-from-queue-handler [{:keys [db] {:keys [queue fetching games]} :db} _]
+(defn-traced fetch-next-from-queue-handler [{:keys [db] {:keys [queue fetching games]} :db} _]
   (if (and (empty? queue) (seq fetching)) ;; non-empty fetching
     ;; nothing to do; there are still games being fetched
     {}
-    ;; queue is not empty
-    ;; or
-    ;; fetching is empty
+    ;; else
+    ;;   queue is not empty
+    ;;   or
+    ;;   fetching is empty
     ;;
     ;; CASES:
     ;;   queue not empty ; fetching not empty
     ;;   queue not empty ; fetching empty
     ;;   queue empty     ; fetching empty
-    (let [fetch-now (if (empty? fetching)
-                      (first (->> (keys games)
-                                  (remove #((fetched-games-ids games) %))
-                                  (remove #(queue %))
-                                  (remove #(fetching %)))) ;; will be nil if all fetched
+    (let [fetch-now (if (empty? queue)
+                      (first 
+                      ;;  (remove 
+                      ;;         (fn [id] ((union 
+                      ;;                    (fetched-games-ids games) 
+                      ;;                    queue 
+                      ;;                    fetching) id)) 
+                      ;;         (keys games)) 
+                       (new-to-fetch (keys games) games queue fetching)
+                      ;;  (->> (keys games)
+                      ;;             (remove #((fetched-games-ids games) %))
+                      ;;             (remove #(queue %))
+                      ;;             (remove #(fetching %)))
+                             ) ;; will be nil if all fetched
                       (first queue)) ;; if fetching not empty, queue is not empty
-          ]
+          
+          new-fetching (if fetch-now
+                         (conj fetching fetch-now)
+                         fetching)]
       (when fetch-now
         (console :debug
-                 (if (empty? fetching)
+                 (if (and (empty? queue) (empty? fetching))
                    "New to fetch (background): "
                    "fetch-next-from-queue: fetching ")
                  fetch-now))
       (merge
        {:db (assoc db
                    :queue (disj queue fetch-now)
-                   :fetching (if fetch-now
-                               (conj fetching fetch-now)
-                               fetching)
-                   :loading (> (count fetching) 0))}
+                   :fetching new-fetching
+                   :loading (> (+ (count queue)(count fetching)) 0))}
        (if fetch-now
          {:dispatch-later
           {:ms (* (inc (count fetching)) delay-between-fetches)
