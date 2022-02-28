@@ -5,12 +5,11 @@
    [ajax.core :as ajax]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable?]]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.db :refer [game-id collection-game->game game-votes]]
-   [tubax.core :refer [xml->clj]]
+   [bbg-reframe.model.db :refer [game-id game-votes xml->game indexed-games]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
-   [clojure.set :refer [union]]))
+   [bbg-reframe.db :refer [default-db]]))
 
 
 (def delay-between-fetches 100)
@@ -18,24 +17,9 @@
 
 (re-frame/reg-event-db
  ::initialize-db
- (fn-traced [_ _]
-            ;; db/default-db
-            {:result nil
-             :fields ["name"]
-             :form {:sort-id "playable"
-                    :take "10"
-                    :higher-than "7.0"
-                    :players "4"
-                    :threshold "0.8"
-                    :time-limit "180"}
-             :games []
-             :queue #{}
-             :fetching #{}
-             :fetches 0
-             :error nil
-             :cors-running false
-             :user nil
-             :ui {:sort-by-button-state false}}))
+ (fn-traced
+  [_ _]
+  default-db))
 
 ;; (re-frame/reg-event-db
 ;;  ::field
@@ -49,29 +33,29 @@
 
 (re-frame/reg-event-fx
  ::update-result
-;;  [(when debug? re-frame.core/debug)]
- (fn-traced [{:keys [db]} _]
-            (let [;; _ (console :debug "update")
-                  sort-by  (get-in db [:form :sort-id])
-                  sorting-fun (if (= sort-by "playable")
-                                (game-more-playable? (read-string (get-in db [:form :players])))
-                                (get sorting-fun (keyword (get-in db [:form :sort-id]))))
-                  result (take (read-string (get-in db [:form :take]))
-                               (sort sorting-fun
-                                     (filter
-                                      (and-filters
-                                       (with-number-of-players?
-                                         (read-string (get-in db [:form :players])))
-                                       (rating-higher-than?
-                                        (read-string (get-in db [:form :higher-than])))
-                                       (playingtime-between?
-                                        0 (read-string (get-in db [:form :time-limit])))
-                                       (is-playable-with-num-of-players
-                                        (get-in db [:form :players])
-                                        (get-in db [:form :threshold])))
-                                      (vals (get db :games)))))]
-              {:db (assoc db :result result)
-               :dispatch [::update-queue (map :id result)]})))
+ (fn-traced
+  [{:keys [db]} _]
+  (let [;; _ (console :debug "update")
+        sort-by  (get-in db [:form :sort-id])
+        sorting-fun (if (= sort-by "playable")
+                      (game-more-playable? (read-string (get-in db [:form :players])))
+                      (get sorting-fun (keyword (get-in db [:form :sort-id]))))
+        result (take (read-string (get-in db [:form :take]))
+                     (sort sorting-fun
+                           (filter
+                            (and-filters
+                             (with-number-of-players?
+                               (read-string (get-in db [:form :players])))
+                             (rating-higher-than?
+                              (read-string (get-in db [:form :higher-than])))
+                             (playingtime-between?
+                              0 (read-string (get-in db [:form :time-limit])))
+                             (is-playable-with-num-of-players
+                              (get-in db [:form :players])
+                              (get-in db [:form :threshold])))
+                            (vals (get db :games)))))]
+    {:db (assoc db :result result)
+     :dispatch [::update-queue (map :id result)]})))
 
 (re-frame/reg-event-fx
  ::update-form
@@ -177,58 +161,22 @@
             (console :debug "status-text: " (:status-text response))
             {:db (assoc db :error "CORS server down")}))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-
-;; <?xml version= "1.0" encoding= "utf-8" standalone= "yes" ?>
-;;   <errors>
-;;     <error>
-;;       <message>Invalid username specified</message>
-;;     </error>
-;;   </errors>
-
-(defn- error? [collection]
-  (-> collection
-      first
-      :tag
-      (= :error)))
-
-(comment
-  ;;   <?xml version= \"1.0\" encoding= \"utf-8\" standalone= \"yes\" ?>
-  ;; <errors>
-  ;;   <error>
-  ;;     <message>Invalid username specified</message>
-  ;;   </error>
-  ;; </errors>
-
-
-  (def xml-clj
-    [{:tag :error, :attrs nil,
-      :content [{:tag :message, :attrs nil, :content ["Invalid username specified"]}]}])
-  xml-clj
-  ;
-  )
-
 (re-frame/reg-event-fx
  ::success-fetch-collection
- (fn-traced [{:keys [db]} [_ response]]
-            (let [collection (:content (xml->clj response))]
-              (if (error? collection)
-                (let [_ (console :debug (str "ERROR: " collection))]
-                  {:db (assoc db
-                              :error (str "Error reading collection. Invalid user?")
-                              :loading false)})
-                (let [_ (console :debug "SUCCESS: collection fetched ")
-                      games (map collection-game->game collection)
-                      indexed-games (reduce
-                                     #(assoc %1 (:id %2) %2)
-                                     {} games)
-                      _ (set-item! "bgg-games" indexed-games)
-                      collection-to-be-fetched collection
-                      _ (console :debug (count collection-to-be-fetched))]
-                  {:dispatch [::update-result]
-                   :db (assoc db
-                              :games indexed-games
-                              :loading false)})))))
+ (fn-traced
+  [{:keys [db]} [_ response]]
+  (if-let [indexed-games (indexed-games response)]
+    (let [_ (console :debug "SUCCESS: collection fetched: " (count indexed-games) " games.")
+          _ (set-item! "bgg-games" indexed-games)]
+      {:dispatch [::update-result]
+       :db (assoc db
+                  :games indexed-games
+                  :loading false)})
+    (let [_ (console :debug (str "ERROR: " response))]
+      {:db (assoc db
+                  :error (str "Error reading collection. Invalid user?")
+                  :loading false)}))))
+
 
 (defn fetched-games-ids
   [games]
@@ -247,18 +195,20 @@
 (re-frame/reg-event-fx
  ::update-queue
  (fn-traced [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
-   (let [new-to-fetch (new-to-fetch results games queue fetching)]
-     {:db (assoc db
-                 :queue (reduce #(conj %1 %2) queue 
+            (let [new-to-fetch (new-to-fetch results games queue fetching)]
+              {:db (assoc db
+                          :queue (reduce #(conj %1 %2) queue
                                 ;; do not queue all ids; just the first one
                                 ;; the rest might not be needed
                                 ;; especially if the results change rapidly
-                                (if (first new-to-fetch) [(first new-to-fetch)] [])
+                                         (if (first new-to-fetch) [(first new-to-fetch)] [])
                                 ;; new-to-fetch
-                                ))
-      :dispatch [::fetch-next-from-queue]})))
+                                         ))
+               :dispatch [::fetch-next-from-queue]})))
 
-
+;;
+;; Handler for successfully fetched game
+;;
 (defn fetched-game-handler
   [{:keys [db] {:keys [fetches fetching loading]} :db} game-id game-votes]
   (let [_  (console :debug "SUCCESS" game-id)
@@ -276,15 +226,14 @@
 
 (defn-traced success-fetch-game-handler
   [cofx [_ response]]
-  (let [game-received (->> response
-                           xml->clj
-                           :content
-                           first)]
+  (let [game-received (xml->game response)]
     (fetched-game-handler cofx (game-id game-received) (game-votes game-received))))
 
 (re-frame/reg-event-fx
  ::success-fetch-game
  success-fetch-game-handler)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (re-frame/reg-event-fx
  ::bad-http-collection
@@ -343,7 +292,10 @@
                     :loading false)
          :dispatch [::fetch-next-from-queue]})))
 
-
+;;
+;; Handler for dispatching the fetch for the next game
+;; either from the queue or from the rest of the unfetched games
+;;
 (defn-traced fetch-next-from-queue-handler [{:keys [db] {:keys [queue fetching games]} :db} _]
   (if (and (empty? queue) (seq fetching)) ;; non-empty fetching
     ;; nothing to do; there are still games being fetched
@@ -358,7 +310,7 @@
     ;;   queue not empty ; fetching empty
     ;;   queue empty     ; fetching empty
     (let [fetch-now (if (empty? queue)
-                      (first 
+                      (first
                       ;;  (remove 
                       ;;         (fn [id] ((union 
                       ;;                    (fetched-games-ids games) 
@@ -370,9 +322,9 @@
                       ;;             (remove #((fetched-games-ids games) %))
                       ;;             (remove #(queue %))
                       ;;             (remove #(fetching %)))
-                             ) ;; will be nil if all fetched
+) ;; will be nil if all fetched
                       (first queue)) ;; if fetching not empty, queue is not empty
-          
+
           new-fetching (if fetch-now
                          (conj fetching fetch-now)
                          fetching)]
@@ -386,7 +338,7 @@
        {:db (assoc db
                    :queue (disj queue fetch-now)
                    :fetching new-fetching
-                   :loading (> (+ (count queue)(count fetching)) 0))}
+                   :loading (> (+ (count queue) (count fetching)) 0))}
        (if fetch-now
          {:dispatch-later
           {:ms (* (inc (count fetching)) delay-between-fetches)
@@ -397,6 +349,7 @@
  ::fetch-next-from-queue
  fetch-next-from-queue-handler)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (re-frame/reg-event-db
  ::toggle-sort-by-button-state
