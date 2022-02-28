@@ -1,7 +1,8 @@
 (ns bbg-reframe.model.db
   (:require [clojure.pprint :as pp]
             [clojure.tools.reader.edn :refer [read-string]]
-            [bbg-reframe.model.localstorage :refer [spit get-item]]))
+            [bbg-reframe.model.localstorage :refer [spit get-item]]
+            [tubax.core :refer [xml->clj]]))
 
 ;; 
 ;; Fields accessors from API XML
@@ -210,3 +211,60 @@
   (take 2 collection)
   ;
   )
+
+;;
+;; BGG XML response
+;;
+(defn xml->game
+  [response]
+  (->> response
+       xml->clj
+       :content
+       first))
+
+(defn xml->collection
+  [response]
+  (:content (xml->clj response)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+
+;; <?xml version= "1.0" encoding= "utf-8" standalone= "yes" ?>
+;;   <errors>
+;;     <error>
+;;       <message>Invalid username specified</message>
+;;     </error>
+;;   </errors>
+
+(defn error? [collection]
+  (-> collection
+      first
+      :tag
+      (= :error)))
+
+(comment
+  ;;   <?xml version= \"1.0\" encoding= \"utf-8\" standalone= \"yes\" ?>
+  ;; <errors>
+  ;;   <error>
+  ;;     <message>Invalid username specified</message>
+  ;;   </error>
+  ;; </errors>
+
+
+  (def xml-clj
+    [{:tag :error, :attrs nil,
+      :content [{:tag :message, :attrs nil, :content ["Invalid username specified"]}]}])
+  xml-clj
+  ;
+  )
+
+(defn indexed-games
+  [response]
+  (let [collection (xml->collection response)]
+    (if (error? collection)
+      nil
+      (let [games (map collection-game->game collection)
+            indexed-games (reduce
+                           #(assoc %1 (:id %2) %2)
+                           {} games)]
+        indexed-games))))
+
