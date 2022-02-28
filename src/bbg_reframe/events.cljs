@@ -165,10 +165,14 @@
             (console :debug (str "CORS server at " cors-server-uri " up!"))
             {:db (assoc db :cors-running true)}))
 
+;; status 0 Request failed. <-- (no network)
+;; status -1 Request timed out. <-- Wrong address
 (re-frame/reg-event-fx
  ::bad-cors
- (fn-traced [{:keys [db]} _]
+ (fn-traced [{:keys [db]} [_ response]]
             (console :error "CORS server down")
+            (console :debug "status: " (:status response))
+            (console :debug "status-text: " (:status-text response))
             {:db (assoc db :error "CORS server down")}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
