@@ -1,1 +1,6 @@
-{:lint-as {day8.re-frame.tracing/fn-traced clojure.core/fn}}
+{:lint-as  
+ {
+  day8.re-frame.tracing/fn-traced clojure.core/fn
+  day8.re-frame.tracing/defn-traced clojure.core/defn
+  }
+ }
