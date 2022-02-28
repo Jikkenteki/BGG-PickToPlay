@@ -3,7 +3,7 @@
             ;; [bbg-reframe.core :as core]
             [bbg-reframe.events
              :refer [fetch-next-from-queue-handler delay-between-fetches
-                     fetched-games-ids]]))
+                     fetched-games-ids fetched-game-handler]]))
 
 ;;
 ;; fetch-next-from-queue-handler
@@ -91,8 +91,9 @@
     (is (= #{} (get-in response [:db :fetching])))
     (is (= nil (get response :dispatch-later)))))
 
-
-
+;;
+;; fetched-games-ids
+;; 
 (deftest test-fetched-games-ids
   (testing "all fetched should be all games")
   (let [games {"0" {:id "0" :votes {}}
@@ -120,3 +121,50 @@
                "4" {:id "4" :votes nil}}]
     (is (= #{} (fetched-games-ids games)))))
 
+
+
+(deftest test-fetched-game-handler-0
+  (testing "with loading true")
+  (let [cofx
+        {:db {:queue #{}
+              :fetching #{"1" "2" "3"}
+              :games {"0" {:id "0" :votes {}}
+                      "1" {:id "1" :votes {}}
+                      "2" {:id "2" :votes {}}
+                      "3" {:id "3" :votes {}}
+                      "4" {:id "4" :votes {}}}
+              :fetches 5
+              :loading true}
+         }
+        game-id "3"
+        game-votes {"5" "votes"}
+        actual (fetched-game-handler cofx game-id game-votes)]
+    (is (= nil (get-in actual [:db :error])))
+    (is (= #{"1" "2"} (get-in actual [:db :fetching])))
+    (is (= 6 (get-in actual [:db :fetches])))
+    (is (= game-votes (get-in actual [:db :games "3" :votes])))
+    (is (= [[:dispatch [:bbg-reframe.events/update-result]]] (get-in actual [:fx])))))
+
+(deftest test-fetched-game-handler-1
+  (testing "with loading false")
+  (let [cofx
+        {:db {:queue #{}
+              :fetching #{"1" "2" "3"}
+              :games {"0" {:id "0" :votes {}}
+                      "1" {:id "1" :votes {}}
+                      "2" {:id "2" :votes {}}
+                      "3" {:id "3" :votes {}}
+                      "4" {:id "4" :votes {}}}
+              :fetches 5
+              :loading false}
+         }
+        game-id "3"
+        game-votes {"5" "votes"}
+        actual (fetched-game-handler cofx game-id game-votes)]
+    (is (= nil (get-in actual [:db :error])))
+    (is (= #{"1" "2"} (get-in actual [:db :fetching])))
+    (is (= 6 (get-in actual [:db :fetches])))
+    (is (= game-votes (get-in actual [:db :games "3" :votes])))
+    (is (= [[:dispatch [:bbg-reframe.events/fetch-next-from-queue]]] (get-in actual [:fx])))))
+
+           

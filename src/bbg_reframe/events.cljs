@@ -258,26 +258,33 @@
                                 ))
       :dispatch [::fetch-next-from-queue]})))
 
+
+(defn fetched-game-handler
+  [{:keys [db] {:keys [fetches fetching loading]} :db} game-id game-votes]
+  (let [_  (console :debug "SUCCESS" game-id)
+        new-db (assoc-in db [:games game-id :votes] game-votes)
+        _ (set-item! "bgg-games" (:games new-db))]
+    {:db (assoc new-db
+                :error nil
+                :fetching (disj fetching game-id)
+                :fetches (inc fetches))
+     :fx (if loading
+           [[:dispatch [::update-result]]
+                    ;; [:dispatch [::fetch-next-from-queue]]
+            ]
+           [[:dispatch [::fetch-next-from-queue]]])}))
+
+(defn-traced success-fetch-game-handler
+  [cofx [_ response]]
+  (let [game-received (->> response
+                           xml->clj
+                           :content
+                           first)]
+    (fetched-game-handler cofx (game-id game-received) (game-votes game-received))))
+
 (re-frame/reg-event-fx
  ::success-fetch-game
- (fn-traced [{:keys [db] {:keys [fetches fetching loading]} :db} [_ response]]
-            (let [game-received (->> response
-                                     xml->clj
-                                     :content
-                                     first)
-                  game-id (game-id game-received)
-                  _  (console :debug "SUCCESS" game-id)
-                  new-db (assoc-in db [:games game-id :votes] (game-votes game-received))
-                  _ (set-item! "bgg-games" (:games new-db))]
-              {:db (assoc new-db
-                          :error nil
-                          :fetching (disj fetching game-id)
-                          :fetches (inc fetches))
-               :fx (if loading
-                     [[:dispatch [::update-result]]
-                    ;; [:dispatch [::fetch-next-from-queue]]
-                      ]
-                     [[:dispatch [::fetch-next-from-queue]]])})))
+ success-fetch-game-handler)
 
 (re-frame/reg-event-fx
  ::bad-http-collection
