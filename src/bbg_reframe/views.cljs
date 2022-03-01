@@ -40,24 +40,13 @@
         (game-div game players))
       result)]))
 
-
-(defn select
-  [id label options]
-  (let [value (re-frame/subscribe [::subs/form id])]
-    [:div
-     [:label label]
-     [:select {:value @value
-               :on-change #(re-frame/dispatch [::events/update-form
-                                               id
-                                               (-> % .-target .-value)])}
-      (map (fn [o] [:option {:key o :value o} o]) options)]]))
-
-(defn custom-select
-  [id label options]
-  (let [value (re-frame/subscribe [::subs/form id])
+(defn sort-list
+  []
+  (let [options  (map name (keys sorting-fun))
+        value (re-frame/subscribe [::subs/form :sort-id])
         button-state (re-frame/subscribe [::subs/ui :sort-by-button-state])]
     [:div.flex.items-center
-     [:p label]
+     [:p "Sort by "]
      [:div.pl-2.relative  (when @button-state
                             [:div.select-box-above.flex.flex-col
                              {:style {:height (str (* (count options) 26) "px")
@@ -106,6 +95,7 @@
      (case @open-tab
        "sliders" (sliders)
        "username" (user-panel)
+       "sort" (sort-list)
        nil)]))
 
 (defn buttons-bar []
@@ -151,7 +141,4 @@
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
      (loading-games-message)
      (games-list)
-     (buttons-bar)
-    ;;  (select :sort-id "Sort by " (map name (keys sorting-fun)))
-    ;;  (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))
-     ]))
+     (buttons-bar)]))
