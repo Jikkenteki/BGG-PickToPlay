@@ -4,16 +4,17 @@
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
    [ajax.core :as ajax]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.db :refer [game-id game-votes xml->game indexed-games]]
+   [bbg-reframe.model.xmlapi :refer [xml->game item-game-id]]
+   [bbg-reframe.model.db :refer [game-votes  indexed-games]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable?]]
 
    [clojure.string :refer [split]]
-   [re-frame.loggers :refer [console]]))
+   [re-frame.loggers :refer [console]]
+   [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]))
 
 
-(def delay-between-fetches 100)
-(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;; 
@@ -75,6 +76,12 @@
 ;;
 ;; Collection
 ;;
+(defn collection-api-uri
+  [user]
+  (if (= xml-api 1)
+    (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
+    (str cors-server-uri "https://boardgamegeek.com/xmlapi2/collection?username=" user)))
+
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db] {:keys [cors-running user]} :db} [_ _]]                    ;; the first param will be "world"
@@ -84,7 +91,7 @@
                           :error nil
                           :fetches 0)
              :http-xhrio {:method          :get
-                          :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
+                          :uri             (collection-api-uri user)
                           :timeout         8000                                           ;; optional see API docs
                           :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                           :on-success      [::success-fetch-collection]
@@ -270,13 +277,19 @@
 ;;
 ;;  Fetch Game
 ;;
+(defn api-game-uri
+  [game-id]
+  (if (= xml-api 1)
+    (str cors-server-uri "https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+    (str cors-server-uri "https://boardgamegeek.com//xmlapi2/thing?stats=1&id=" game-id)))
+
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db] {:keys [cors-running]} :db} [_ game-id]]                    ;; the first param will be "world"
             (if cors-running
               {;;  :db   (assoc db :loading true)
                :http-xhrio {:method          :get
-                            :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/boardgame/" game-id)
+                            :uri             (api-game-uri game-id)
                             :timeout         8000                                           ;; optional see API docs
                             :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                             :on-success      [::success-fetch-game]
@@ -306,13 +319,17 @@
 (defn-traced success-fetch-game-handler
   [cofx [_ response]]
   (let [game-received (xml->game response)]
-    (fetched-game-handler cofx (game-id game-received) (game-votes game-received))))
+    (fetched-game-handler cofx (item-game-id game-received) (game-votes game-received))))
 
 (re-frame/reg-event-fx
  ::success-fetch-game
  success-fetch-game-handler)
 
 
+;; 429
+;; <error>
+;; <message>Rate limit exceeded.</message>
+;; </error>
 (re-frame/reg-event-fx
  ::failure-fetch-game
  (fn-traced
