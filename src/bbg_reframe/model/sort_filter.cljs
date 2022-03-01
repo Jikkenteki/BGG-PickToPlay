@@ -51,7 +51,7 @@
   {:rating game-better?
    :time game-shorter?
    :rating-time game-shorter-and-better?
-   :playable game-more-playable?})
+   :playability game-more-playable?})
 
 (map name (keys sorting-fun))
 
@@ -119,11 +119,11 @@
 
 
 
- (defn max-index
-   ([coll]    (max-index coll 0 (apply max coll)))
-   ([coll num max] (if (= max (nth coll num))
-                     num
-                     (max-index coll (inc num) max))))
+(defn max-index
+  ([coll]    (max-index coll 0 (apply max coll)))
+  ([coll num max] (if (= max (nth coll num))
+                    num
+                    (max-index coll (inc num) max))))
 
 (defn game->best-rec-not
   "For a game, returns 0 1 2 if best, recommended or not recommended for player-num.
@@ -132,9 +132,9 @@
   (if (game :votes)
     (if (> player-num (count (game :votes)))
       ;; (function-name game (count (game :votes)))
-    nil
-    (let [votes-perc (filter number? (vals (nth (game :votes) (dec player-num))))]
-      (max-index (map #(nth votes-perc %) [1 3 5]))))
+      nil
+      (let [votes-perc (filter number? (vals (nth (game :votes) (dec player-num))))]
+        (max-index (map #(nth votes-perc %) [1 3 5]))))
     nil))
 
 

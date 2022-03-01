@@ -47,12 +47,6 @@
  (fn-traced [{:keys [db]} [_ val]]
             {:db (assoc db :form val)}))
 
-
-(re-frame/reg-event-db
- ::toggle-sort-by-button-state
- (fn [db]
-   (assoc-in db [:ui :sort-by-button-state] (not (get-in db [:ui :sort-by-button-state])))))
-
 (re-frame/reg-event-db
  ::set-open-tab
  (fn-traced [db [_ tab]]

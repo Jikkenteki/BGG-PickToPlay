@@ -157,7 +157,7 @@
   [{:keys [db]} _]
   (let [;; _ (console :debug "update")
         sort-by  (get-in db [:form :sort-id])
-        sorting-fun (if (= sort-by "playable")
+        sorting-fun (if (= sort-by "playability")
                       (game-more-playable? (read-string (get-in db [:form :players])))
                       (get sorting-fun (keyword (get-in db [:form :sort-id]))))
         result (take (read-string (get-in db [:form :take]))

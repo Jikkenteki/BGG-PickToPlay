@@ -3,7 +3,7 @@
 (def default-db
   {:result nil
    :fields ["name"]
-   :form {:sort-id "playable"
+   :form {:sort-id "playability"
           :take "10"
           :higher-than "7.0"
           :players "4"
@@ -16,8 +16,7 @@
    :error nil
    :cors-running true
    :user nil
-   :ui {:sort-by-button-state false
-        :open-tab ""}})
+   :ui {:open-tab ""}})
 
 
 

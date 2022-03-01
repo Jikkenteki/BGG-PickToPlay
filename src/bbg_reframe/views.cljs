@@ -40,22 +40,15 @@
         (game-div game players))
       result)]))
 
-(defn sort-list
-  []
+(defn sort-list []
   (let [options  (map name (keys sorting-fun))
-        value (re-frame/subscribe [::subs/form :sort-id])
-        button-state (re-frame/subscribe [::subs/ui :sort-by-button-state])]
-    [:div.flex.items-center
-     [:p "Sort by "]
-     [:div.pl-2.relative  (when @button-state
-                            [:div.select-box-above.flex.flex-col
-                             {:style {:height (str (* (count options) 26) "px")
-                                      :top (str "-" (- (* (count options) 24) 7) "px")}
-                              :on-click #(re-frame/dispatch [::events/toggle-sort-by-button-state])}
-                             "hey"])
-      [:div.flex.w-24.button
-       {:on-click #(re-frame/dispatch [::events/toggle-sort-by-button-state])}
-       [:p.my-auto @value]]]]))
+        value (re-frame/subscribe [::subs/form :sort-id])]
+    [:div.grid.grid-cols-2.grid-rows-2.gap-3.mb-1
+     (doall (for [option options]
+              ^{:key option}
+              [:div.button.flex {:class (when (= @value option) "active")
+                                 :on-click #(re-frame/dispatch [::events/update-form :sort-id option])}
+               [:p.m-auto option]]))]))
 
 (defn slider
   [id label min max step]
@@ -77,7 +70,7 @@
                                             :value @user
                                             :placeholder "Insert BGG username"
                                             :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
-     [:button.button.min-w-fit.ml-1 {:on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
+     [:button.button.min-w-fit.px-2.ml-1 {:on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
 
 (defn sliders []
   [:<>
@@ -89,7 +82,7 @@
 
 (defn overlay []
   (let [open-tab (re-frame/subscribe [::subs/ui :open-tab])]
-    [:div
+    [:div.mb-2
      {:style {:display (when (= @open-tab "")
                          "none")}}
      (case @open-tab
@@ -99,17 +92,21 @@
        nil)]))
 
 (defn buttons-bar []
-  [:div.bottom-overlay-box-shadow.p-1.z-10
-   (overlay)
-   [:div.flex
-    [:div.button.flex-1.flex {:style {:flex-grow "4"}
-                              :on-click  #(re-frame/dispatch [::events/set-open-tab "sliders"])}
-     [:i.mx-auto.my-auto {:class "fa-solid fa-sliders fa-xl"}]]
-    [:div.button.flex-1.flex.ml-1 {:style {:flex-grow "4"}
-                                   :on-click  #(re-frame/dispatch [::events/set-open-tab "sort"])}
-     [:i.mx-auto.my-auto {:class "fa-solid fa-sort fa-xl"}]]
-    [:div.button.flex-1.flex.ml-1 {:on-click  #(re-frame/dispatch [::events/set-open-tab "username"])}
-     [:i.mx-auto.my-auto {:class "fa-solid fa-user fa-xl"}]]]])
+  (let [open-tab (re-frame/subscribe [::subs/ui :open-tab])]
+    [:div.bottom-overlay-box-shadow.pr-2.p-1.z-10.flex.flex-col
+     (overlay)
+     [:div.flex.gap-2
+      [:div.button.flex-1.flex {:class (when (= @open-tab "sliders") "active")
+                                :style {:flex-grow "4"}
+                                :on-click  #(re-frame/dispatch [::events/set-open-tab "sliders"])}
+       [:i.mx-auto.my-auto {:class "fa-solid fa-sliders fa-xl"}]]
+      [:div.button.flex-1.flex.ml-1 {:class (when (= @open-tab "sort") "active")
+                                     :style {:flex-grow "4"}
+                                     :on-click  #(re-frame/dispatch [::events/set-open-tab "sort"])}
+       [:i.mx-auto.my-auto {:class "fa-solid fa-sort fa-xl"}]]
+      [:div.button.flex-1.flex.ml-1 {:class (when (= @open-tab "username") "active")
+                                     :on-click  #(re-frame/dispatch [::events/set-open-tab "username"])}
+       [:i.mx-auto.my-auto {:class "fa-solid fa-user fa-xl"}]]]]))
 
 (defn error-box [error-msg]
   [:div.error-box
