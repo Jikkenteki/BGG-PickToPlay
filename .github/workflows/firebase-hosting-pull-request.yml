@@ -17,3 +17,4 @@ jobs:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_HELP_ME_PICK_WHAT_TO_PLAY }}"
           projectId: help-me-pick-what-to-play
+          channelId: preview
