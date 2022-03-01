@@ -52,3 +52,10 @@
  ::toggle-sort-by-button-state
  (fn [db]
    (assoc-in db [:ui :sort-by-button-state] (not (get-in db [:ui :sort-by-button-state])))))
+
+(re-frame/reg-event-db
+ ::set-open-tab
+ (fn-traced [db [_ tab]]
+            (assoc-in db [:ui :open-tab] (if (= (get-in db [:ui :open-tab]) tab)
+                                           ""
+                                           tab))))

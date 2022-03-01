@@ -9,9 +9,11 @@
     "postcss:release": "postcss TAILWIND_MODE=build src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose",
     "postcss:watch": "postcss TAILWIND_MODE=watch src/bbg_reframe/css/app.css -o resources/public/css/compiled/app.css --verbose -w",
     "dev": "run-p -l *:watch",
-    "release": "run-s *:release"
+    "release": "run-s *:release",
+    "postinstall": "cp -R node_modules/@fortawesome/fontawesome-free/css ./resources/public/ && cp -R node_modules/@fortawesome/fontawesome-free/webfonts ./resources/public/"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.0.0",
     "@tailwindcss/forms": "^0.4.0",
     "highlight.js": "11.1.0",
     "react": "17.0.2",

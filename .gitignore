@@ -1,6 +1,7 @@
 /out/
 /resources/public/js/compiled/
-/resources/public/css/compiled/
+/resources/public/css/
+/resources/public/webfonts/
 /target/
 /*-init.clj
 /*.log

@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 .range {
   height: 13px;
   -webkit-appearance: none;
@@ -75,4 +71,8 @@
   position: absolute;
   background-color: theme("colors.red.900");
   z-index: 10;
+}
+
+.bottom-overlay-box-shadow {
+  box-shadow: 0 -30px 30px 10px rgb(0, 0, 0, 0.4);
 }

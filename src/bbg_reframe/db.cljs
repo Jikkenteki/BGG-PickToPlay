@@ -16,7 +16,8 @@
    :error nil
    :cors-running false
    :user nil
-   :ui {:sort-by-button-state false}})
+   :ui {:sort-by-button-state false
+        :open-tab ""}})
 
 
 

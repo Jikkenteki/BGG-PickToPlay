@@ -23,7 +23,7 @@
                                             game players))]
     ^{:key (random-uuid)}
     [:p
-     (when SHOW_PLAYABILITY (str 
+     (when SHOW_PLAYABILITY (str
                              (case (game->best-rec-not game players)
                                0 "best"
                                1 "rec "
@@ -82,36 +82,76 @@
 
 (defn user-panel []
   (let [user (re-frame/subscribe [::subs/user])]
-    [:div.flex.items-center.mb-1
-     [:input.ml-1.input-box.min-w-0.grow.h-full {:type "text"
-                                                 :id "name"
-                                                 :value @user
-                                                 :placeholder "Insert BGG username"
-                                                 :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
-     [:button.button.min-w-fit.ml-1 {:class "basis-1/3"
-                                     :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
+    [:div.flex.items-center.mb-1.h-full
+     [:input.input-box.min-w-0.grow.h-full {:type "text"
+                                            :id "name"
+                                            :value @user
+                                            :placeholder "Insert BGG username"
+                                            :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
+     [:button.button.min-w-fit.ml-1 {:on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
+
+(defn sliders []
+  [:<>
+   (slider :take "Take" 1 100 1)
+   (slider :higher-than "Rating higher than" 0 10 0.1)
+   (slider :players "For number of players" 1 10 1)
+   (slider :threshold "Playability threshold" 0 0.95 0.05)
+   (slider :time-limit "Time limit" 10 500 10)])
+
+(defn overlay []
+  (let [open-tab (re-frame/subscribe [::subs/ui :open-tab])]
+    [:div
+     {:style {:display (when (= @open-tab "")
+                         "none")}}
+     (case @open-tab
+       "sliders" (sliders)
+       "username" (user-panel)
+       nil)]))
+
+(defn buttons-bar []
+  [:div.bottom-overlay-box-shadow.p-1.z-10
+   (overlay)
+   [:div.flex
+    [:div.button.flex-1.flex {:style {:flex-grow "4"}
+                              :on-click  #(re-frame/dispatch [::events/set-open-tab "sliders"])}
+     [:i.mx-auto.my-auto {:class "fa-solid fa-sliders fa-xl"}]]
+    [:div.button.flex-1.flex.ml-1 {:style {:flex-grow "4"}
+                                   :on-click  #(re-frame/dispatch [::events/set-open-tab "sort"])}
+     [:i.mx-auto.my-auto {:class "fa-solid fa-sort fa-xl"}]]
+    [:div.button.flex-1.flex.ml-1 {:on-click  #(re-frame/dispatch [::events/set-open-tab "username"])}
+     [:i.mx-auto.my-auto {:class "fa-solid fa-user fa-xl"}]]]])
 
 (defn error-box [error-msg]
   [:div.error-box
    [:p error-msg]])
 
+(defn loading-games-message []
+  (let [loading (re-frame/subscribe [::subs/loading])]
+    (when @loading
+      [:div.flex.ml-3
+       [:div.sk-folding-cube
+        [:div.sk-cube1.sk-cube]
+        [:div.sk-cube2.sk-cube]
+        [:div.sk-cube4.sk-cube]
+        [:div.sk-cube3.sk-cube]]
+       [:p.ml-2.inline.italic "loading games..."]])))
+
+(defn games-list []
+  (let [result (re-frame/subscribe [::subs/result])]
+    [:div.overflow-auto.grow.px-1
+     (result-div @result)]))
+
 (defn main-panel []
-  (let [result (re-frame/subscribe [::subs/result])
-        loading (re-frame/subscribe [::subs/loading])
-        error-msg (re-frame/subscribe [::subs/error-msg])]
-    [:div.container.p-1.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+  (let [error-msg (re-frame/subscribe [::subs/error-msg])]
+    [:div.container.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
      (when @error-msg (error-box @error-msg))
-     [:h1.text-3xl.font-bold.mb-2
+     [:h1.text-3xl.font-bold.mb-2.px-1
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
-     (user-panel)
-     (slider :take "Take" 1 100 1)
-     (slider :higher-than "Rating higher than" 0 10 0.1)
-     (slider :players "For number of players" 1 10 1)
-     (slider :threshold "Playability threshold" 0 0.95 0.05)
-     (slider :time-limit "Time limit" 10 500 10)
-     [:h3 "Games " (when @loading " loading...")]
-     (result-div @result)
-     (select :sort-id "Sort by " (map name (keys sorting-fun)))
-     (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))]))
+     (loading-games-message)
+     (games-list)
+     (buttons-bar)
+    ;;  (select :sort-id "Sort by " (map name (keys sorting-fun)))
+    ;;  (custom-select :sort-id "Sort by " (map name (keys sorting-fun)))
+     ]))
