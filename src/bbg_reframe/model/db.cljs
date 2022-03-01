@@ -260,8 +260,13 @@
   ;;   </error>
   ;; </errors>
 
- ;; status: 202 
-;; <?xml version= "1.0" encoding= "utf-8" standalone= "yes" ?>
+  (def xml "<?xml version= \"1.0\" encoding= \"utf-8\" standalone= \"yes\" ?>
+<message>
+  Your request for this collection has been accepted and will be processed.  Please try again later for access.
+</message>")
+
+;;  status: 202 
+;; <?xml version= \"1.0\" encoding= \"utf-8\" standalone= \"yes\" ?>
 ;; <message>
 ;;   Your request for this collection has been accepted and will be processed.  Please try again later for access.
 ;; </message>
