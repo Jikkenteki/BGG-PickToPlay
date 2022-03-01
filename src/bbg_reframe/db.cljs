@@ -14,7 +14,7 @@
    :fetching #{}
    :fetches 0
    :error nil
-   :cors-running false
+   :cors-running true
    :user nil
    :ui {:sort-by-button-state false
         :open-tab ""}})
