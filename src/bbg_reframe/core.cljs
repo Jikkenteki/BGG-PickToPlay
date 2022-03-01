@@ -30,6 +30,8 @@
     (console :log "Using local storage data")
     (re-frame/dispatch [::events/update-user (get-item "bgg-user")])
     (re-frame/dispatch [::events/update-games (read-string (get-item "bgg-games"))]))
+  (when (item-exists? "bgg-ui-settings")
+    (re-frame/dispatch [::events/update-ui-settings (read-string (get-item "bgg-ui-settings"))]))
   (re-frame/dispatch [::network-events/update-result])
   (dev-setup)
   (mount-root))

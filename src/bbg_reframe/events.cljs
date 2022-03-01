@@ -27,6 +27,7 @@
 (re-frame/reg-event-fx
  ::update-form
  (fn-traced [{:keys [db]} [_ id val]]
+            (set-item! "bgg-ui-settings" (assoc (:form db) id val))
             {:db (assoc-in db [:form id] val)
              :dispatch [:bbg-reframe.network-events/update-result]}))
 
@@ -40,6 +41,12 @@
  ::update-games
  (fn-traced [{:keys [db]} [_ val]]
             {:db (assoc db :games val)}))
+
+(re-frame/reg-event-fx
+ ::update-ui-settings
+ (fn-traced [{:keys [db]} [_ val]]
+            {:db (assoc db :form val)}))
+
 
 (re-frame/reg-event-db
  ::toggle-sort-by-button-state
