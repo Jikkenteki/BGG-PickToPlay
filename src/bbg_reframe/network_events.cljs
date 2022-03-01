@@ -13,7 +13,7 @@
 
 
 (def delay-between-fetches 100)
-(def cors-server-uri "https://guarded-wildwood-02993.herokuappa.com/")
+(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;; 
@@ -110,7 +110,7 @@
                   :loading false)})
     (let [_ (console :debug (str "ERROR: " response))]
       {:db (assoc db
-                  :error (str "Error reading collection. Invalid user?")
+                  :error (str "Error reading collection. Invalid user? Try again")
                   :loading false)}))))
 
 ;; BAD REQUEST

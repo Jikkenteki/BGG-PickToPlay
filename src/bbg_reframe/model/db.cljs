@@ -241,13 +241,30 @@
       :tag
       (= :error)))
 
+(defn message? [collection]
+  (-> collection
+      first
+      :tag
+      nil?))
+
 (comment
+  (-> "some text"
+      :tag
+      nil?)
+
+
   ;;   <?xml version= \"1.0\" encoding= \"utf-8\" standalone= \"yes\" ?>
   ;; <errors>
   ;;   <error>
   ;;     <message>Invalid username specified</message>
   ;;   </error>
   ;; </errors>
+
+ ;; status: 202 
+;; <?xml version= "1.0" encoding= "utf-8" standalone= "yes" ?>
+;; <message>
+;;   Your request for this collection has been accepted and will be processed.  Please try again later for access.
+;; </message>
 
 
   (def xml-clj
@@ -260,7 +277,7 @@
 (defn indexed-games
   [response]
   (let [collection (xml->collection response)]
-    (if (error? collection)
+    (if (or (error? collection) (message? collection))
       nil
       (let [games (map collection-game->game collection)
             indexed-games (reduce
