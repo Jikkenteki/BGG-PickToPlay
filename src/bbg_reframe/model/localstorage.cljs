@@ -23,15 +23,3 @@
 
 (comment
   (remove-item! "ls-key"))
-;; 
-;; slurp and spit implementations using local storage
-;; 
-(defn spit
-  "Uses local storage for saving the data into the file"
-  [fname data]
-  (set-item! fname data))
-
-;; (defn read-ls
-;;   "Uses local storage for retrieving the file"
-;;   [fname]
-;;   (get-item fname))

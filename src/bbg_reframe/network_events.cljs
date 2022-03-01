@@ -84,7 +84,7 @@
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
- (fn-traced [{:keys [db] {:keys [cors-running user]} :db} [_ _]]                    ;; the first param will be "world"
+ (fn-traced [{:keys [db] {:keys [user]} :db} [_ _]]                    ;; the first param will be "world"
             ;; (if cors-running
             {:db   (assoc db
                           :loading true
