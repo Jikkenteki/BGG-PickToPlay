@@ -1,6 +1,8 @@
 (ns bbg-reframe.model.sort-filter
   (:require [clojure.string :as s]
-            [clojure.tools.reader.edn :refer [read-string]]))
+            [clojure.tools.reader.edn :refer [read-string]]
+            [bbg-reframe.model.data :refer [local-storage-db]]
+            [clojure.pprint :as pp]))
 
 ;; 
 ;; Sorters
@@ -113,3 +115,46 @@
   (fn [game] (reduce
               #(and %1 %2)
               ((apply juxt filters) game))))
+
+
+
+
+ (defn max-index
+   ([coll]    (max-index coll 0 (apply max coll)))
+   ([coll num max] (if (= max (nth coll num))
+                     num
+                     (max-index coll (inc num) max))))
+
+(defn game->best-rec-not
+  "For a game, returns 0 1 2 if best, recommended or not recommended for player-num.
+   Returns nil if game has no votes (unfetched game)"
+  [game player-num]
+  (if (game :votes)
+    (if (> player-num (count (game :votes)))
+      ;; (function-name game (count (game :votes)))
+    nil
+    (let [votes-perc (filter number? (vals (nth (game :votes) (dec player-num))))]
+      (max-index (map #(nth votes-perc %) [1 3 5]))))
+    nil))
+
+
+(comment
+
+  local-storage-db
+
+  (def wizard (local-storage-db "1465"))
+  (def caverna (local-storage-db "102794"))
+  (pp/pp)
+  (game->best-rec-not caverna 1)
+  (rating-for-number-of-players caverna 1)
+  (rating-for-number-of-players wizard 10)
+
+  (map #(game->best-rec-not wizard (inc %)) (range 10))
+  (map #(rating-for-number-of-players wizard (inc %)) (range 10))
+
+  (pp/pprint (map (fn [n]
+                    [(game->best-rec-not caverna (inc n)) (rating-for-number-of-players caverna (inc n))])
+                  (range 10)))
+
+   ;
+  )

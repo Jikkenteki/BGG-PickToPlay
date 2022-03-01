@@ -4,7 +4,7 @@
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
    [bbg-reframe.network-events :as network-events]
-   [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun]]
+   [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun game->best-rec-not]]
    [goog.string :as gstring]
    [goog.string.format]
    ["sax" :as sax]))
@@ -23,7 +23,12 @@
                                             game players))]
     ^{:key (random-uuid)}
     [:p
-     (when SHOW_PLAYABILITY (str playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
+     (when SHOW_PLAYABILITY (str 
+                             (case (game->best-rec-not game players)
+                               0 "best"
+                               1 "rec "
+                               2 "not "
+                               "loading") " - " playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
      (:name game)]))
 
 (defn result-div
