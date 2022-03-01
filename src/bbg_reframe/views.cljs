@@ -55,6 +55,7 @@
   (let [value (re-frame/subscribe [::subs/form id])]
     [:div.flex.justify-between.mb-1
      [:label label]
+     [:div.connector-line.grow.my-auto.ml-2]
      [:div.flex
       [:input.range.my-auto.mr-2 {:type "range" :min min :max max :step step :value @value :id id
                                   :onChange #(re-frame/dispatch [::events/update-form
