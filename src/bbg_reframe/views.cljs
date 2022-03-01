@@ -53,14 +53,14 @@
 (defn slider
   [id label min max step]
   (let [value (re-frame/subscribe [::subs/form id])]
-    [:div.flex.justify-between.mb-1
-     [:label label]
+    [:div.flex.justify-between.mb-2.last:mb-1
+     [:p.my-auto label]
      [:div.connector-line.grow.my-auto.ml-2]
-     [:div.flex
-      [:input.range.my-auto.mr-2 {:type "range" :min min :max max :step step :value @value :id id
-                                  :onChange #(re-frame/dispatch [::events/update-form
-                                                                 id
-                                                                 (-> % .-target .-value)])}]
+     [:div.flex {:class "basis-1/2"}
+      [:input.range.my-auto.mr-2.grow {:type "range" :min min :max max :step step :value @value :id id
+                                       :onChange #(re-frame/dispatch [::events/update-form
+                                                                      id
+                                                                      (-> % .-target .-value)])}]
       [:span.range-slider-ticket-value @value]]]))
 
 (defn user-panel []
@@ -131,7 +131,7 @@
 
 (defn main-panel []
   (let [error-msg (re-frame/subscribe [::subs/error-msg])]
-    [:div.container.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+    [:div.container.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
      (when @error-msg (error-box @error-msg))
      [:h1.text-3xl.font-bold.mb-2.px-1
