@@ -13,7 +13,7 @@
 
 
 (def delay-between-fetches 100)
-(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
+(def cors-server-uri "https://guarded-wildwood-02993.herokuappa.com/")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;; 
@@ -44,7 +44,15 @@
             (console :error "CORS server down")
             (console :debug "status: " (:status response))
             (console :debug "status-text: " (:status-text response))
-            {:db (assoc db :error "CORS server down")}))
+            {:db (assoc db :error "CORS server down")
+             :dispatch-later {:ms 3000
+                              :dispatch [::reset-error]}}))
+
+(re-frame/reg-event-db
+ ::reset-error
+ (fn-traced
+  [db _]
+  (assoc db :error nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EVENT GRAPH
@@ -70,22 +78,24 @@
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db] {:keys [cors-running user]} :db} [_ _]]                    ;; the first param will be "world"
-            (if cors-running
-              {:db   (assoc db
-                            :loading true
-                            :error nil
-                            :fetches 0)
-               :http-xhrio {:method          :get
-                            :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
-                            :timeout         8000                                           ;; optional see API docs
-                            :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
-                            :on-success      [::success-fetch-collection]
-                            :on-failure      [::bad-http-collection]}}
-              {:db (assoc db
-                          :error "CORS server not responding. Trying again in 2 seconds")
-               :dispatch [::cors-check]
-               :dispatch-later {:ms 2000
-                                :dispatch [::fetch-collection user]}})))
+            ;; (if cors-running
+            {:db   (assoc db
+                          :loading true
+                          :error nil
+                          :fetches 0)
+             :http-xhrio {:method          :get
+                          :uri             (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
+                          :timeout         8000                                           ;; optional see API docs
+                          :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                          :on-success      [::success-fetch-collection]
+                          :on-failure      [::bad-http-collection]}}
+              ;; {:db (assoc db
+              ;;             :error "CORS server not responding. Trying again in 2 seconds")
+              ;; ;;  :dispatch [::cors-check]
+              ;;  :dispatch-later {:ms 2000
+              ;;                   :dispatch [::fetch-collection user]}}
+            ;; )
+            ))
 
 (re-frame/reg-event-fx
  ::success-fetch-collection
@@ -122,18 +132,22 @@
  ::bad-http-collection
  (fn-traced [{:keys [db]} [_ response]]
             (console :debug "FAILURE: " response)
-            (cond
-              (= 0 (:status response)) {:db (assoc db
-                                                   :queue #{}
-                                                   :fetching #{}
-                                                   :error "CORS server is not responding"
-                                                   :loading false
-                                                   :cors-running false)}
-              :else {:db (assoc db
-                                :queue #{}
-                                :fetching #{}
-                                :error (:status-text response)
-                                :loading false)})))
+            (merge (cond
+                     (= 0 (:status response))
+                     {:db (assoc db
+                                 :queue #{}
+                                 :fetching #{}
+                                 :error "CORS server is not responding"
+                                 :loading false
+                                 :cors-running false)}
+                     :else
+                     {:db (assoc db
+                                 :queue #{}
+                                 :fetching #{}
+                                 :error (:status-text response)
+                                 :loading false)})
+                   {:dispatch-later {:ms 3000
+                                     :dispatch [::reset-error]}})))
 ;;
 ;; Update form result
 ;;
@@ -160,8 +174,10 @@
                               (get-in db [:form :players])
                               (get-in db [:form :threshold])))
                             (vals (get db :games)))))]
-    {:db (assoc db :result result)
-     :dispatch [::update-queue (map :id result)]})))
+    (merge {:db (assoc db :result result :error nil)}
+           (if (:cors-running db)
+             {:dispatch [::update-queue (map :id result)]}
+             {})))))
 
 
 (defn fetched-games-ids
