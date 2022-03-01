@@ -13,7 +13,7 @@
 
 
 (def delay-between-fetches 100)
-(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
+(def cors-server-uri "https://guarded-wildwood-02993.herokuappa.com/")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;; 
