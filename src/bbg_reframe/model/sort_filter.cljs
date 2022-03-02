@@ -26,20 +26,18 @@
     (> (* (:rating g1) (rating-for-number-of-players g1 num-players))
        (* (:rating g2) (rating-for-number-of-players g2 num-players)))))
 
+(defn rating-function
+  [votes]
+  ;; (double (/ (+  (* 1.5 (votes :best-votes)) (votes :recommended-votes))
+  ;;            (+ 0.0001 (* 1.5 (votes :best-votes)) (votes :recommended-votes) (votes :not-recommended-votes))))
+  (double (+ (* (:best-perc votes)) (* 0.2 (:recommended-perc votes)))))
+
 (defn rating-for-number-of-players
   "Returns a rating based on the best and recommended percentages
    if votes are not availabe returns 1"
   [game num-players]
   (if (:votes game)
-    (let [;_ (println (:name game) num-players)
-          percentages
-          (map
-           (fn [votes]
-             (double (/ (+  (* 1.5 (votes :best-votes)) (votes :recommended-votes))
-                        (+ 0.0001 (* 1.5 (votes :best-votes)) (votes :recommended-votes) (votes :not-recommended-votes)))))
-           (:votes game))
-        ;_ (println percentages)
-          ]
+    (let [percentages (map rating-function (:votes game))]
     ;; Assuming all games have rating for 1 player
     ;; 1 2 3 4 4+ (5 perc)
       (if (> (count percentages) num-players)
