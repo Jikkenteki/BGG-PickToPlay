@@ -1,7 +1,7 @@
 (ns bbg-reframe.model.xmlapi
   (:require [clojure.tools.reader.edn :refer [read-string]]
             [tubax.core :refer [xml->clj]]
-            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag]]
+            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag has-tag?]]
             [bbg-reframe.config :refer [xml-api]]))
 
 ;; 
@@ -55,7 +55,7 @@
 ;; 
 (defn polls-with-num-of-players-for-game [game]
   (let [tag-list (game :content)
-        tag-poll (filter (fn [x] (= (x :tag) :poll)) tag-list)
+        tag-poll (filter (has-tag? :poll) tag-list)
         suggested-numplayers (filter (fn [x] (= (get-in x [:attrs :name]) "suggested_numplayers")) tag-poll)]
     ((first suggested-numplayers) :content)))
 
