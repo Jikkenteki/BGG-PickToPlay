@@ -31,14 +31,16 @@
        :attrs))
 
 (defn game-my-rating [collection-game]
-  (let [my-rating (->> (find-element-with-tag :rating collection-game)
+  (let [my-rating (->> collection-game
+                       (find-element-with-tag :rating)
                        :attrs
                        :value
                        read-string)]
     (if (number? my-rating) my-rating nil)))
 
 (defn game-rating [collection-game]
-  (let [rating (->> (find-element-with-tag :rating collection-game)
+  (let [rating (->> collection-game
+                    (find-element-with-tag :rating)
                     (find-element-with-tag :average)
                     :attrs
                     :value
@@ -62,9 +64,9 @@
 ;; 
 ;; Functions for numbers of players
 ;; 
-(defn list-results-of-votes-per-playernum 
+(defn list-results-of-votes-per-playernum
   "Returns a list of results tagged elements, one for each number of players
-   with the votes for the game."  
+   with the votes for the game."
   [game]
   (->> game
        :content
@@ -83,7 +85,7 @@
   ;
   )
 
-(defn create-votes-for-results 
+(defn create-votes-for-results
   "Creates a map with the votes and percentages for an element
    of the list of results"
   [poll-results]
