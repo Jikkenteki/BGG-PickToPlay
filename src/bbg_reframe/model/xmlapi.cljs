@@ -1,8 +1,11 @@
 (ns bbg-reframe.model.xmlapi
   (:require [clojure.tools.reader.edn :refer [read-string]]
             [tubax.core :refer [xml->clj]]
-            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag has-tag?]]
-            [bbg-reframe.config :refer [xml-api]]))
+            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag has-tag? has-attr-with-value?]]
+            [bbg-reframe.config :refer [xml-api]]
+            [bbg-reframe.model.examples.game :refer [powergrid-xml]]
+            [clojure.pprint :as pp]))
+
 
 ;; 
 ;; Fields accessors from API XML
@@ -50,26 +53,47 @@
       :content
       first))
 
+(defn game-attribute [collection-game]
+  (fn [key]
+    (let [attr (game-attributes collection-game)
+          value (attr key)]
+      (if value (read-string value) nil))))
+
 ;; 
 ;; Functions for numbers of players
 ;; 
-(defn polls-with-num-of-players-for-game [game]
-  (let [tag-list (game :content)
-        tag-poll (filter (has-tag? :poll) tag-list)
-        suggested-numplayers (filter (fn [x] (= (get-in x [:attrs :name]) "suggested_numplayers")) tag-poll)]
-    ((first suggested-numplayers) :content)))
+(defn list-results-of-votes-per-playernum 
+  "Returns a list of results tagged elements, one for each number of players
+   with the votes for the game."  
+  [game]
+  (->> game
+       :content
+       (filter (has-tag? :poll))
+       (filter (has-attr-with-value? :name "suggested_numplayers"))
+       first
+       :content))
 
-(defn votes-best-rating-per-players [poll-results]
-  (let [players (get-in poll-results [:attrs :numplayers])
-        total-votes (apply + (map (fn [x] (read-string (get-in x [:attrs :numvotes]))) (poll-results :content)))
-        best-votes (read-string (get-in (first (poll-results :content)) [:attrs :numvotes]))
-        best-perc (if (= 0 total-votes) 0 (/ best-votes total-votes))
+(comment
+  powergrid-xml
+  (def powergrid (first (:content (xml->clj powergrid-xml))))
+  (pp/pprint powergrid)
 
-        recommended-votes (read-string (get-in (second (poll-results :content)) [:attrs :numvotes]))
-        recommended-perc (if (= 0 total-votes) 0 (/ recommended-votes total-votes))
-        not-recommended-votes (read-string (get-in (last (poll-results :content)) [:attrs :numvotes]))
-        not-recommended-perc (if (= 0 total-votes) 0 (/ not-recommended-votes total-votes))]
-    {:players players
+  (list-results-of-votes-per-playernum powergrid)
+  (pp/pp)
+  ;
+  )
+
+(defn create-votes-for-results 
+  "Creates a map with the votes and percentages for an element
+   of the list of results"
+  [poll-results]
+  (let [votes (map #(read-string (get-in (nth (poll-results :content) %) [:attrs :numvotes])) (range 3))
+        total-votes (apply + votes)
+        [best-votes recommended-votes not-recommended-votes] votes
+        [best-perc recommended-perc not-recommended-perc] (if (= 0 total-votes)
+                                                            [0 0 0]
+                                                            (map #(/ % total-votes) votes))]
+    {:players (get-in poll-results [:attrs :numplayers])
      :best-votes best-votes :best-perc best-perc
      :recommended-votes recommended-votes :recommended-perc recommended-perc
      :not-recommended-votes not-recommended-votes :not-recommended-perc not-recommended-perc}))

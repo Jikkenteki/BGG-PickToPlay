@@ -8,7 +8,7 @@
 (defn has-attr-with-value?
   [attr value]
   (fn [x]
-    = (get-in x [:attrs attr]) value))
+    (= (get-in x [:attrs attr]) value)))
 
   ;; mutual recursion
 (declare find-element-with-tag)
