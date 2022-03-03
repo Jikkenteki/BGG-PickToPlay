@@ -137,7 +137,7 @@
               :fetches 5}}
         game-id "3"
         game-votes {"5" "votes"}
-        actual (fetched-game-handler cofx game-id game-votes)]
+        actual (fetched-game-handler cofx game-id game-votes "boardgame")]
     (is (= nil (get-in actual [:db :error])))
     (is (= #{"1" "2"} (get-in actual [:db :fetching])))
     (is (= 6 (get-in actual [:db :fetches])))
@@ -157,7 +157,7 @@
               :fetches 5}}
         game-id "3"
         game-votes {"5" "votes"}
-        actual (fetched-game-handler cofx game-id game-votes)]
+        actual (fetched-game-handler cofx game-id game-votes "boardgame")]
     (is (= nil (get-in actual [:db :error])))
     (is (= #{"1" "2"} (get-in actual [:db :fetching])))
     (is (= 6 (get-in actual [:db :fetches])))
