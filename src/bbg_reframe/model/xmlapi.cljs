@@ -17,6 +17,12 @@
     (get-in item [:attrs :objectid])
     (get-in item [:attrs :id])))
 
+;; type in the game XMLAPI2
+(defn item-game-type [item]
+  (if (= xml-api 1)
+    nil
+    (get-in item [:attrs :type])))
+
 
 ;; in in the collection
 (defn game-id [game]
@@ -49,6 +55,7 @@
       first
       :content
       first))
+
 
 ;; 
 ;; Functions for numbers of players

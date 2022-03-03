@@ -24,11 +24,13 @@
     ^{:key (random-uuid)}
     [:p
      (when SHOW_PLAYABILITY (str
-                             (case (game->best-rec-not game players)
-                               0 "best"
-                               1 "rec "
-                               2 "not "
-                               "loading") " - " playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
+                             (:id game) " "
+                             "type: " (:type game) " "
+                             "v: " (case (game->best-rec-not game players)
+                                     0 "best"
+                                     1 "rec "
+                                     2 "not "
+                                     "loading") " - " playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
      (:name game)]))
 
 (defn result-div

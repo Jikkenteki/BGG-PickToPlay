@@ -8,11 +8,14 @@
           :higher-than "7.0"
           :players "4"
           :threshold "0.8"
-          :time-limit "180"}
+          :time-limit "180"
+          :show "boardgame" ;; "any" "boardgame"
+          }
    :games []
    :queue #{}
    :fetching #{}
    :fetches 0
+   :bg-loading false
    :error nil
    :cors-running true
    :user nil

@@ -20,6 +20,7 @@
 (defn  collection-item->game
   [collection-item]
   {:id (game-id collection-item)
+   :type nil
    :name (game-name collection-item)
    :rating (game-rating collection-item)
    :my-rating (game-my-rating collection-item)

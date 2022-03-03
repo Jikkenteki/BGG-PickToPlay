@@ -8,7 +8,7 @@
    [bbg-reframe.network-events :as network-events]
    [bbg-reframe.views :as views]
    [bbg-reframe.config :as config]
-   [bbg-reframe.model.localstorage :refer [item-exists? get-item]]
+   [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
    [clojure.tools.reader.edn :refer [read-string]]
    [re-frame.loggers :refer [console]]))
 
@@ -24,6 +24,10 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
+  (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
+  (remove-item! "bgg-ui-settings")
+
+  (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
   (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::network-events/cors-check])
   (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))

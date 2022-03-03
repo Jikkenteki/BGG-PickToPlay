@@ -4,10 +4,10 @@
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
    [ajax.core :as ajax]
    [clojure.tools.reader.edn :refer [read-string]]
-   [bbg-reframe.model.xmlapi :refer [xml->game item-game-id]]
+   [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable?]]
+   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable? is-type? is-any?]]
 
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
@@ -171,6 +171,7 @@
                      (sort sorting-fun
                            (filter
                             (and-filters
+                             (is-type? (get-in db [:form :show])) ;; show only 
                              (with-number-of-players?
                                (read-string (get-in db [:form :players])))
                              (rating-higher-than?
@@ -304,9 +305,12 @@
 ;; Handler for successfully fetched game
 ;;
 (defn fetched-game-handler
-  [{:keys [db] {:keys [fetches fetching queue]} :db} game-id game-votes]
+  [{:keys [db] {:keys [fetches fetching queue]} :db} game-id game-votes game-type]
   (let [_  (console :debug "SUCCESS" game-id)
-        new-db (assoc-in db [:games game-id :votes] game-votes)
+        new-db (-> db
+                   (assoc-in [:games game-id :votes] game-votes)
+                   (assoc-in [:games game-id :type] game-type))
+        ;; new-db (assoc-in db [:games game-id :votes] game-votes)
         _ (set-item! "bgg-games" (:games new-db))]
     {:db (assoc new-db
                 :error nil
@@ -319,7 +323,10 @@
 (defn-traced success-fetch-game-handler
   [cofx [_ response]]
   (let [game-received (xml->game response)]
-    (fetched-game-handler cofx (item-game-id game-received) (game-votes game-received))))
+    (fetched-game-handler cofx
+                          (item-game-id game-received)
+                          (game-votes game-received)
+                          (item-game-type game-received))))
 
 (re-frame/reg-event-fx
  ::success-fetch-game
