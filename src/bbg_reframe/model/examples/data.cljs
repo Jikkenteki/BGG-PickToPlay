@@ -1,4 +1,4 @@
-(ns bbg-reframe.model.data)
+(ns bbg-reframe.model.examples.data)
 
 (def local-storage-db
   {"102794"

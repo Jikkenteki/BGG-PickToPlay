@@ -194,6 +194,7 @@ karma start
 ```
 npm install -g karma-cli
 ```
+Test results on browser: [http://localhost:8290/](http://localhost:8290/)
 
 
 ### Running `shadow-cljs` Actions

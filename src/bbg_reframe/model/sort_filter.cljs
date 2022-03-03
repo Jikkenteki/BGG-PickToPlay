@@ -1,7 +1,7 @@
 (ns bbg-reframe.model.sort-filter
   (:require [clojure.string :as s]
             [clojure.tools.reader.edn :refer [read-string]]
-            [bbg-reframe.model.data :refer [local-storage-db]]
+            [bbg-reframe.model.examples.data :refer [local-storage-db]]
             [clojure.pprint :as pp]))
 
 ;; 

@@ -1,9 +1,14 @@
-(ns bbg-reframe.model.tag-helpers)
+ (ns bbg-reframe.model.tag-helpers)
 
 (defn has-tag?
   [tag-name]
   (fn [{:keys [tag]}]
     (= tag tag-name)))
+
+(defn has-attr-with-value?
+  [attr value]
+  (fn [x]
+    (= (get-in x [:attrs attr]) value)))
 
   ;; mutual recursion
 (declare find-element-with-tag)
