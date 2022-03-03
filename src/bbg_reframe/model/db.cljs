@@ -5,6 +5,7 @@
             [bbg-reframe.model.xmlapi :refer [game-attributes game-id
                                               game-name game-rating game-my-rating
                                               votes-best-rating-per-players polls-with-num-of-players-for-game]]
+            [re-frame.loggers :refer [console]]
             [tubax.core :refer [xml->clj]]))
 
 (defn- game-attribute [collection-game]
@@ -19,14 +20,17 @@
 ;; 
 (defn  collection-item->game
   [collection-item]
-  {:id (game-id collection-item)
-   :type nil
-   :name (game-name collection-item)
-   :rating (game-rating collection-item)
-   :my-rating (game-my-rating collection-item)
-   :minplayers ((game-attribute collection-item) :minplayers)
-   :maxplayers ((game-attribute collection-item) :maxplayers)
-   :playingtime ((game-attribute collection-item) :playingtime)})
+  (try {:id (game-id collection-item)
+        :type nil
+        :name (game-name collection-item)
+        :rating (game-rating collection-item)
+        :my-rating (game-my-rating collection-item)
+        :minplayers ((game-attribute collection-item) :minplayers)
+        :maxplayers ((game-attribute collection-item) :maxplayers)
+        :playingtime ((game-attribute collection-item) :playingtime)}
+       (catch js/Error e
+         (console :error (str "Error:" e "\nOn collection-item: " collection-item))
+         (throw e))))
 
 (defn game-votes
   [game]

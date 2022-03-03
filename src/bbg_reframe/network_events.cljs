@@ -80,7 +80,7 @@
   [user]
   (if (= xml-api 1)
     (str cors-server-uri "https://boardgamegeek.com/xmlapi/collection/" user)
-    (str cors-server-uri "https://boardgamegeek.com/xmlapi2/collection?username=" user)))
+    (str cors-server-uri "https://boardgamegeek.com/xmlapi2/collection?stats=1&username=" user)))
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
@@ -350,11 +350,12 @@
                     :error "CORS server is not responding"
                     :loading false
                     :cors-running false)}
-        (#{500 503} (:status response))
+        (#{500 503 429} (:status response))
         ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
         ;; the server will give you 500 or 503 return codes, reporting that it is too busy.
-        (let [uri (:uri response)
-              game-id (last (split uri \/))
+        (let [char-before-id (if (= xml-api 1) \/ \= )
+              uri (:uri response)
+              game-id (last (split uri char-before-id))
               _ (console :debug (str (:status-text response) " Puting " game-id " back in the queue"))]
           {:db {assoc db
                 :queue (conj queue game-id)
