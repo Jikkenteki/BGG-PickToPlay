@@ -3,13 +3,15 @@
             [tubax.core :refer [xml->clj]]
             [re-frame.loggers :refer [console]]
             [clojure.tools.reader.edn :refer [read-string]]
-            [bbg-reframe.model.localstorage :refer [get-item]]))
+            [bbg-reframe.model.localstorage :refer [get-item]]
+            [clojure.spec.alpha :as s]))
 
 ;; 
 ;; API - DB
 ;; 
 (defn  create-game-from-collection-item
   [collection-item]
+  {:post [(s/valid? :bbg-reframe.db/game %)]}
   (try {:id (game-id collection-item)
         :type nil
         :name (game-name collection-item)
@@ -24,6 +26,7 @@
 
 (defn game-votes
   [game-item]
+  {:post [(s/valid? :bbg-reframe.db/votes %)]}
   (into [] (map create-votes-for-results
                 (list-results-of-votes-per-playernum game-item))))
 
