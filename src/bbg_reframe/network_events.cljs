@@ -37,7 +37,8 @@
  [check-spec-interceptor]
  (fn-traced [{:keys [db]} _]
             (console :debug (str "CORS server at " cors-server-uri " up!"))
-            {:db (assoc db :cors-running true)}))
+            {:db (assoc db :cors-running true)
+             :dispatch [::update-result]}))
 
 ;; status 0 Request failed. <-- (no network)
 ;; status -1 Request timed out. <-- Wrong address
@@ -270,7 +271,8 @@
        {:db (assoc db
                    :queue (disj queue fetch-now)
                    :fetching new-fetching
-                   :loading (> (+ (count queue) (count fetching)) 0))}
+                  ;;  :loading (> (+ (count queue) (count fetching)) 0)
+                   :loading (> (count queue) 0))}
        (if fetch-now
          {:dispatch-later
           {:ms (* (inc (count fetching)) delay-between-fetches)
@@ -353,7 +355,7 @@
  ::failure-fetch-game
  [check-spec-interceptor]
  (fn-traced
-  [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
+  [{:keys [db]} [_ response]]
   (console :debug "BAD REQUEST")
   (console :debug "Response: " response)
   (cond (= 0 (:status response))
@@ -369,12 +371,11 @@
         (let [char-before-id (if (= xml-api 1) \/ \=)
               uri (:uri response)
               game-id (last (split uri char-before-id))
-              _ (console :debug (str (:status-text response) " Puting " game-id " back in the queue"))]
-          {:db (assoc db
-                      :queue (conj queue game-id)
-                      :fetching (disj fetching game-id))
+              ;; _ (console :debug (str (:status-text response) " Puting " game-id " back in the queue"))]
+              _ (console :debug (str (:status-text response) " Refetching " game-id))]
+          {:db db
            :dispatch-later {:ms 3000
-                            :dispatch [::fetch-next-from-queue]}})
+                            :dispatch [::fetch-game game-id]}})
         (= 404 (:status response))
         {:db (assoc db
                     :queue #{}
