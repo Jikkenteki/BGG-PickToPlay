@@ -72,5 +72,5 @@
  [check-spec-interceptor]
  (fn-traced [db [_ tab]]
             (assoc-in db [:ui :open-tab] (if (= (get-in db [:ui :open-tab]) tab)
-                                           ""
+                                           nil
                                            tab))))
