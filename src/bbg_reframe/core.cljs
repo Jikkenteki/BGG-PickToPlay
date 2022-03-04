@@ -24,8 +24,10 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  ;; (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
-  ;; (remove-item! "bgg-ui-settings")
+  (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
+  (remove-item! "bgg-ui-settings")
+
+
   (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::network-events/cors-check])
   (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))

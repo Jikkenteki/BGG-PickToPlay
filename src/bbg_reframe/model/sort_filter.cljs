@@ -2,6 +2,7 @@
   (:require [clojure.string :as s]
             [clojure.tools.reader.edn :refer [read-string]]
             [bbg-reframe.model.examples.data :refer [local-storage-db]]
+            [clojure.spec.alpha :as spec]
             [clojure.pprint :as pp]))
 
 ;; 
@@ -60,10 +61,12 @@
   (fn [game]
     (s/includes? (:name game) name)))
 
-(defn is-type? [type]
+(defn is-type?
+  [type]
+  {:pre [(spec/valid? :bbg-reframe.db/show type)]}
   (fn [game]
     (if (:type game)
-      (or (= type "any") (= (:type game) type))
+      (or (= type :all) (= (:type game) type))
       true)))
 
 (defn is-best-with-num-of-players

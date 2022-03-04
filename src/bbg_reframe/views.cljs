@@ -25,12 +25,14 @@
     [:p
      (when SHOW_PLAYABILITY (str
                              (:id game) " "
-                             "type: " (:type game) " "
-                             "v: " (case (game->best-rec-not game players)
-                                     0 "best"
-                                     1 "rec "
-                                     2 "not "
-                                     "loading") " - " playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
+                             (case (:type game)
+                               :boardgame "b"
+                               :expansion "e") " "
+                             (case (game->best-rec-not game players)
+                               0 "Best"
+                               1 "Rec "
+                               2 "Not "
+                               "loading") " - " playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
      (:name game)]))
 
 (defn result-div

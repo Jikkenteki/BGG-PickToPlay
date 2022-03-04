@@ -24,7 +24,11 @@
 (defn item-game-type [item]
   (if (= xml-api 1)
     nil
-    (get-in item [:attrs :type])))
+    (let [type-string (get-in item [:attrs :type])]
+      (case type-string
+        "boardgame" :boardgame
+        "boardgameexpansion" :expansion
+        :boardgame))))
 
 
 ;; in in the collection

@@ -27,6 +27,7 @@
                    ::type ::minplayers ::maxplayers]
           :opt-un [::votes]))
 
+(s/def ::show #{:all :boardgame :expansion})
 (s/def ::game-unchecked (s/keys))
 
 (s/def ::user string-or-nil?)
@@ -64,8 +65,7 @@
           :players "4"
           :threshold "0.8"
           :time-limit "180"
-          :show "boardgame" ;; "any" "boardgame" ;; change to keywords :all :boardgame
-          }
+          :show :all}
    :games {}
    :queue #{}
    :fetching #{}
