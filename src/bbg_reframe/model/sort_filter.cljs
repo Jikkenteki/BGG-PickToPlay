@@ -61,14 +61,10 @@
     (s/includes? (:name game) name)))
 
 (defn is-type? [type]
-  (println (str "TYPE " type))
   (fn [game]
-    (or (= type "any") (= (:type game) type))))
-
-(defn is-any? []
-  (fn [_]
-    true))
-
+    (if (:type game)
+      (or (= type "any") (= (:type game) type))
+      true)))
 
 (defn is-best-with-num-of-players
   [num-players]

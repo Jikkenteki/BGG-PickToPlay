@@ -7,11 +7,12 @@
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable? is-type? is-any?]]
+   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable? is-type?]]
 
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
-   [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]))
+   [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
+   [bbg-reframe.events :refer [check-spec-interceptor]]))
 
 
 
@@ -33,6 +34,7 @@
 
 (re-frame/reg-event-fx
  ::success-cors
+ [check-spec-interceptor]
  (fn-traced [{:keys [db]} _]
             (console :debug (str "CORS server at " cors-server-uri " up!"))
             {:db (assoc db :cors-running true)}))
@@ -41,6 +43,7 @@
 ;; status -1 Request timed out. <-- Wrong address
 (re-frame/reg-event-fx
  ::bad-cors
+ [check-spec-interceptor]
  (fn-traced [{:keys [db]} [_ response]]
             (console :error "CORS server down")
             (console :debug "status: " (:status response))
@@ -51,6 +54,7 @@
 
 (re-frame/reg-event-db
  ::reset-error
+ [check-spec-interceptor]
  (fn-traced
   [db _]
   (assoc db :error nil)))
@@ -84,6 +88,7 @@
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
+ [check-spec-interceptor]
  (fn-traced [{:keys [db] {:keys [user]} :db} [_ _]]                    ;; the first param will be "world"
             ;; (if cors-running
             {:db   (assoc db
@@ -106,6 +111,7 @@
 
 (re-frame/reg-event-fx
  ::success-fetch-collection
+ [check-spec-interceptor]
  (fn-traced
   [{:keys [db]} [_ response]]
   (if-let [indexed-games (indexed-games response)]
@@ -137,6 +143,7 @@
 
 (re-frame/reg-event-fx
  ::bad-http-collection
+ [check-spec-interceptor]
  (fn-traced [{:keys [db]} [_ response]]
             (console :debug "FAILURE: " response)
             (merge (cond
@@ -160,6 +167,7 @@
 ;;
 (re-frame/reg-event-fx
  ::update-result
+ [check-spec-interceptor]
  (fn-traced
   [{:keys [db]} _]
   (let [;; _ (console :debug "update")
@@ -204,6 +212,7 @@
 
 (re-frame/reg-event-fx
  ::update-queue
+ [check-spec-interceptor]
  (fn-traced [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
             (let [new-to-fetch (new-to-fetch results games queue fetching)]
               {:db (assoc db
@@ -270,6 +279,7 @@
 
 (re-frame/reg-event-fx
  ::fetch-next-from-queue
+ [check-spec-interceptor]
  fetch-next-from-queue-handler)
 
 
@@ -286,6 +296,7 @@
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
+ [check-spec-interceptor]
  (fn-traced [{:keys [db] {:keys [cors-running]} :db} [_ game-id]]                    ;; the first param will be "world"
             (if cors-running
               {;;  :db   (assoc db :loading true)
@@ -330,6 +341,7 @@
 
 (re-frame/reg-event-fx
  ::success-fetch-game
+ [check-spec-interceptor]
  success-fetch-game-handler)
 
 
@@ -339,6 +351,7 @@
 ;; </error>
 (re-frame/reg-event-fx
  ::failure-fetch-game
+ [check-spec-interceptor]
  (fn-traced
   [{:keys [db] {:keys [queue fetching]} :db} [_ response]]
   (console :debug "BAD REQUEST")
