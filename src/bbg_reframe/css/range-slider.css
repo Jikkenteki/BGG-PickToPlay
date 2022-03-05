@@ -16,7 +16,7 @@
   background: theme("colors.orange.900");
   cursor: pointer;
   border: 4px solid rgba(34, 34, 34);
-  box-shadow: -108px 0 0 100px theme("colors.orange.900");
+  box-shadow: -120px 0 0 112px theme("colors.orange.900");
 }
 
 .range-slider-ticket-value {
