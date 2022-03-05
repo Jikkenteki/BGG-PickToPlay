@@ -16,6 +16,14 @@
 
 
 
+(defn games->local-store
+  "Puts games into localStorage"
+  [db]
+  (set-item! "bgg-games" (:games db)))
+
+;; Interceptor that saves the games from db to local-storage
+(def ->games->local-store (re-frame/after games->local-store))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;; 
@@ -112,12 +120,11 @@
 
 (re-frame/reg-event-fx
  ::success-fetch-collection
- [check-spec-interceptor]
+ [check-spec-interceptor ->games->local-store]
  (fn-traced
   [{:keys [db]} [_ response]]
   (if-let [indexed-games (indexed-games response)]
-    (let [_ (console :debug "SUCCESS: collection fetched: " (count indexed-games) " games.")
-          _ (set-item! "bgg-games" indexed-games)]
+    (let [_ (console :debug "SUCCESS: collection fetched: " (count indexed-games) " games.")]
       {:dispatch [::update-result]
        :db (assoc db
                   :games indexed-games
@@ -319,16 +326,13 @@
 ;;
 (defn fetched-game-handler
   [{:keys [db] {:keys [fetches fetching queue]} :db} game-id game-votes game-type]
-  (let [_  (console :debug "SUCCESS" game-id)
-        new-db (-> db
-                   (assoc-in [:games game-id :votes] game-votes)
-                   (assoc-in [:games game-id :type] game-type))
-        ;; new-db (assoc-in db [:games game-id :votes] game-votes)
-        _ (set-item! "bgg-games" (:games new-db))]
-    {:db (assoc new-db
-                :error nil
-                :fetching (disj fetching game-id)
-                :fetches (inc fetches))
+  (let [_  (console :debug "SUCCESS" game-id)]
+    {:db (-> db
+             (assoc-in [:games game-id :votes] game-votes)
+             (assoc-in [:games game-id :type] game-type)
+             (assoc :error nil
+                    :fetching (disj fetching game-id)
+                    :fetches (inc fetches)))
      :fx (if (empty? queue)
            [[:dispatch [::update-result]]]
            [[:dispatch [::fetch-next-from-queue]]])}))
@@ -343,7 +347,8 @@
 
 (re-frame/reg-event-fx
  ::success-fetch-game
- [check-spec-interceptor]
+ ;; check db state; stores games in local storage
+ [check-spec-interceptor ->games->local-store]
  success-fetch-game-handler)
 
 

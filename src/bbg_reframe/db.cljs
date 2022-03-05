@@ -27,6 +27,8 @@
                    ::type ::minplayers ::maxplayers]
           :opt-un [::votes]))
 
+(s/def ::show #{:all :boardgame :expansion})
+(s/def ::open-tab (s/or :tab #{:sliders-tab :user-name-tab :sort-tab} :nil nil?))
 (s/def ::game-unchecked (s/keys))
 
 (s/def ::user string-or-nil?)
@@ -40,6 +42,15 @@
 (s/def ::ui (s/keys :req-un [::open-tab]))
 (s/def ::queue (s/coll-of ::id))
 (s/def ::fetching (s/coll-of ::id))
+
+(comment
+  #{}
+  (defn in-set? [x] (#{1 2 5} x))
+  (in-set? 5)
+  (if (in-set? 3) "OK" "NO")
+  ([1 2 3 4 5] 3)
+  ;
+  )
 
 (s/def ::db
   (s/keys :req-un
@@ -64,8 +75,7 @@
           :players "4"
           :threshold "0.8"
           :time-limit "180"
-          :show "boardgame" ;; "any" "boardgame" ;; change to keywords :all :boardgame
-          }
+          :show :boardgame}
    :games {}
    :queue #{}
    :fetching #{}
@@ -74,7 +84,7 @@
    :error nil
    :cors-running true
    :user nil
-   :ui {:open-tab ""}})
+   :ui {:open-tab nil}})
 
 
 

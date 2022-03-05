@@ -2,6 +2,7 @@
   (:require [clojure.string :as s]
             [clojure.tools.reader.edn :refer [read-string]]
             [bbg-reframe.model.examples.data :refer [local-storage-db]]
+            [clojure.spec.alpha :as spec]
             [clojure.pprint :as pp]))
 
 ;; 
@@ -19,18 +20,23 @@
   (> (/ (:rating g1) (:playingtime g1))
      (/ (:rating g2) (:playingtime g2))))
 
+
+(defn playability
+  [game num-players]
+  (/ (* (:rating game) (:rating game) (:rating game) (:rating game) (rating-for-number-of-players game num-players)) 1000))
+
 (defn game-more-playable?
   [num-players]
   (fn
     [g1 g2]
-    (> (* (:rating g1) (rating-for-number-of-players g1 num-players))
-       (* (:rating g2) (rating-for-number-of-players g2 num-players)))))
+    (> (playability g1 num-players)
+       (playability g2 num-players))))
 
 (defn rating-function
   [votes]
   ;; (double (/ (+  (* 1.5 (votes :best-votes)) (votes :recommended-votes))
   ;;            (+ 0.0001 (* 1.5 (votes :best-votes)) (votes :recommended-votes) (votes :not-recommended-votes))))
-  (double (+ (* (:best-perc votes)) (* 0.2 (:recommended-perc votes)))))
+  (double (+ (* (:best-perc votes)) (* 0.7 (:recommended-perc votes)))))
 
 (defn rating-for-number-of-players
   "Returns a rating based on the best and recommended percentages
@@ -60,10 +66,12 @@
   (fn [game]
     (s/includes? (:name game) name)))
 
-(defn is-type? [type]
+(defn is-type?
+  [type]
+  {:pre [(spec/valid? :bbg-reframe.db/show type)]}
   (fn [game]
     (if (:type game)
-      (or (= type "any") (= (:type game) type))
+      (or (= type :all) (= (:type game) type))
       true)))
 
 (defn is-best-with-num-of-players

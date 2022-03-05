@@ -4,7 +4,7 @@
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
    [bbg-reframe.network-events :as network-events]
-   [bbg-reframe.model.sort-filter :refer [rating-for-number-of-players sorting-fun game->best-rec-not]]
+   [bbg-reframe.model.sort-filter :refer [sorting-fun game->best-rec-not playability]]
    [goog.string :as gstring]
    [goog.string.format]
    ["sax" :as sax]))
@@ -19,18 +19,21 @@
 (defn game-div
   [game players]
   (let [;_ (println game)
-        playability (gstring/format "%.2f" (rating-for-number-of-players
+        playability (gstring/format "%.2f" (playability
                                             game players))]
     ^{:key (random-uuid)}
     [:p
      (when SHOW_PLAYABILITY (str
                              (:id game) " "
-                             "type: " (:type game) " "
-                             "v: " (case (game->best-rec-not game players)
-                                     0 "best"
-                                     1 "rec "
-                                     2 "not "
-                                     "loading") " - " playability " - " (gstring/format "%.2f" (* playability (:rating game)))  " - "))
+                             (case (:type game)
+                               :boardgame "b"
+                               :expansion "e"
+                               "u") " "
+                             (case (game->best-rec-not game players)
+                               0 "Best"
+                               1 "Rec "
+                               2 "Not "
+                               "loading") " - " playability " - " (gstring/format "%.2f"  (:rating game))  " - "))
      (:name game)]))
 
 (defn result-div
@@ -90,9 +93,9 @@
      {:style {:display (when (= @open-tab "")
                          "none")}}
      (case @open-tab
-       "sliders" (sliders)
-       "username" (user-panel)
-       "sort" (sort-list)
+       :sliders-tab (sliders)
+       :user-name-tab (user-panel)
+       :sort-tab (sort-list)
        nil)]))
 
 (defn buttons-bar []
@@ -100,16 +103,16 @@
     [:div.bottom-overlay-box-shadow.pr-2.p-1.z-10.flex.flex-col
      (overlay)
      [:div.flex.gap-2
-      [:div.button.flex-1.flex {:class (when (= @open-tab "sliders") "active")
+      [:div.button.flex-1.flex {:class (when (= @open-tab :sliders-tab) "active")
                                 :style {:flex-grow "4"}
-                                :on-click  #(re-frame/dispatch [::events/set-open-tab "sliders"])}
+                                :on-click  #(re-frame/dispatch [::events/set-open-tab :sliders-tab])}
        [:i.mx-auto.my-auto {:class "fa-solid fa-sliders fa-xl"}]]
-      [:div.button.flex-1.flex.ml-1 {:class (when (= @open-tab "sort") "active")
+      [:div.button.flex-1.flex.ml-1 {:class (when (= @open-tab :sort-tab) "active")
                                      :style {:flex-grow "4"}
-                                     :on-click  #(re-frame/dispatch [::events/set-open-tab "sort"])}
+                                     :on-click  #(re-frame/dispatch [::events/set-open-tab :sort-tab])}
        [:i.mx-auto.my-auto {:class "fa-solid fa-sort fa-xl"}]]
-      [:div.button.flex-1.flex.ml-1 {:class (when (= @open-tab "username") "active")
-                                     :on-click  #(re-frame/dispatch [::events/set-open-tab "username"])}
+      [:div.button.flex-1.flex.ml-1 {:class (when (= @open-tab :user-name-tab) "active")
+                                     :on-click  #(re-frame/dispatch [::events/set-open-tab :user-name-tab])}
        [:i.mx-auto.my-auto {:class "fa-solid fa-user fa-xl"}]]]]))
 
 (defn error-box [error-msg]
