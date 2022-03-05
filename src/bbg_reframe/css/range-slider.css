@@ -1,6 +1,6 @@
 .range {
   height: 17px;
-  -webkit-appearance: none;
+  appearance: none;
   background: #292524;
   outline: none;
   border-radius: 17px;
@@ -8,8 +8,8 @@
   box-shadow: inset 0 0 5px 3px black;
 }
 
-.range::-webkit-slider-thumb {
-  -webkit-appearance: none;
+.range::range-thumb {
+  appearance: none;
   width: 17px;
   height: 17px;
   border-radius: 50%;
@@ -47,19 +47,11 @@
 }
 
 .button {
-  /* box-shadow: inset 0 0 5px black;
-  position: relative;
-  background-color: theme("colors.stone.800");
-  height: 40px;
-  border-radius: 10px;
-  padding: 0 8px; */
   outline: 0;
   background: theme("colors.orange.800");
   border: none;
   height: 40px;
   padding-bottom: 6px;
-  /* @apply px-3 py-6; */
-  /* transition: all 0.3s ease-out; */
   box-shadow: inset 0 -6px 0 0 rgba(0, 0, 0, 0.3),
     1px 1px 0 0 rgba(0, 0, 0, 0.4), 2px 2px 0 0 rgba(0, 0, 0, 0.4),
     3px 3px 0 0 rgba(0, 0, 0, 0.4), 4px 4px 0 0 rgba(0, 0, 0, 0.4),
@@ -73,6 +65,10 @@
   box-shadow: inset 0 -3px 0 0 rgba(0, 0, 0, 0.2),
     1px 1px 0 0 rgba(0, 0, 0, 0.4), 2px 2px 0 0 rgba(0, 0, 0, 0.4),
     3px 3px 0 0 rgba(0, 0, 0, 0.4);
+}
+
+.button:disabled {
+  background-color: theme("colors.neutral.600");
 }
 
 .select-box-above {

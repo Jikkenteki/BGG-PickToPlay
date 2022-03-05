@@ -73,7 +73,8 @@
                                             :value @user
                                             :placeholder "Insert BGG username"
                                             :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
-     [:button.button.min-w-fit.px-2.ml-1 {:on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
+     [:button.button.min-w-fit.px-2.ml-1 {:disabled (if (= @user "") true false)
+                                          :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
 
 (defn sliders []
   [:<>
@@ -133,7 +134,7 @@
 
 (defn main-panel []
   (let [error-msg (re-frame/subscribe [::subs/error-msg])]
-    [:div.container.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+    [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
     ;;  (fn-queue)
      (when @error-msg (error-box @error-msg))
      [:h1.text-3xl.font-bold.mb-2.px-1
