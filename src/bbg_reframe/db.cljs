@@ -35,7 +35,7 @@
 (s/def ::cors-running boolean?)
 (s/def ::fetches non-negative-number?)
 (s/def ::form (s/keys :req-un
-                      [::sort-id ::take ::higher-than ::players ::threshold ::time-limit ::show]))
+                      [::sort-id ::take ::higher-than ::players ::threshold ::time-available ::show]))
 (s/def ::games (s/map-of ::id ::game-unchecked))
 (s/def ::result (s/coll-of ::game-unchecked))
 (s/def ::error string-or-nil?)
@@ -69,12 +69,12 @@
 (def default-db
   {:result []
    :fields ["name"]
-   :form {:sort-id "playability"
-          :take "10"
+   :form {:sort-id :playability-time
+          :take "20"
           :higher-than "7.0"
           :players "4"
-          :threshold "0.8"
-          :time-limit "180"
+          :threshold "0.5"
+          :time-available "120"
           :show :boardgame}
    :games {}
    :queue #{}
@@ -92,7 +92,7 @@
   (s/def ::user (s/or :string string? :nil nil?))
   (s/def ::cors-running boolean?)
   (s/def ::fetches (s/and number? #(>= 0 %)))
-  (s/def ::form (s/keys :req-un [::sort-id ::take ::higher-than ::players ::threshold ::time-limit ::show]))
+  (s/def ::form (s/keys :req-un [::sort-id ::take ::higher-than ::players ::threshold ::time-available ::show]))
   (s/def ::db-spec
     (s/keys :req-un
             [::result
