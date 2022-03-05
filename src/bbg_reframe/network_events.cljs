@@ -7,8 +7,7 @@
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players playingtime-between? game-more-playable? is-type?]]
-
+   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players is-type? game-more-time-playable?]]
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
@@ -181,7 +180,9 @@
   (let [;; _ (console :debug "update")
         sort-by  (get-in db [:form :sort-id])
         sorting-fun (if (= sort-by "playability")
-                      (game-more-playable? (read-string (get-in db [:form :players])))
+                      ;; (game-more-playable? (read-string (get-in db [:form :players])))
+                      (game-more-time-playable? (read-string (get-in db [:form :players]))
+                                                (read-string (get-in db [:form :time-limit])))
                       (get sorting-fun (keyword (get-in db [:form :sort-id]))))
         result (take (read-string (get-in db [:form :take]))
                      (sort sorting-fun
@@ -192,8 +193,7 @@
                                (read-string (get-in db [:form :players])))
                              (rating-higher-than?
                               (read-string (get-in db [:form :higher-than])))
-                             (playingtime-between?
-                              0 (read-string (get-in db [:form :time-limit])))
+                            ;;  (playingtime-between? 0 (read-string (get-in db [:form :time-limit])))
                              (is-playable-with-num-of-players
                               (get-in db [:form :players])
                               (get-in db [:form :threshold])))

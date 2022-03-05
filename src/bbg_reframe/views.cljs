@@ -4,7 +4,7 @@
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
    [bbg-reframe.network-events :as network-events]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun game->best-rec-not playability]]
+   [bbg-reframe.model.sort-filter :refer [sorting-fun game->best-rec-not playability time-rating playability-time]]
    [goog.string :as gstring]
    [goog.string.format]
    ["sax" :as sax]))
@@ -17,32 +17,39 @@
 
 
 (defn game-div
-  [game players]
+  [game players time]
   (let [;_ (println game)
         playability (gstring/format "%.2f" (playability
-                                            game players))]
+                                            game players))
+        time-rating (gstring/format "%.2f" (time-rating
+                                            game time))]
     ^{:key (random-uuid)}
     [:p
-     (when SHOW_PLAYABILITY (str
-                             (:id game) " "
-                             (case (:type game)
-                               :boardgame "b"
-                               :expansion "e"
-                               "u") " "
-                             (case (game->best-rec-not game players)
-                               0 "Best"
-                               1 "Rec "
-                               2 "Not "
-                               "loading") " - " playability " - " (gstring/format "%.2f"  (:rating game))  " - "))
+     (when SHOW_PLAYABILITY
+       (str
+        " [ " time-rating " - " (gstring/format "%5d" (:playingtime game)) " - "
+        (gstring/format "%.2f" (playability-time game players time)) " ] "
+                            ;;  (:id game) " "
+        (case (:type game)
+          :boardgame "b"
+          :expansion "e"
+          "u") " "
+        (case (game->best-rec-not game players)
+          0 "Best"
+          1 "Rec "
+          2 "Not "
+          "loading") " - "
+        playability " - " (gstring/format "%.2f"  (:rating game))  " - "))
      (:name game)]))
 
 (defn result-div
   [result]
-  (let [players @(re-frame/subscribe [::subs/form :players])]
+  (let [players @(re-frame/subscribe [::subs/form :players])
+        time @(re-frame/subscribe [::subs/form :time-limit])]
     [:div.pl-6.flex-auto.overflow-auto
      (map
       (fn [game]
-        (game-div game players))
+        (game-div game players time))
       result)]))
 
 (defn sort-list []

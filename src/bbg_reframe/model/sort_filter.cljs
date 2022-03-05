@@ -25,12 +25,42 @@
   [game num-players]
   (/ (* (:rating game) (:rating game) (:rating game) (:rating game) (rating-for-number-of-players game num-players)) 1000))
 
+(defn time-rating
+  [game time]
+  ;; (println (str "TIME avail: " time " game time " (:playingtime game)))
+  ;; (/ 1 (Math/log10 (+ (Math/abs (- (:playingtime game) time)) 10)))
+  (let [game-time (:playingtime game)]
+    (if (>= time game-time)
+      ;; (/ game-time time)
+      (- 1 (* 0.002 (- time game-time)))
+      ;; (/ 1 (- game-time time))
+      ;; (/ time game-time)
+      (- 1 (* 0.01 (- game-time time))))))
+
+(defn playability-time
+  [game num-players time]
+  (* (playability game num-players)
+     (time-rating game time)))
+
+(comment
+  (Math/log10 (+ 60 10))
+  (/ 1 (Math/log10 (+ (Math/abs (- 60 60)) 10)))
+  ;
+  )
+
 (defn game-more-playable?
   [num-players]
   (fn
     [g1 g2]
     (> (playability g1 num-players)
        (playability g2 num-players))))
+
+(defn game-more-time-playable?
+  [num-players time-limit]
+  (fn
+    [g1 g2]
+    (> (playability-time g1 num-players time-limit)
+       (playability-time g2 num-players time-limit))))
 
 (defn rating-function
   [votes]
@@ -102,6 +132,11 @@
        (number? time)
        (>= time min)
        (<= time max)))))
+
+(comment
+  playingtime-between?
+  ;
+  )
 
 (defn with-number-of-players? [num]
   (fn [game] (and
