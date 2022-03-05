@@ -27,7 +27,8 @@
                              (:id game) " "
                              (case (:type game)
                                :boardgame "b"
-                               :expansion "e") " "
+                               :expansion "e"
+                               "u") " "
                              (case (game->best-rec-not game players)
                                0 "Best"
                                1 "Rec "
