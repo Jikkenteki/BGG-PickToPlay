@@ -16,10 +16,6 @@
 (defn game-shorter? [g1 g2]
   (< (:playingtime g1) (:playingtime g2)))
 
-(defn game-shorter-and-better? [g1 g2]
-  (> (/ (:rating g1) (:playingtime g1))
-     (/ (:rating g2) (:playingtime g2))))
-
 
 (defn playability
   [game num-players]
@@ -49,7 +45,7 @@
   )
 
 (defn game-more-playable?
-  [num-players]
+  [num-players _]
   (fn
     [g1 g2]
     (> (playability g1 num-players)
@@ -82,9 +78,9 @@
     1.0))
 
 (def sorting-fun
-  {:rating game-better?
-   :time game-shorter?
-   :rating-time game-shorter-and-better?
+  {:rating (fn [_ _] game-better?)
+   :time (fn [_ _] game-shorter?)
+   :playability-time game-more-time-playable?
    :playability game-more-playable?})
 
 (map name (keys sorting-fun))

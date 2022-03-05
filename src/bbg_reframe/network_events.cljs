@@ -7,7 +7,7 @@
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players is-type? game-more-time-playable?]]
+   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players is-type?]]
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
@@ -177,13 +177,9 @@
  [check-spec-interceptor]
  (fn-traced
   [{:keys [db]} _]
-  (let [;; _ (console :debug "update")
-        sort-by  (get-in db [:form :sort-id])
-        sorting-fun (if (= sort-by "playability")
-                      ;; (game-more-playable? (read-string (get-in db [:form :players])))
-                      (game-more-time-playable? (read-string (get-in db [:form :players]))
-                                                (read-string (get-in db [:form :time-limit])))
-                      (get sorting-fun (keyword (get-in db [:form :sort-id]))))
+  (let [sorting-fun ((get sorting-fun (get-in db [:form :sort-id]))
+                     (read-string (get-in db [:form :players]))
+                     (read-string (get-in db [:form :time-available])))
         result (take (read-string (get-in db [:form :take]))
                      (sort sorting-fun
                            (filter
@@ -193,7 +189,7 @@
                                (read-string (get-in db [:form :players])))
                              (rating-higher-than?
                               (read-string (get-in db [:form :higher-than])))
-                            ;;  (playingtime-between? 0 (read-string (get-in db [:form :time-limit])))
+                            ;;  (playingtime-between? 0 (read-string (get-in db [:form :time-available])))
                              (is-playable-with-num-of-players
                               (get-in db [:form :players])
                               (get-in db [:form :threshold])))

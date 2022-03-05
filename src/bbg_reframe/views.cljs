@@ -27,7 +27,7 @@
     [:p
      (when SHOW_PLAYABILITY
        (str
-        " [ " time-rating " - " (gstring/format "%5d" (:playingtime game)) " - "
+        " [ " time-rating " : " (gstring/format "%5d" (:playingtime game)) " : "
         (gstring/format "%.2f" (playability-time game players time)) " ] "
                             ;;  (:id game) " "
         (case (:type game)
@@ -45,7 +45,7 @@
 (defn result-div
   [result]
   (let [players @(re-frame/subscribe [::subs/form :players])
-        time @(re-frame/subscribe [::subs/form :time-limit])]
+        time @(re-frame/subscribe [::subs/form :time-available])]
     [:div.pl-6.flex-auto.overflow-auto
      (map
       (fn [game]
@@ -58,8 +58,8 @@
     [:div.grid.grid-cols-2.grid-rows-2.gap-3.mb-1
      (doall (for [option options]
               ^{:key option}
-              [:div.button.flex {:class (when (= @value option) "active")
-                                 :on-click #(re-frame/dispatch [::events/update-form :sort-id option])}
+              [:div.button.flex {:class (when (= @value (keyword option)) "active")
+                                 :on-click #(re-frame/dispatch [::events/update-form :sort-id (keyword option)])}
                [:p.m-auto option]]))]))
 
 (defn slider
@@ -92,7 +92,7 @@
    (slider :higher-than "Rating higher than" 0 10 0.1)
    (slider :players "For number of players" 1 10 1)
    (slider :threshold "Playability threshold" 0 0.95 0.05)
-   (slider :time-limit "Time limit" 10 500 10)])
+   (slider :time-available "Available time" 10 500 10)])
 
 (defn overlay []
   (let [open-tab (re-frame/subscribe [::subs/ui :open-tab])]
