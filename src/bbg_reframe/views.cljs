@@ -5,7 +5,11 @@
    [bbg-reframe.components.loading-games-info-comp :refer [loading-games-info-comp]]
    [bbg-reframe.components.games-list-comp :refer [games-list-comp]]
    [bbg-reframe.components.bottom-buttons-bar-comp :refer [bottom-buttons-bar-comp]]
-   [bbg-reframe.components.error-box-comp :refer [error-box-comp]]))
+   [bbg-reframe.components.error-box-comp :refer [error-box-comp]]
+   ["sax" :as sax]))
+
+; required for tubax to work
+(js/goog.exportSymbol "sax" sax)
 
 (defn main-panel []
   (let [error-msg (re-frame/subscribe [::subs/error-msg])]
