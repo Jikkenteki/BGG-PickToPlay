@@ -174,7 +174,7 @@
 ;;
 (re-frame/reg-event-fx
  ::update-result
- [check-spec-interceptor]
+;;  [check-spec-interceptor]
  (fn-traced
   [{:keys [db]} _]
   (let [sorting-fun ((get sorting-fun (get-in db [:form :sort-id]))
