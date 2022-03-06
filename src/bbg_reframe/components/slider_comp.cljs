@@ -19,4 +19,4 @@
         :value value
         :id id
         :onChange #(re-frame/dispatch [::events/update-form id (-> % .-target .-value)])}]
-      [:span.range-slider-ticket-value @value]]]))
+      [:span.range-slider-ticket-value value]]]))
