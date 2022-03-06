@@ -11,6 +11,7 @@
     [:div.grid.grid-cols-2.grid-rows-2.gap-3.mb-1
      (doall (for [option options]
               ^{:key option}
-              [:div.button.flex {:class (when (= value option) "active")
-                                 :on-click #(re-frame/dispatch [::events/update-form :sort-id option])}
+              [:div.button.flex
+               {:class (when (= value (keyword option)) "active")
+                :on-click #(re-frame/dispatch [::events/update-form :sort-id (keyword option)])}
                [:p.m-auto option]]))]))
