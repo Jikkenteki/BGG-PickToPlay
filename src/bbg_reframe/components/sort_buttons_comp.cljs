@@ -6,11 +6,11 @@
    [bbg-reframe.model.sort-filter :refer [sorting-fun]]))
 
 (defn sort-buttons-comp []
-  (let [options  (map name (keys sorting-fun))
-        value (re-frame/subscribe [::subs/form :sort-id])]
+  (let [options (map name (keys sorting-fun))
+        value @(re-frame/subscribe [::subs/form :sort-id])]
     [:div.grid.grid-cols-2.grid-rows-2.gap-3.mb-1
      (doall (for [option options]
               ^{:key option}
-              [:div.button.flex {:class (when (= @value option) "active")
+              [:div.button.flex {:class (when (= value option) "active")
                                  :on-click #(re-frame/dispatch [::events/update-form :sort-id option])}
                [:p.m-auto option]]))]))

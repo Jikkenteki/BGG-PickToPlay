@@ -9,7 +9,7 @@
 (defn bottom-overlay-comp []
   (let [open-tab @(re-frame/subscribe [::subs/ui :open-tab])]
     [:div.mb-2
-     {:style {:display (when (empty? open-tab)
+     {:style {:display (when-not open-tab
                          "none")}}
      (case open-tab
        :sliders-tab (sliders-comp)
