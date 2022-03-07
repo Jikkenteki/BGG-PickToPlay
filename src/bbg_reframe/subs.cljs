@@ -15,7 +15,10 @@
 (re-frame/reg-sub
  ::form
  (fn [db [_ id]]
-   (get-in db [:form id])))
+   (let [value (get-in db [:form id])]
+     (if value
+       value
+       (throw (ex-info (str "ERROR in subs.cljs: ::form subscription. id: " id " does not exist in :form!") {:id id}))))))
 
 (re-frame/reg-sub
  ::loading

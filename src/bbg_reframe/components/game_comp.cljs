@@ -16,13 +16,12 @@
     ^{:key (:id game)}
     [:p
      (when SHOW_PLAYABILITY
-       (str
-        "[" time-rating " : " playing-time " : " playability-time  "]"
+       (str "[" time-rating " : " playing-time " : " playability-time  "]"
                             ;;  (:id game) " "
-        (case (game->best-rec-not game players)
-          0 "B"
-          1 "R "
-          2 "N "
-          "_") " , "
-        playability " : " rating  " : "))
+            (case (game->best-rec-not game players)
+              0 "B"
+              1 "R "
+              2 "N "
+              "_") " , "
+            playability " : " rating  " : "))
      (:name game)]))
