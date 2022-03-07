@@ -12,7 +12,7 @@
      {:style {:display (when-not open-tab
                          "none")}}
      (case open-tab
-       :sliders-tab (sliders-comp)
-       :user-name-tab (fetch-collection-comp)
-       :sort-tab (sort-buttons-comp)
+       :sliders-tab [sliders-comp]
+       :user-name-tab [fetch-collection-comp]
+       :sort-tab [sort-buttons-comp]
        nil)]))

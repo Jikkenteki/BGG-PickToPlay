@@ -19,6 +19,6 @@
      [:h1.text-3xl.font-bold.mb-2.px-1
       "HMPWTP "
       [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
-     (loading-games-info-comp)
-     (games-list-comp)
-     (bottom-buttons-bar-comp)]))
+     [loading-games-info-comp]
+     [games-list-comp]
+     [bottom-buttons-bar-comp]]))
