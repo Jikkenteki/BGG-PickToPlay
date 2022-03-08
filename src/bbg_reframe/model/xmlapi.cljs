@@ -36,7 +36,7 @@
   (get-in game [:attrs :objectid]))
 
 
-(defn game-attributes [collection-game]
+(defn game-stats-attributes [collection-game]
   (->> (find-element-with-tag :stats collection-game)
        :attrs))
 
@@ -68,9 +68,39 @@
 
 (defn game-attribute [collection-game]
   (fn [key]
-    (let [attr (game-attributes collection-game)
+    (let [attr (game-stats-attributes collection-game)
           value (attr key)]
       (if value (read-string value) nil))))
+
+
+(defn game-thumbnail
+  [collection-game]
+  (->> collection-game
+       (find-element-with-tag :thumbnail)
+       (:content)
+       (first)))
+
+(defn game-ranks
+  [collection-game]
+  (->> collection-game
+       (find-element-with-tag :ranks)
+       (:content)
+       (map (fn [rank]
+              {:friendlyname (get-in rank [:attrs :friendlyname])
+               :value
+               (let [value (get-in rank [:attrs :value])]
+                 (if (= value "Not Ranked")
+                   nil
+                   (read-string value)))}))
+       (into [])))
+
+(defn game-yearpublished
+  [collection-game]
+  (->> collection-game
+       (find-element-with-tag :yearpublished)
+       (:content)
+       (first)
+       (read-string)))
 
 ;; 
 ;; Functions for numbers of players
