@@ -13,7 +13,6 @@
         playability (gstring/format "%.1f" (playability game players))
         time-rating (gstring/format "%.1f" (time-rating game time))
         rating (gstring/format "%.1f"  (:rating game))]
-    ^{:key (:id game)}
     [:p
      (when SHOW_PLAYABILITY
        (str "[" time-rating " : " playing-time " : " playability-time  "]"

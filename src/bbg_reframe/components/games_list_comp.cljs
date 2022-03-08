@@ -12,5 +12,5 @@
      [:pre players " PLAYERS, TIME: " time " min"]
      (map
       (fn [game]
-        (game-comp game players time))
+        ^{:key (:id game)} [game-comp game players time])
       result)]))
