@@ -2,6 +2,7 @@
   (:require [clojure.string :as s]
             [clojure.tools.reader.edn :refer [read-string]]
             [bbg-reframe.model.examples.data :refer [local-storage-db]]
+            [bbg-reframe.spec.db-spec :as db-spec]
             [clojure.spec.alpha :as spec]
             [clojure.pprint :as pp]))
 
@@ -104,7 +105,7 @@
 
 (defn is-type?
   [type]
-  {:pre [(spec/valid? :bbg-reframe.db/show type)]}
+  {:pre [(spec/valid? ::db-spec/show type)]}
   (fn [game]
     (if (:type game)
       (or (= type :all) (= (:type game) type))

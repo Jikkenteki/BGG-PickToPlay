@@ -1,17 +1,44 @@
 (ns bbg-reframe.model.db
-  (:require [bbg-reframe.model.xmlapi :refer [game-attribute game-id game-name game-rating game-my-rating create-votes-for-results list-results-of-votes-per-playernum]]
+  (:require [bbg-reframe.model.xmlapi :refer [game-attribute game-id game-name game-rating game-my-rating create-votes-for-results list-results-of-votes-per-playernum game-thumbnail game-ranks game-yearpublished]]
             [tubax.core :refer [xml->clj]]
             [re-frame.loggers :refer [console]]
             [clojure.tools.reader.edn :refer [read-string]]
             [bbg-reframe.model.localstorage :refer [get-item]]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [bbg-reframe.model.examples.collection2 :refer [collection-2]]
+            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag]]
+            [clojure.pprint :as pp]
+            [bbg-reframe.spec.game-spec :as game-spec]
+            [cljs.test :refer [is]]))
+
+(comment
+  (->> collection-2
+       (xml->clj)
+       (:content)
+       (first)
+       (find-element-with-tag :yearpublished)
+       (:content)
+       (first)
+       (read-string))
+  (pp/pp)
+
+  (->> collection-2
+       (xml->clj)
+       (:content)
+       (first)
+       (game-yearpublished))
+  (pp/pp)
+
+
+  ;
+  )
 
 ;; 
 ;; API - DB
 ;; 
 (defn  create-game-from-collection-item
   [collection-item]
-  {:post [(s/valid? :bbg-reframe.db/game %)]}
+  {:post [(is (s/valid? ::game-spec/game %))]}
   (try {:id (game-id collection-item)
         :type nil
         :name (game-name collection-item)
@@ -19,14 +46,27 @@
         :my-rating (game-my-rating collection-item)
         :minplayers ((game-attribute collection-item) :minplayers)
         :maxplayers ((game-attribute collection-item) :maxplayers)
-        :playingtime ((game-attribute collection-item) :playingtime)}
+        :playingtime ((game-attribute collection-item) :playingtime)
+        :thumbnail (game-thumbnail collection-item)
+        :ranks (game-ranks collection-item)
+        :yearpublished (game-yearpublished collection-item)}
        (catch js/Error e
          (console :error (str "Error:" e "\nOn collection-item: " collection-item))
          (throw e))))
 
+(comment
+  (->> collection-2
+       (xml->clj)
+       (:content)
+       (first)
+       (create-game-from-collection-item))
+  (pp/pp)
+  ;
+  )
+
 (defn game-votes
   [game-item]
-  {:post [(s/valid? :bbg-reframe.db/votes %)]}
+  {:post [(s/valid? ::game-spec/votes %)]}
   (into [] (map create-votes-for-results
                 (list-results-of-votes-per-playernum game-item))))
 
@@ -48,5 +88,6 @@
   (def ddmits-games [1 3 11 12 13 42 50 71 93 118 215 234 278 325 372 432 478 555 760 822 926 1465 2389 2448 2591 2651 2655 2993 3076 5405 6249 6472 8051 8217 9209 9216 9217 9625 9674 10630 12333 12493 14105 14996 15987 17133 18602 19600 20551 21385 21763 21790 22038 22279 22664 22766 22821 24181 24270 24480 25292 25554 25613 27833 28143 28720 29714 29715 29716 29717 29718 30549 31260 31784 34499 34585 34635 34887 35677 36218 37111 40210 40692 40834 43015 43018 43111 45315 51811 54138 55697 62219 63628 66188 66589 70149 72125 73439 77130 84876 86246 91873 94480 96613 96848 96913 97842 98778 102680 102794 104006 107529 109276 111426 117914 120677 121408 121921 122515 124361 126042 126163 128621 128882 133632 136223 144592 144733 145219 146508 146886 148949 154203 154246 155426 156061 156566 157096 157354 157403 159507 160495 161417 161936 161970 163967 164928 165022 166372 167355 167791 169786 171623 172386 173346 175914 176396 176494 176920 178044 181304 181796 182874 183394 184267 188834 192661 193738 196340 203624 210108 213893 216132 220308 228341 229220 229853 230802 236457 245655 247763 251247 266507 276025 277018 312484 324856])
   (defn in-ddmits [game] (some #(= game %) ddmits-games))
   (remove (fn [ag] (in-ddmits ag)) adranidis-games)
+
 ;
   )

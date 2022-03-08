@@ -6,7 +6,8 @@
    [bbg-reframe.db :refer [default-db]]
    [clojure.spec.alpha :as s]
    [clojure.string :refer [trim]]
-   [re-frame.loggers :refer [console]]))
+   [re-frame.loggers :refer [console]]
+   [bbg-reframe.spec.db-spec :as db-spec]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -16,7 +17,7 @@
     (throw (ex-info (str "spec check failed: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (re-frame/after (partial check-and-throw :bbg-reframe.db/db)))
+(def check-spec-interceptor (re-frame/after (partial check-and-throw ::db-spec/db)))
 
 
 
