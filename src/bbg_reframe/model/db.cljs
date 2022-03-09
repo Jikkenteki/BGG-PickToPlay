@@ -10,7 +10,8 @@
             [clojure.pprint :as pp]
             [bbg-reframe.spec.game-spec :as game-spec]
             [cljs.test :refer [is]]
-            [bbg-reframe.model.examples.game2 :refer [powergrid2]]))
+            [bbg-reframe.model.examples.game2 :refer [powergrid2]]
+            [clojure.string :refer [includes? upper-case]]))
 
 (comment
   (->> powergrid2
@@ -112,5 +113,21 @@
   (defn in-ddmits [game] (some #(= game %) ddmits-games))
   (remove (fn [ag] (in-ddmits ag)) adranidis-games)
 
+  (def game-names (map :name (vals (read-string (get-item "bgg-games")))))
+  (filter #(includes? % "Pul") game-names)
+  (includes? "Power" "owe")
+
+
+  (def val "P")
+  (apply :name (filter (fn [game] (includes? (:name game) val))
+                       (vals (read-string (get-item "bgg-games")))))
+
+  (map :name (vals (read-string (get-item "bgg-games"))))
+
+  (->> (vals (read-string (get-item "bgg-games")))
+       (mapv :name)
+       (filterv (fn [name] (includes? (upper-case name) (upper-case "the")))))
+
+  (upper-case "dssadas")
 ;
   )

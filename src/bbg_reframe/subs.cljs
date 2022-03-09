@@ -36,6 +36,16 @@
    (:user db)))
 
 (re-frame/reg-sub
+ ::substring-query
+ (fn [db]
+   (:substring db)))
+
+(re-frame/reg-sub
+ ::filtered
+ (fn [db]
+   (:filtered db)))
+
+(re-frame/reg-sub
  ::ui
  (fn [db [_ id]]
    (get-in db [:ui id])))

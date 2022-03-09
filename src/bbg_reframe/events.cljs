@@ -5,7 +5,7 @@
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.db :refer [default-db]]
    [clojure.spec.alpha :as s]
-   [clojure.string :refer [trim]]
+   [clojure.string :refer [trim includes? upper-case]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.spec.db-spec :as db-spec]))
 
@@ -33,7 +33,7 @@
 ;;  (fn-traced[db [_ field e]]
 ;;    (let [_ (println e field)
 ;;          new-fields
-;;          (if (some #(= field %) (:fields db))
+;;          (if (some #(= field (:name %)) (:fields db))
 ;;            (filter #(not= field %) (:fields db))
 ;;            (conj (:fields db) field))]
 ;;      (assoc db :fields new-fields))))
@@ -55,6 +55,19 @@
             (let [user (trim val)
                   _ (set-item! "bgg-user" user)]
               {:db (assoc db :user user)})))
+
+(re-frame/reg-event-fx
+ ::search-name-with-substring
+ [check-spec-interceptor]
+ (fn-traced [{:keys [db]} [_ val]]
+            (let [filtered
+                  (if (> (count val) 1)
+                    (->> (vals (:games db))
+                         (map :name)
+                         (filter (fn [name] (includes? (upper-case name) (upper-case val))))
+                         (sort))
+                    [])]
+              {:db (assoc db :substring val :filtered filtered)})))
 
 (re-frame/reg-event-fx
  ::update-games
