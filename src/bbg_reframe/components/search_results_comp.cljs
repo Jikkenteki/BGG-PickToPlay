@@ -4,9 +4,14 @@
    [bbg-reframe.subs :as subs]))
 
 (defn search-results-comp []
-  (let [filtered @(re-frame/subscribe [::subs/filtered])]
+  (let [search-results @(re-frame/subscribe [::subs/search-results])]
     [:div.overflow-auto.grow.px-3
      [:ul
       (map
-       (fn [name] [:li name])
-       filtered)]]))
+       (fn [game]
+         ^{:key (:id game)}
+         [:li
+          [:span
+          ;;  (:id game) " : "
+           (:name game)]])
+       search-results)]]))

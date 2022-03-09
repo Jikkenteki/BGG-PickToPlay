@@ -41,9 +41,9 @@
    (:substring db)))
 
 (re-frame/reg-sub
- ::filtered
+ ::search-results
  (fn [db]
-   (:filtered db)))
+   (:search-results db)))
 
 (re-frame/reg-sub
  ::ui

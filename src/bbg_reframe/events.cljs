@@ -5,9 +5,10 @@
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.db :refer [default-db]]
    [clojure.spec.alpha :as s]
-   [clojure.string :refer [trim includes? upper-case]]
+   [clojure.string :refer [trim]]
    [re-frame.loggers :refer [console]]
-   [bbg-reframe.spec.db-spec :as db-spec]))
+   [bbg-reframe.spec.db-spec :as db-spec]
+   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -63,11 +64,11 @@
             (let [filtered
                   (if (> (count val) 1)
                     (->> (vals (:games db))
-                         (map :name)
-                         (filter (fn [name] (includes? (upper-case name) (upper-case val))))
-                         (sort))
+                         (filter (has-name? val))
+                         (sort name-alpha?)
+                         )
                     [])]
-              {:db (assoc db :substring val :filtered filtered)})))
+              {:db (assoc db :substring val :search-results filtered)})))
 
 (re-frame/reg-event-fx
  ::update-games
