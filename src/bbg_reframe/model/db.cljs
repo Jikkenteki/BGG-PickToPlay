@@ -9,7 +9,21 @@
             [bbg-reframe.model.tag-helpers :refer [find-element-with-tag]]
             [clojure.pprint :as pp]
             [bbg-reframe.spec.game-spec :as game-spec]
-            [cljs.test :refer [is]]))
+            [cljs.test :refer [is]]
+            [bbg-reframe.model.examples.game2 :refer [powergrid2]]))
+
+(comment
+  (->> powergrid2
+       (xml->clj)
+       (:content)
+       (first)
+       (find-element-with-tag :averageweight)
+       (:attrs)
+       (:value)
+       (read-string))
+  (pp/pp)
+  ;
+  )
 
 (comment
   (->> collection-2
@@ -64,9 +78,18 @@
   ;
   )
 
+(defn game-weight
+  [game-item]
+  {:post [(is (s/valid? game-spec/non-negative-number? %))]}
+  (->> game-item
+       (find-element-with-tag :averageweight)
+       (:attrs)
+       (:value)
+       (read-string)))
+
 (defn game-votes
   [game-item]
-  {:post [(s/valid? ::game-spec/votes %)]}
+  {:post [(is (s/valid? ::game-spec/votes %))]}
   (into [] (map create-votes-for-results
                 (list-results-of-votes-per-playernum game-item))))
 
