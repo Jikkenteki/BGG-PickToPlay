@@ -11,10 +11,16 @@
 ;; 
 (declare rating-for-number-of-players)
 
-(defn game-better? [g1 g2]
+(defn name-alpha?  
+  [g1 g2] 
+  (< (:name g1) (:name g2)))
+
+(defn game-better? 
+  [g1 g2]
   (> (:rating g1) (:rating g2)))
 
-(defn game-shorter? [g1 g2]
+(defn game-shorter? 
+  [g1 g2]
   (< (:playingtime g1) (:playingtime g2)))
 
 
@@ -99,9 +105,11 @@
 ;; 
 ;; Filters
 ;; 
-(defn has-name [name]
-  (fn [game]
-    (s/includes? (:name game) name)))
+(defn has-name? [substring]
+  (fn
+    [game]
+    (let [name (:name game)]
+      (s/includes? (s/upper-case name) (s/upper-case substring)))))
 
 (defn is-type?
   [type]
@@ -122,7 +130,6 @@
 
 (comment
   ;;  for linter unused public keyword
-  (has-name "name")
   (is-best-with-num-of-players 5)
   ;
   )

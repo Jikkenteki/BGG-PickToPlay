@@ -7,7 +7,8 @@
    [clojure.spec.alpha :as s]
    [clojure.string :refer [trim]]
    [re-frame.loggers :refer [console]]
-   [bbg-reframe.spec.db-spec :as db-spec]))
+   [bbg-reframe.spec.db-spec :as db-spec]
+   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -33,7 +34,7 @@
 ;;  (fn-traced[db [_ field e]]
 ;;    (let [_ (println e field)
 ;;          new-fields
-;;          (if (some #(= field %) (:fields db))
+;;          (if (some #(= field (:name %)) (:fields db))
 ;;            (filter #(not= field %) (:fields db))
 ;;            (conj (:fields db) field))]
 ;;      (assoc db :fields new-fields))))
@@ -55,6 +56,19 @@
             (let [user (trim val)
                   _ (set-item! "bgg-user" user)]
               {:db (assoc db :user user)})))
+
+(re-frame/reg-event-fx
+ ::search-name-with-substring
+ [check-spec-interceptor]
+ (fn-traced [{:keys [db]} [_ val]]
+            (let [filtered
+                  (if (> (count val) 1)
+                    (->> (vals (:games db))
+                         (filter (has-name? val))
+                         (sort name-alpha?)
+                         )
+                    [])]
+              {:db (assoc db :substring val :search-results filtered)})))
 
 (re-frame/reg-event-fx
  ::update-games
