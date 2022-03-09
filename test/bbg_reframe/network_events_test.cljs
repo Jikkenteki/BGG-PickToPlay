@@ -137,11 +137,12 @@
               :fetches 5}}
         game-id "3"
         game-votes {"5" "votes"}
-        actual (fetched-game-handler cofx game-id game-votes "boardgame")]
+        actual (fetched-game-handler cofx game-id game-votes "boardgame" 2.5)]
     (is (= nil (get-in actual [:db :error])))
     (is (= #{"1" "2"} (get-in actual [:db :fetching])))
     (is (= 6 (get-in actual [:db :fetches])))
     (is (= game-votes (get-in actual [:db :games "3" :votes])))
+    (is (= 2.5 (get-in actual [:db :games "3" :weight])))
     (is (= [[:dispatch [:bbg-reframe.network-events/update-result]]] (get-in actual [:fx])))))
 
 (deftest test-fetched-game-handler-1
@@ -157,10 +158,11 @@
               :fetches 5}}
         game-id "3"
         game-votes {"5" "votes"}
-        actual (fetched-game-handler cofx game-id game-votes "boardgame")]
+        actual (fetched-game-handler cofx game-id game-votes "boardgame" 3.0)]
     (is (= nil (get-in actual [:db :error])))
     (is (= #{"1" "2"} (get-in actual [:db :fetching])))
     (is (= 6 (get-in actual [:db :fetches])))
+    (is (= 3.0 (get-in actual [:db :games "3" :weight])))
     (is (= game-votes (get-in actual [:db :games "3" :votes])))
     (is (= [[:dispatch [:bbg-reframe.network-events/fetch-next-from-queue]]] (get-in actual [:fx])))))
 

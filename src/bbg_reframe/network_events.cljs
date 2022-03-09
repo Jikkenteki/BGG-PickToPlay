@@ -5,7 +5,7 @@
    [ajax.core :as ajax]
    [clojure.tools.reader.edn :refer [read-string]]
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
-   [bbg-reframe.model.db :refer [game-votes  indexed-games]]
+   [bbg-reframe.model.db :refer [game-votes  indexed-games game-weight]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players is-type?]]
    [clojure.string :refer [split]]
@@ -321,11 +321,12 @@
 ;; Handler for successfully fetched game
 ;;
 (defn fetched-game-handler
-  [{:keys [db] {:keys [fetches fetching queue]} :db} game-id game-votes game-type]
+  [{:keys [db] {:keys [fetches fetching queue]} :db} game-id game-votes game-type game-weight]
   (let [_  (console :debug "SUCCESS" game-id)]
     {:db (-> db
              (assoc-in [:games game-id :votes] game-votes)
              (assoc-in [:games game-id :type] game-type)
+             (assoc-in [:games game-id :weight] game-weight)
              (assoc :error nil
                     :fetching (disj fetching game-id)
                     :fetches (inc fetches)))
@@ -339,7 +340,8 @@
     (fetched-game-handler cofx
                           (item-game-id game-received)
                           (game-votes game-received)
-                          (item-game-type game-received))))
+                          (item-game-type game-received)
+                          (game-weight game-received))))
 
 (re-frame/reg-event-fx
  ::success-fetch-game

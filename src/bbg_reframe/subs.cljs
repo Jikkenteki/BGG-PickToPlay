@@ -20,9 +20,6 @@
        (throw (ex-info (str "ERROR in subs.cljs: ::form subscription. id: " id " does not exist in :form!") {:id id})))
      value)))
 
-(def x 1)
-(do (println x) x)
-
 (re-frame/reg-sub
  ::loading
  (fn [db]
