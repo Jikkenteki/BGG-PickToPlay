@@ -21,7 +21,6 @@
 (def check-spec-interceptor (re-frame/after (partial check-and-throw ::db-spec/db)))
 
 
-
 (re-frame/reg-event-db
  ::initialize-db
  [check-spec-interceptor]
@@ -65,8 +64,7 @@
                   (if (> (count val) 1)
                     (->> (vals (:games db))
                          (filter (has-name? val))
-                         (sort name-alpha?)
-                         )
+                         (sort name-alpha?))
                     [])]
               {:db (assoc db :substring val :search-results filtered)})))
 

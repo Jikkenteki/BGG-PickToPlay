@@ -9,7 +9,7 @@
           :players "4"
           :threshold "0.5"
           :time-available "120"
-          :show :boardgame}
+          :show-expansions? false}
    :games {}
    :queue #{}
    :fetching #{}

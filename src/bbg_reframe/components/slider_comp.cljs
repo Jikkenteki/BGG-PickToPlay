@@ -9,7 +9,7 @@
   (let [value @(re-frame/subscribe [::subs/form id])]
     [:div.flex.justify-between.mb-2.last:mb-1
      [:p.my-auto label]
-     [:div.connector-line.grow.my-auto.ml-2]
+     [:div.connector-line.grow.my-auto.ml-2.bg-stone-600]
      [:div.flex {:class "basis-1/2"}
       [:input.range.my-auto.mr-2.grow
        {:type "range"

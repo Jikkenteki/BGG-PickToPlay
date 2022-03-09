@@ -7,7 +7,7 @@
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games game-weight]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players is-type?]]
+   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players should-show-expansions?]]
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
@@ -184,7 +184,7 @@
                      (sort sorting-fun
                            (filter
                             (and-filters
-                             (is-type? (get-in db [:form :show])) ;; show only 
+                             (should-show-expansions? (get-in db [:form :show-expansions?])) ;; show only 
                              (with-number-of-players?
                                (read-string (get-in db [:form :players])))
                              (rating-higher-than?

@@ -2,7 +2,6 @@
   (:require [clojure.string :as s]
             [clojure.tools.reader.edn :refer [read-string]]
             [bbg-reframe.model.examples.data :refer [local-storage-db]]
-            [bbg-reframe.spec.db-spec :as db-spec]
             [clojure.spec.alpha :as spec]
             [clojure.pprint :as pp]))
 
@@ -11,15 +10,15 @@
 ;; 
 (declare rating-for-number-of-players)
 
-(defn name-alpha?  
-  [g1 g2] 
+(defn name-alpha?
+  [g1 g2]
   (< (:name g1) (:name g2)))
 
-(defn game-better? 
+(defn game-better?
   [g1 g2]
   (> (:rating g1) (:rating g2)))
 
-(defn game-shorter? 
+(defn game-shorter?
   [g1 g2]
   (< (:playingtime g1) (:playingtime g2)))
 
@@ -111,13 +110,13 @@
     (let [name (:name game)]
       (s/includes? (s/upper-case name) (s/upper-case substring)))))
 
-(defn is-type?
-  [type]
-  {:pre [(spec/valid? ::db-spec/show type)]}
+(defn should-show-expansions?
+  [show-expansions?]
+  {:pre [(spec/valid? boolean? show-expansions?)]}
   (fn [game]
-    (if (:type game)
-      (or (= type :all) (= (:type game) type))
-      true)))
+    (if show-expansions?
+      (= (:type game) :expansion)
+      (not= (:type game) :expansion))))
 
 (defn is-best-with-num-of-players
   [num-players]

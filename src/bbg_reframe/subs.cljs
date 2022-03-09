@@ -16,8 +16,6 @@
  ::form
  (fn [db [_ id]]
    (let [value (get-in db [:form id])]
-     (when-not (or (= db {}) value)
-       (throw (ex-info (str "ERROR in subs.cljs: ::form subscription. id: " id " does not exist in :form!") {:id id})))
      value)))
 
 (re-frame/reg-sub

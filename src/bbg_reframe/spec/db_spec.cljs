@@ -12,7 +12,7 @@
 
 (s/def ::id non-empty-string?)
 
-(s/def ::show #{:all :boardgame :expansion})
+(s/def ::show-expansions? boolean?)
 (s/def ::open-tab (s/or :tab #{:sliders-tab :user-name-tab :sort-tab} :nil nil?))
 (s/def ::game-unchecked (s/keys))
 
@@ -20,7 +20,7 @@
 (s/def ::cors-running boolean?)
 (s/def ::fetches non-negative-number?)
 (s/def ::form (s/keys :req-un
-                      [::sort-id ::take ::higher-than ::players ::threshold ::time-available ::show]))
+                      [::sort-id ::take ::higher-than ::players ::threshold ::time-available ::show-expansions?]))
 (s/def ::games (s/map-of ::id ::game-unchecked))
 (s/def ::result (s/coll-of ::game-unchecked))
 (s/def ::error string-or-nil?)
