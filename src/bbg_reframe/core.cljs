@@ -6,11 +6,19 @@
 
    [bbg-reframe.events :as events]
    [bbg-reframe.network-events :as network-events]
+
    [bbg-reframe.views :as views]
+  ;;  [bbg-reframe.test-firebase.views :as views]
+
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
    [clojure.tools.reader.edn :refer [read-string]]
-   [re-frame.loggers :refer [console]]))
+   [re-frame.loggers :refer [console]]
+
+   [bbg-reframe.test-firebase.events :as fb-events]
+   [bbg-reframe.test-firebase.firebase.firebase-app :refer [init-app]]
+   [bbg-reframe.test-firebase.firebase.firebase-auth :refer [get-auth]]
+   [bbg-reframe.test-firebase.firebase.fb-reframe :refer [set-browser-session-persistence fb-reframe-config]]))
 
 
 (defn dev-setup []
@@ -24,6 +32,16 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
+    ;; at the beginning so that they are loaded first
+  (init-app)
+  (get-auth)
+  (set-browser-session-persistence)
+  ;; set the path in the db for the fb temp storage
+  ;; and returning maps instead of lists
+  (fb-reframe-config {:temp-path [::fb-events/fire-base-temp-storage]})
+
+
+
   (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
   (remove-item! "bgg-ui-settings")
 
@@ -37,6 +55,11 @@
   (when (item-exists? "bgg-ui-settings")
     (re-frame/dispatch [::events/update-ui-settings (read-string (get-item "bgg-ui-settings"))]))
   (re-frame/dispatch [::network-events/update-result])
+
+    ;; poll for a signed-in user for 2 seconds
+  ;; auth is not ready
+  (re-frame/dispatch [::fb-events/poll-user 10000])
+
   (dev-setup)
   (mount-root))
 

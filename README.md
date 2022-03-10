@@ -7,6 +7,57 @@ games from [Boardgamegeek](https://boardgamegeek.com/).
 
 Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-what-to-play.web.app/)
 
+# Firebase instructions
+
+Run to install tools and login
+```
+npm install -g firebase-tools
+firebase login
+
+```
+
+Run to create/connect to a project and follow the instructions:
+```
+firebase init
+```
+
+Install firebase in the project
+
+```
+npm install firebase
+```
+
+In the firebase console:
+* At Project settings: get the SDK setup and configuration of the app and update the file ```firebase/firebase_app.cljs```.
+  * Example: 
+  ```
+  {
+  apiKey: "AIzaSyCpMjjOO9t-TVrzJ-seEy-4MUnH9PWc-uc",
+  authDomain: "test-firebase-refr.firebaseapp.com",
+  databaseURL: "https://test-firebase-refr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "test-firebase-refr",
+  storageBucket: "test-firebase-refr.appspot.com",
+  messagingSenderId: "1052651152055",
+  appId: "1:1052651152055:web:4971b846529e25aa0ba332"}
+  ```
+
+* At Authenication: enable the authentication with an email/password provider.
+
+
+Edit the database rules in ```database.rules.json```. Deploy the database rules:
+```
+firebase deploy --only database:rules
+```
+
+Deploy the app
+```
+firebase deploy
+```
+
+
+Inspired by re-frame-firebase.
+
+
 ## Getting Started
 
 ### Project Overview
