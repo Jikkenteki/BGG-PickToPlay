@@ -8,6 +8,11 @@
    [bbg-reframe.network-events :as network-events]
 
    [bbg-reframe.views :as views]
+   [bbg-reframe.routes :as routes]
+
+   ;; required so that it is loaded for pushy
+   ;; otherwise :default panel is loaded even when the :fb-panel is set!
+   [bbg-reframe.test-firebase.views]
 
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
@@ -44,8 +49,9 @@
   (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
   (remove-item! "bgg-ui-settings")
 
+  (re-frame/dispatch-sync [::events/initialize-db])
+  (routes/start!)
 
-  (re-frame/dispatch [::events/initialize-db])
   (re-frame/dispatch [::network-events/cors-check])
   (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))
     (console :log "Using local storage data")

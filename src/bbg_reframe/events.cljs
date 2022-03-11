@@ -87,3 +87,19 @@
             (assoc-in db [:ui :open-tab] (if (= (get-in db [:ui :open-tab]) tab)
                                            nil
                                            tab))))
+
+;; routing
+(comment
+  ;; navigates to the route specified by the keyword
+  (re-frame/dispatch [::navigate :home])
+  (re-frame/dispatch [::navigate :fb]))
+
+(re-frame/reg-event-fx
+ ::navigate
+ (fn-traced [_ [_ handler]]
+            {:navigate handler}))
+
+(re-frame/reg-event-fx
+ ::set-active-panel
+ (fn-traced [{:keys [db]} [_ active-panel]]
+            {:db (assoc db :active-panel active-panel)}))

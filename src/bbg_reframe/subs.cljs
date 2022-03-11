@@ -47,3 +47,11 @@
  ::ui
  (fn [db [_ id]]
    (get-in db [:ui id])))
+
+
+;; routing
+
+(re-frame/reg-sub
+ ::active-panel
+ (fn [db _]
+   (:active-panel db)))

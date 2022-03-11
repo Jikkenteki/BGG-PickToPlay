@@ -2,7 +2,8 @@
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.test-firebase.subs :as subs]
-   [bbg-reframe.test-firebase.events :as events]))
+   [bbg-reframe.test-firebase.events :as events]
+   [bbg-reframe.routes :as routes]))
 
 (defn game-div
   [id]
@@ -51,7 +52,7 @@
      [:button.button.min-w-fit.px-2.ml-1 {:on-click #(re-frame/dispatch [::events/new-collection (str "Collection-" (rand-int 1000))])} "New collection"]
      [:div (doall (map collection-div @collection-ids))]]))
 
-(defn main-panel []
+(defn fb-panel []
   (let [email (re-frame/subscribe [::subs/email])
         public-data (re-frame/subscribe [::subs/public-data])]
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
@@ -69,4 +70,5 @@
     ))
 
 
+(defmethod routes/panels :fb-panel [] [fb-panel])
 
