@@ -8,21 +8,29 @@
    [bbg-reframe.components.error-box-comp :refer [error-box-comp]]
    ["sax" :as sax]
    [bbg-reframe.components.search-comp :refer [search-comp]]
-   [bbg-reframe.components.search-results-comp :refer [search-results-comp]]))
+   [bbg-reframe.components.search-results-comp :refer [search-results-comp]]
+
+   [bbg-reframe.test-firebase.views :as fb-views]))
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
 
-(defn main-panel []
-  (let [error-msg (re-frame/subscribe [::subs/error-msg])]
-    [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+;; change to true to show the other panel
+;; do we need routing?
+(def show-other-panel false)
 
-     (when @error-msg (error-box-comp @error-msg))
-     [:h1.text-3xl.font-bold.mb-2.px-1
-      "HMPWTP "
-      [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
-     [loading-games-info-comp]
-     [games-list-comp]
-     [search-results-comp]
-     [search-comp]
-     [bottom-buttons-bar-comp]]))
+(defn main-panel []
+  (if show-other-panel
+    (fb-views/main-panel)
+    (let [error-msg (re-frame/subscribe [::subs/error-msg])]
+      [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+
+       (when @error-msg (error-box-comp @error-msg))
+       [:h1.text-3xl.font-bold.mb-2.px-1
+        "HMPWTP "
+        [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
+       [loading-games-info-comp]
+       [games-list-comp]
+       [search-results-comp]
+       [search-comp]
+       [bottom-buttons-bar-comp]])))

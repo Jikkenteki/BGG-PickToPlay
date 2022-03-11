@@ -8,7 +8,6 @@
    [bbg-reframe.network-events :as network-events]
 
    [bbg-reframe.views :as views]
-  ;;  [bbg-reframe.test-firebase.views :as views]
 
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]

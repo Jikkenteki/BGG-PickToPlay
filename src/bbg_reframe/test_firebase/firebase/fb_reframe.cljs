@@ -58,20 +58,14 @@
 ;; Settings for FB and reframe
 ;;
 (def temp-path-atom (atom [:temp]))
-(def turn-lists-to-maps-atom? (atom true))
 
 (defn set-temp-path!
   [new-path]
   (swap! temp-path-atom (fn [] new-path)))
 
-(defn set-turn-lists-to-maps!
-  [turn?]
-  (swap! turn-lists-to-maps-atom? (fn [] turn?)))
-
 (defn fb-reframe-config
-  [{:keys [temp-path turn-lists-to-maps?]}]
-  (set-temp-path! temp-path)
-  (set-turn-lists-to-maps! turn-lists-to-maps?))
+  [{:keys [temp-path]}]
+  (set-temp-path! temp-path))
 
 ;;
 ;; Utility functions for transforming lists to maps
@@ -85,25 +79,22 @@
    (if (empty? list) {}
        (assoc (vector->map (rest list) (inc n)) (keyword (str n)) (first list)))))
 
-(defn- if-vector->map
+(defn- if-vector?->map
   [value]
-  (println "if-vector->map" value ";" (str @turn-lists-to-maps-atom?) ";" (str (vector? value))  ";" (str (and @turn-lists-to-maps-atom? (vector? value)))
-           (vector->map value))
   (if (vector? value)
     (vector->map value)
     value))
 
 (comment
   (vector->map [true nil true true])
-
-  ;
+  ;;
   )
 
 (re-frame/reg-sub-raw
  ::on-value
  (fn [app-db [_ path]]
    (let [query-token (on-value path
-                               #(re-frame/dispatch [::fb-write-to-temp path (if-vector->map %)]))]
+                               #(re-frame/dispatch [::fb-write-to-temp path (if-vector?->map %)]))]
      (ratom/make-reaction
       (fn [] (get-in @app-db (concat @temp-path-atom path)))
       :on-dispose #(do (off path query-token)
