@@ -14,6 +14,8 @@
          "fb" :fb}]))
 
 (defn parse
+  "Parse a url string and return a map with the :handler keyword according to
+   the @routes table."
   [url]
   (bidi/match-route @routes url))
 
@@ -41,3 +43,22 @@
  :navigate
  (fn [handler]
    (navigate! handler)))
+
+
+
+(comment
+  history
+  (def handler :home)
+  (url-for handler) ;; "/"
+
+
+  (parse "/") ;; {:handler :home}
+  (def route (parse "/"))
+  (:handler route)  ;; :home
+  (keyword (str (name (:handler route)) "-panel")) ;; :home-panel
+
+
+  (navigate! :home)
+
+  ;
+  )
