@@ -107,5 +107,4 @@
 (re-frame/reg-event-fx
  ::set-route
  (fn-traced [{:keys [db]} [_ route]]
-            (println route)
             {:db (assoc db :route route)}))

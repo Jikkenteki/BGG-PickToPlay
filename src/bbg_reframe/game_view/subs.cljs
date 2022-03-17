@@ -6,5 +6,4 @@
  ::game
  :<- [::subs/games]
  (fn [games [_ id]]
-   (println "ID" id games)
    (get games id)))
