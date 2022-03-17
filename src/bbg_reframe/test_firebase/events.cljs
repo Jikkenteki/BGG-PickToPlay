@@ -1,7 +1,7 @@
 (ns bbg-reframe.test-firebase.events
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
-            [bbg-reframe.test-firebase.firebase.fb-reframe :as fb-reframe :refer [get-current-user]]))
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe :refer [get-current-user]]))
 
 
 (def poll-time-interval-ms 200)
@@ -151,6 +151,7 @@
   (re-frame/dispatch [::sign-in "adranidisb@gmail.com" "password"])
 
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
+  (fb-reframe/get-current-user-uid)
 
   (re-frame/dispatch [::sign-out])
 

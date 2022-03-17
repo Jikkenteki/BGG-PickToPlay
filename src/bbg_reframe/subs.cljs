@@ -71,3 +71,7 @@
  (fn [db _]
    (get-in db [:route :route-params])))
 
+(re-frame/reg-sub
+ ::email
+ (fn [db]
+   (:email db)))

@@ -1,8 +1,8 @@
 (ns bbg-reframe.test-firebase.subs
   (:require
    [re-frame.core :as re-frame]
-   [bbg-reframe.test-firebase.firebase.firebase-auth :refer [get-current-user-uid]]
-   [bbg-reframe.test-firebase.firebase.fb-reframe :as fb-reframe]))
+   [re-frame-firebase-nine.firebase-auth :refer [get-current-user-uid]]
+   [re-frame-firebase-nine.fb-reframe :as fb-reframe]))
 
 (defn fb-sub-user-id
   [path]
