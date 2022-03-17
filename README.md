@@ -49,6 +49,11 @@ Edit the database rules in ```database.rules.json```. Deploy the database rules:
 firebase deploy --only database:rules
 ```
 
+Run local firebase emulator
+```
+firebase emulators:start
+```
+
 Deploy the app
 ```
 firebase deploy

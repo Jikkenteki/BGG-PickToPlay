@@ -2,7 +2,9 @@
   (:require
    [bbg-reframe.model.sort-filter :refer [game->best-rec-not playability time-rating playability-time]]
    [goog.string :as gstring]
-   [goog.string.format]))
+   [goog.string.format]
+   [re-frame.core :as re-frame]
+   [bbg-reframe.events :as events]))
 
 (def SHOW_PLAYABILITY true)
 
@@ -23,4 +25,6 @@
               2 "N "
               "_") " , "
             playability " : " rating  " : "))
-     (:name game)]))
+     [:a {:on-click #(re-frame/dispatch [::events/navigate [:game-view :id (:id game)]])}
+      (:name game)]]))
+

@@ -3,6 +3,11 @@
    [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
+ ::games
+ (fn [db]
+   (:games db)))
+
+(re-frame/reg-sub
  ::result
  (fn [db]
    (:result db)))
@@ -51,7 +56,22 @@
 
 ;; routing
 
+;; (re-frame/reg-sub
+;;  ::active-panel
+;;  (fn [db _]
+;;    (:active-panel db)))
+
 (re-frame/reg-sub
  ::active-panel
  (fn [db _]
-   (:active-panel db)))
+   (get-in db [:route :panel])))
+
+(re-frame/reg-sub
+ ::route-params
+ (fn [db _]
+   (get-in db [:route :route-params])))
+
+(re-frame/reg-sub
+ ::email
+ (fn [db]
+   (:email db)))

@@ -10,19 +10,13 @@
    [bbg-reframe.views :as views]
    [bbg-reframe.routes :as routes]
 
-   ;; required so that it is loaded for pushy
-   ;; otherwise :default panel is loaded even when the :fb-panel is set!
-   [bbg-reframe.test-firebase.views]
-
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
    [clojure.tools.reader.edn :refer [read-string]]
    [re-frame.loggers :refer [console]]
 
-   [bbg-reframe.test-firebase.events :as fb-events]
-   [bbg-reframe.test-firebase.firebase.firebase-app :refer [init-app]]
-   [bbg-reframe.test-firebase.firebase.firebase-auth :refer [get-auth]]
-   [bbg-reframe.test-firebase.firebase.fb-reframe :refer [set-browser-session-persistence fb-reframe-config]]))
+   [bbg-reframe.login-view.events :as login-events]
+   [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config]]))
 
 
 (defn dev-setup []
@@ -37,14 +31,15 @@
 
 (defn init []
     ;; at the beginning so that they are loaded first
-  (init-app)
-  (get-auth)
+  (fb-reframe-config {:temp-path [:firebase-temp-storage]
+                      :firebase-config {:apiKey "AIzaSyCLH4BlNSOfTrMlB_90Hsxg5cr3bn3p-7E",
+                                        :authDomain "help-me-pick-what-to-play.firebaseapp.com",
+                                        :databaseURL "https://help-me-pick-what-to-play-default-rtdb.europe-west1.firebasedatabase.app",
+                                        :projectId "help-me-pick-what-to-play",
+                                        :storageBucket "help-me-pick-what-to-play.appspot.com",
+                                        :messagingSenderId "780911312465",
+                                        :appId "1:780911312465:web:bbd9007195b3c630910270"}})
   (set-browser-session-persistence)
-  ;; set the path in the db for the fb temp storage
-  ;; and returning maps instead of lists
-  (fb-reframe-config {:temp-path [::fb-events/fire-base-temp-storage]})
-
-
 
   (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
   (remove-item! "bgg-ui-settings")
@@ -63,7 +58,7 @@
 
     ;; poll for a signed-in user for 2 seconds
   ;; auth is not ready
-  (re-frame/dispatch [::fb-events/poll-user 10000])
+  (re-frame/dispatch [::login-events/poll-user 20000])
 
   (dev-setup)
   (mount-root))
