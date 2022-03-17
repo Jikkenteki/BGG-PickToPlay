@@ -154,6 +154,8 @@
 
   (re-frame/dispatch [::sign-out])
 
+  (fb-reframe/get-current-user-uid)
+
   (re-frame/dispatch [::update-value ["users" (fb-reframe/get-current-user-uid) "games" "1" "available"] false])
   (re-frame/dispatch [::update-value ["users" (fb-reframe/get-current-user-uid) "games" "available" "1"] true]) ;; or this?
 

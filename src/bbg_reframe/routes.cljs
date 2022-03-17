@@ -11,7 +11,9 @@
 (def routes
   (atom
    ["/" {""   :home
-         "fb" :fb}]))
+         "fb" :fb
+         "game" {"" :home
+                 ["/" :id] :game-view}}]))
 
 (defn parse
   "Parse a url string and return a map with the :handler keyword according to
@@ -23,17 +25,35 @@
   [& args]
   (apply bidi/path-for (into [@routes] args)))
 
+(comment
+  (parse "/game/10")
+  (apply url-for [:games :id 10])
+
+  (parse "/")
+  (url-for :home)
+  (apply url-for [:home])
+ ;
+  )
+
 (defn dispatch
   [route]
   (let [panel (keyword (str (name (:handler route)) "-panel"))]
-    (re-frame/dispatch [::events/set-active-panel panel])))
+    ;; (re-frame/dispatch [::events/set-active-panel panel])
+    (re-frame/dispatch [::events/set-route {:route-params (:route-params route) :panel panel}])))
+
+(comment
+  (parse "/")
+  (dispatch (parse "/"))
+  ;
+  )
 
 (defonce history
   (pushy/pushy dispatch parse))
 
 (defn navigate!
   [handler]
-  (pushy/set-token! history (url-for handler)))
+  ;; (pushy/set-token! history (url-for handler))
+  (pushy/set-token! history (apply url-for handler)))
 
 (defn start!
   []
@@ -48,9 +68,15 @@
 
 (comment
   history
-  (def handler :home)
-  (url-for handler) ;; "/"
+  (def handler [:home])
+  (apply url-for handler)
 
+  (def handler [:game-view :id 10])
+  handler
+
+  (apply url-for handler) ;; "/"
+
+  (apply url-for handler)
 
   (parse "/") ;; {:handler :home}
   (def route (parse "/"))
@@ -58,7 +84,27 @@
   (keyword (str (name (:handler route)) "-panel")) ;; :home-panel
 
 
-  (navigate! :home)
+  (def route (parse "/game/1"))
+  (keyword (str (name (:handler route)) "-panel")) ;; :home-panel
 
+
+  (navigate! [:home])
+
+  (navigate! [:fb])
+  (navigate! [:game-view :id 102680])
+
+  (def route (parse "/game/102680"))
+  route
+
+  (parse "/")
+  (parse "/fb")
+  (parse "/game/102680")
+  (def route (parse "/fb"))
+  route
+
+  (keyword (str (name (:handler route)) "-panel"))
+
+
+  (dispatch route)
   ;
   )

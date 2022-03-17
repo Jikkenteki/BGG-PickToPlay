@@ -10,7 +10,8 @@
    [bbg-reframe.components.search-comp :refer [search-comp]]
    [bbg-reframe.components.search-results-comp :refer [search-results-comp]]
 
-   [bbg-reframe.routes :as routes]))
+   [bbg-reframe.routes :as routes]
+   [bbg-reframe.game-view.views :refer [game-view-panel]]))
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
@@ -31,6 +32,8 @@
      [bottom-buttons-bar-comp]]))
 
 (defmethod routes/panels :home-panel [] [home-panel])
+(defmethod routes/panels :game-view-panel [] [game-view-panel])
+
 
 ;; main
 
