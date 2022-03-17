@@ -21,18 +21,15 @@
 
 
 (defn home-panel []
-  (let [error-msg (re-frame/subscribe [::subs/error-msg])]
-    [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-
-     (when @error-msg (error-box-comp @error-msg))
-     [:h1.text-3xl.font-bold.mb-2.px-1
-      "HMPWTP "
-      [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
-     [loading-games-info-comp]
-     [games-list-comp]
-     [search-results-comp]
-     [search-comp]
-     [bottom-buttons-bar-comp]]))
+  [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+   [:h1.text-3xl.font-bold.mb-2.px-1
+    "HMPWTP "
+    [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
+   [loading-games-info-comp]
+   [games-list-comp]
+   [search-results-comp]
+   [search-comp]
+   [bottom-buttons-bar-comp]])
 
 (defmethod routes/panels :home-panel [] [home-panel])
 (defmethod routes/panels :game-view-panel [] [game-view-panel])
@@ -42,11 +39,13 @@
 ;; main
 
 (defn main-panel []
-  (let [active-panel (re-frame/subscribe [::subs/active-panel])]
+  (let [active-panel (re-frame/subscribe [::subs/active-panel])
+        error-msg (re-frame/subscribe [::subs/error-msg])]
     [:div.bg-stone-800.text-neutral-200
+     (when @error-msg (error-box-comp @error-msg))
      [:span {:on-click #(re-frame/dispatch [::events/navigate [:home]])} "Home"]
      [:span " | "]
-     [:span {:on-click #(re-frame/dispatch [::events/navigate [:login-view]])} "Login"]
+     [:span {:on-click #(re-frame/dispatch [::events/navigate [:login-view]])} "Sign in/up/out"]
      [:span " | User: " @(re-frame/subscribe [::tfb-subs/email])]
 
      (routes/panels @active-panel)]))
