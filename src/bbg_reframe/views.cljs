@@ -14,7 +14,7 @@
    [bbg-reframe.routes :as routes]
    [bbg-reframe.game-view.views :refer [game-view-panel]]
    [bbg-reframe.login-view.view :refer [login-view-panel]]
-   [bbg-reframe.test-firebase.subs :as tfb-subs]))
+   [bbg-reframe.login-view.subs :as login-subs]))
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
@@ -46,6 +46,6 @@
      [:span {:on-click #(re-frame/dispatch [::events/navigate [:home]])} "Home"]
      [:span " | "]
      [:span {:on-click #(re-frame/dispatch [::events/navigate [:login-view]])} "Sign in/up/out"]
-     [:span " | User: " @(re-frame/subscribe [::tfb-subs/email])]
+     [:span " | User: " @(re-frame/subscribe [::login-subs/email])]
 
      (routes/panels @active-panel)]))

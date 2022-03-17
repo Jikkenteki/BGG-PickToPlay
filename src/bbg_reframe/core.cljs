@@ -10,16 +10,12 @@
    [bbg-reframe.views :as views]
    [bbg-reframe.routes :as routes]
 
-   ;; required so that it is loaded for pushy
-   ;; otherwise :default panel is loaded even when the :fb-panel is set!
-   [bbg-reframe.test-firebase.views]
-
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
    [clojure.tools.reader.edn :refer [read-string]]
    [re-frame.loggers :refer [console]]
 
-   [bbg-reframe.test-firebase.events :as fb-events]
+   [bbg-reframe.login-view.events :as login-events]
    [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config]]))
 
 
@@ -62,7 +58,7 @@
 
     ;; poll for a signed-in user for 2 seconds
   ;; auth is not ready
-  (re-frame/dispatch [::fb-events/poll-user 10000])
+  (re-frame/dispatch [::login-events/poll-user 20000])
 
   (dev-setup)
   (mount-root))
