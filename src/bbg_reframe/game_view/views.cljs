@@ -3,7 +3,8 @@
             [bbg-reframe.subs :as subs]
             [bbg-reframe.game-view.subs :as game-view-subs]
             [bbg-reframe.game-view.events :as game-view-events]
-            [bbg-reframe.forms.forms :refer [input dropdown-search   db-get-ref]]))
+            [bbg-reframe.forms.forms :refer [input dropdown-search   db-get-ref]]
+            [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
 
 (defn game-view-panel
   []
@@ -12,13 +13,11 @@
         id (:id game)]
 
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-
-
+     [naive-nav-bar]
      [:h1 (:name game)]
      [:h2 (:rating game)]
 
      [input "Available" :checkbox [:game-form :available (str id)]]
-
      [:div
       [:label "Group Item with"]
       (dropdown-search {:db-path [:game-form :group-with (str id)]

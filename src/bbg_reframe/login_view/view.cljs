@@ -2,11 +2,14 @@
   (:require [re-frame.core :as re-frame]
             [bbg-reframe.forms.forms :refer [input]]
             [bbg-reframe.forms.form-subs :as subs]
-            [bbg-reframe.login-view.events :as events]))
+            [bbg-reframe.login-view.events :as events]
+            [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
 
 (defn login-view-panel
   []
   [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+   [naive-nav-bar]
+
    [:h1 "Login"]
 
    (let [form @(re-frame/subscribe [::subs/get-value [:login-form]])]
