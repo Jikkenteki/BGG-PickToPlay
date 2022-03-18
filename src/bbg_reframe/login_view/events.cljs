@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [bbg-reframe.events :as events]
+            [bbg-reframe.network-events :as events]
             [re-frame-firebase-nine.firebase-auth :refer [get-current-user on-auth-state-changed on-auth-state-changed-callback]]))
 
 (def poll-time-interval-ms 1000)
@@ -31,6 +31,14 @@
               ;;  :dispatch [::events/navigate [:home]]
                })))
 
+(re-frame/reg-event-fx
+ ::sign-in-error
+ (fn-traced [{:keys [db]} [_ error]]
+            (println "Sign-in error" (js->clj error))
+            {:db (assoc db :error "Error signing in!")
+             :dispatch-later {:ms 1000
+                              :dispatch [::events/reset-error]}}))
+
 
 (re-frame/reg-event-db
  ::sign-out-success
@@ -44,7 +52,8 @@
             {:fx [[:dispatch [::sign-out]]
                   [::fb-reframe/firebase-sign-in {:email email
                                                   :password password
-                                                  :success ::sign-in-success}]]}))
+                                                  :success ::sign-in-success
+                                                  :error ::sign-in-error}]]}))
 
 (re-frame/reg-event-db
  ::sign-up-success
