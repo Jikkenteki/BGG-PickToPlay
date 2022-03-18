@@ -3,7 +3,7 @@
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.events :as events]
-            [re-frame-firebase-nine.firebase-auth :refer [get-current-user]]))
+            [re-frame-firebase-nine.firebase-auth :refer [get-current-user on-auth-state-changed on-auth-state-changed-callback]]))
 
 (def poll-time-interval-ms 1000)
 
@@ -70,5 +70,6 @@
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
   (re-frame/dispatch [::sign-in "adranidisb@gmail.com" "password"])
 
+  (on-auth-state-changed on-auth-state-changed-callback)
  ;
   )
