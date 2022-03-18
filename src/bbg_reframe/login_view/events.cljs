@@ -28,7 +28,8 @@
             (println "User signed-in")
             (let [email (.-email (.-user userCredential))]
               {:db (assoc db :email email)
-               :dispatch [::events/navigate [:home]]})))
+              ;;  :dispatch [::events/navigate [:home]]
+               })))
 
 
 (re-frame/reg-event-db
@@ -68,7 +69,9 @@
 (comment
 
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
+
   (re-frame/dispatch [::sign-in "adranidisb@gmail.com" "password"])
+  (re-frame/dispatch [::sign-out])
 
   (on-auth-state-changed on-auth-state-changed-callback)
  ;

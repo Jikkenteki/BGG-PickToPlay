@@ -14,16 +14,19 @@
         ;; subscriptions for reading from the DB
         ;; sub events update :game-form which are used by the 
         ;; elements in the form
+        ;; _ @(re-frame/subscribe [::game-view-subs/on-auth-path ["available" id]])
+        ;; _ @(re-frame/subscribe [::game-view-subs/on-auth-path ["group-with" id]])
+
         _ @(re-frame/subscribe [::game-view-subs/available id])
-        _ @(re-frame/subscribe [::game-view-subs/group-with id])
-        ]
+        _ @(re-frame/subscribe [::game-view-subs/group-with id])]
 
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
      [naive-nav-bar]
      [:h1 (:name game)]
+     [:h1 [:b (:id game)]]
      [:h2 (:rating game)]
 
-     [input "Available" :checkbox [:game-form :available (str id)]]
+     [input "Available" :checkbox [:game-form :available  (str id)]]
      [:div
       [:label "Group Item with"]
       (dropdown-search {:db-path [:game-form :group-with (str id)]
