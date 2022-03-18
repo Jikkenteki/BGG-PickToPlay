@@ -4,9 +4,10 @@
    [goog.string :as gstring]
    [goog.string.format]
    [re-frame.core :as re-frame]
-   [bbg-reframe.events :as events]))
+   [bbg-reframe.events :as events]
+   [bbg-reframe.config :refer [debug?]]))
 
-(def SHOW_PLAYABILITY true)
+(def SHOW_PLAYABILITY debug?)
 
 (defn game-comp
   [game players time]

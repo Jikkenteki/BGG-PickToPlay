@@ -1,6 +1,6 @@
 (ns bbg-reframe.forms.form-subs
   (:require [re-frame.core :as re-frame]
-            [day8.re-frame.tracing :refer [fn-traced]]
+            [day8.re-frame.tracing :refer-macros [fn-traced]]
             [bbg-reframe.forms.utils :refer [is-substring?]]))
 
 

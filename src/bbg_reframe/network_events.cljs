@@ -131,7 +131,9 @@
     (let [_ (console :debug (str "ERROR: " response))]
       {:db (assoc db
                   :error (str "Error reading collection. Invalid user? Try again")
-                  :loading false)}))))
+                  :loading false)
+       :dispatch-later {:ms 3000
+                        :dispatch [::reset-error]}}))))
 
 ;; BAD REQUEST
 ;; core.cljs:200 Response:  
