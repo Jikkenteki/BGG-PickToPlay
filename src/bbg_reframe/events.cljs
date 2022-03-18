@@ -8,7 +8,9 @@
    [clojure.string :refer [trim]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.spec.db-spec :as db-spec]
-   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]))
+   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]
+   [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+   [re-frame.db :as db]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -108,3 +110,28 @@
  ::set-route
  (fn-traced [{:keys [db]} [_ route]]
             {:db (assoc db :route route)}))
+
+
+;; fb
+(re-frame/reg-event-fx
+ ::fb-save-games
+ (fn-traced [{:keys [db]} [_ path value]]
+            {::fb-reframe/firebase-set {:path path
+                                        :data value
+                                        :success #(println "Success")}}))
+
+(comment
+
+  (def db @re-frame.db/app-db)
+  (def first-game (-> (:games db)
+                      (vals)
+                      (first)))
+  first-game
+  (def first-game-value {(:id first-game) first-game})
+  first-game-value
+  (fb-reframe/get-current-user-uid)
+  (re-frame/dispatch [::fb-save-games ["users" (fb-reframe/get-current-user-uid) "cached-games"] (str first-game-value)])
+
+  (re-frame/dispatch [::fb-save-games ["users" (fb-reframe/get-current-user-uid) "bgg-user-name"] "ddmits"])
+
+  {})
