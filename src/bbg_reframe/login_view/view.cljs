@@ -1,7 +1,7 @@
 (ns bbg-reframe.login-view.view
   (:require [re-frame.core :as re-frame]
             [bbg-reframe.forms.forms :refer [input]]
-            [bbg-reframe.forms.form-subs :as subs]
+            [bbg-reframe.forms.subs :as subs]
             [bbg-reframe.login-view.events :as events]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
 

@@ -10,7 +10,13 @@
   []
   (let [route-params @(re-frame/subscribe [::subs/route-params 1])
         game @(re-frame/subscribe [::game-view-subs/game (:id route-params)])
-        id (:id game)]
+        id (:id game)
+        ;; subscriptions for reading from the DB
+        ;; sub events update :game-form which are used by the 
+        ;; elements in the form
+        _ @(re-frame/subscribe [::game-view-subs/available id])
+        _ @(re-frame/subscribe [::game-view-subs/group-with id])
+        ]
 
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
      [naive-nav-bar]

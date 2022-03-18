@@ -2,17 +2,18 @@
   (:require [re-frame.core :as re-frame]
             [clojure.spec.alpha :as spec]
             [clojure.test :refer [is]]
-            [bbg-reframe.forms.form-subs :as form-subs]
+            [bbg-reframe.forms.subs :as form-subs]
+            [bbg-reframe.forms.events :as form-events]
             [bbg-reframe.forms.utils :refer [find-key-value-in-map-list if-nil?->value]]))
 
 
 (defn db-get-ref
   [db-path]
-  (re-frame/subscribe [::form-subs/get-value db-path]))
+  (re-frame/subscribe [::form-events/get-value db-path]))
 
 (defn db-set-value!
   [db-path value]
-  (re-frame/dispatch [::form-subs/set-value! db-path value]))
+  (re-frame/dispatch [::form-events/set-value! db-path value]))
 
 ;;
 ;; functions for generic form inputs
@@ -23,13 +24,13 @@
   (throw (js/Error. (str "No dispatch method for form input element of type: " type " for path: " path))))
 
 (defmethod dispatch :text [_ path value]
-  (re-frame/dispatch [::form-subs/set-value! path value]))
+  (re-frame/dispatch [::form-events/set-value! path value]))
 
 (defmethod dispatch :password [_ path value]
-  (re-frame/dispatch [::form-subs/set-value! path value]))
+  (re-frame/dispatch [::form-events/set-value! path value]))
 
 (defmethod dispatch :checkbox [_ path _]
-  (re-frame/dispatch [::form-subs/update-value! path not]))
+  (re-frame/dispatch [::form-events/update-value! path not]))
 
 (defmulti input-element (fn [type _] type))
 

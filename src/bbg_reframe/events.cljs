@@ -115,7 +115,7 @@
 ;; fb
 (re-frame/reg-event-fx
  ::fb-save-games
- (fn-traced [{:keys [db]} [_ path value]]
+ (fn-traced [_ [_ path value]]
             {::fb-reframe/firebase-set {:path path
                                         :data value
                                         :success #(println "Success")}}))
