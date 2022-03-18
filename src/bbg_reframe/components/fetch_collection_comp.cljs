@@ -3,7 +3,8 @@
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
    [bbg-reframe.network-events :as network-events]
-   [bbg-reframe.events :as events]))
+   [bbg-reframe.events :as events]
+   [bbg-reframe.login-view.view :refer [login-comp]]))
 
 (defn fetch-collection-comp []
   (let [user @(re-frame/subscribe [::subs/user])]
@@ -16,4 +17,5 @@
        :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
      [:button.button.min-w-fit.px-2.ml-1
       {:disabled (empty? user)
-       :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]))
+       :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]
+     [login-comp]]))
