@@ -32,21 +32,24 @@
 (defmethod dispatch :checkbox [_ path _]
   (re-frame/dispatch [::form-events/update-value! path not]))
 
-(defmulti input-element (fn [type _] type))
+(defmulti input-element (fn [{:keys [type]}] type))
 
-(defmethod input-element :default [type path]
+(defmethod input-element :default [{:keys [type path post-fn]}]
   [:input.input-box.min-w-0.grow.h-full {:type (name type) :value @(db-get-ref path)
-                                         :on-change #(dispatch type path (-> % .-target .-value))}])
+                                         :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}])
 
-(defmethod input-element :checkbox [type path]
+(defmethod input-element :checkbox [{:keys [type path post-fn]}]
   (let [checked @(db-get-ref path)]
     [:input.checkbox {:type (name type) :checked (if (nil? checked) false checked)
-                      :on-change #(dispatch type path (-> % .-target .-value))}]))
+                      :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
 (defn input
-  [label type path]
-  [:div
-   [:label label]
-   [input-element type path]])
+  [{:keys [label type path post-fn] :as params}]
+  {:pre [(is (spec/valid?
+              (spec/keys :req-un [label type path]) params))]}
+  (let [post-fn (if-nil?->value post-fn identity)]
+    [:div
+     [:label label]
+     [input-element {:type type :path path :post-fn post-fn}]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn string-list->map-list

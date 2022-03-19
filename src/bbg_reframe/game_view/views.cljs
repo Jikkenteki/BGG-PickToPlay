@@ -26,7 +26,7 @@
      [:h1 [:b (:id game)]]
      [:h2 (:rating game)]
 
-     [input "Available" :checkbox [:game-form :available  (str id)]]
+     [input {:label "Available" :type :checkbox :path [:game-form :available  (str id)]}]
      [:div
       [:label "Group Item with"]
       (dropdown-search {:db-path [:game-form :group-with (str id)]

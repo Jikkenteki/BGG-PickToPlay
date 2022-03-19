@@ -5,19 +5,32 @@
             [bbg-reframe.login-view.events :as events]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.login-view.subs :as login-subs]
-            [bbg-reframe.forms.utils :refer [if-nil?->value]]))
+            [bbg-reframe.forms.utils :refer [if-nil?->value]]
+            [clojure.string :refer [trim]]))
 
 (defn login-comp
   []
-  (let [form @(re-frame/subscribe [::subs/get-value [:login-form]])]
+  (let [email @(re-frame/subscribe [::subs/get-value [:login-form :email]])
+        password @(re-frame/subscribe [::subs/get-value [:login-form :password]])]
     [:div
      [:h1 "HMPWTP account"]
      [:h1 " User: " (if-nil?->value @(re-frame/subscribe [::login-subs/email]) "(none)")]
-     [input "email" :text [:login-form :email]]
-     [input "password" :password [:login-form :password]]
-     [:button.button.min-w-fit.px-2.ml-1 {:on-click #(re-frame/dispatch [::events/sign-in (:email form) (:password form)])} "Sign in"]
-     [:button.button.min-w-fit.px-2.ml-1 {:on-click #(re-frame/dispatch [::events/sign-up (:email form) (:password form)])} "Sign up"]
-     [:button.button.min-w-fit.px-2.ml-1 {:on-click #(re-frame/dispatch [::events/sign-out])} "Sign out"]]))
+     [input {:label "email"
+             :type :text
+             :path [:login-form :email]
+             :post-fn trim}]
+     [input {:label "password"
+             :type :password
+             :path [:login-form :password]}]
+
+
+     [:button.button.min-w-fit.px-2.ml-1
+      {:on-click #(re-frame/dispatch [::events/sign-in email password])} "Sign in"]
+     [:button.button.min-w-fit.px-2.ml-1
+      {:on-click #(re-frame/dispatch [::events/sign-up email password])} "Sign up"]
+     [:button.button.min-w-fit.px-2.ml-1
+      {:on-click #(re-frame/dispatch
+                   [::events/sign-out])} "Sign out"]]))
 
 (defn login-view-panel
   []
