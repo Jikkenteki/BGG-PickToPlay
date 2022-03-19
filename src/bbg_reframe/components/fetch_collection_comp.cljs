@@ -8,14 +8,16 @@
 
 (defn fetch-collection-comp []
   (let [user @(re-frame/subscribe [::subs/user])]
-    [:div.flex.items-center.mb-1.h-full
-     [:input.input-box.min-w-0.grow.h-full
-      {:type "text"
-       :id "name"
-       :value user
-       :placeholder "Insert BGG username"
-       :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
-     [:button.button.min-w-fit.px-2.ml-1
-      {:disabled (empty? user)
-       :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]
-     [login-comp]]))
+    [:<>
+     [:div.flex.items-center.mb-1;.h-full
+      [:input.input-box.min-w-0.grow;.h-full
+       {:type "text"
+        :id "name"
+        :value user
+        :placeholder "Insert BGG username"
+        :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
+      [:button.button.min-w-fit.px-2.ml-1
+       {:disabled (empty? user)
+        :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]
+     [:div.flex.items-center.mb-1;.h-full 
+      [login-comp]]]))
