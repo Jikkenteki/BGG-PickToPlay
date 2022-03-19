@@ -2,8 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [bbg-reframe.events :as events]
-            [re-frame-firebase-nine.firebase-auth :refer [get-current-user]]))
+            [bbg-reframe.network-events :as events]
+            [re-frame-firebase-nine.firebase-auth :refer [get-current-user on-auth-state-changed on-auth-state-changed-callback]]))
 
 (def poll-time-interval-ms 1000)
 
@@ -28,7 +28,16 @@
             (println "User signed-in")
             (let [email (.-email (.-user userCredential))]
               {:db (assoc db :email email)
-               :dispatch [::events/navigate [:home]]})))
+              ;;  :dispatch [::events/navigate [:home]]
+               })))
+
+(re-frame/reg-event-fx
+ ::sign-in-error
+ (fn-traced [{:keys [db]} [_ error]]
+            (println "Sign-in error" (js->clj error))
+            {:db (assoc db :error "Error signing in!")
+             :dispatch-later {:ms 2000
+                              :dispatch [::events/reset-error]}}))
 
 
 (re-frame/reg-event-db
@@ -40,10 +49,11 @@
 (re-frame/reg-event-fx
  ::sign-in
  (fn-traced [_ [_ email password]]
-            {:fx [[:dispatch [::sign-out]]
+            {:fx [; [:dispatch [::sign-out]]
                   [::fb-reframe/firebase-sign-in {:email email
                                                   :password password
-                                                  :success ::sign-in-success}]]}))
+                                                  :success ::sign-in-success
+                                                  :error ::sign-in-error}]]}))
 
 (re-frame/reg-event-db
  ::sign-up-success
@@ -68,7 +78,10 @@
 (comment
 
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
-  (re-frame/dispatch [::sign-in "adranidisb@gmail.com" "password"])
 
+  (re-frame/dispatch [::sign-in "adranidisb@gmail.com" "password"])
+  (re-frame/dispatch [::sign-out])
+
+  (on-auth-state-changed on-auth-state-changed-callback)
  ;
   )

@@ -11,7 +11,9 @@
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
-   [bbg-reframe.events :refer [check-spec-interceptor]]))
+   [bbg-reframe.events :refer [check-spec-interceptor]]
+   [re-frame-firebase-nine.firebase-database :refer [on-value]]
+   [re-frame-firebase-nine.fb-reframe :as fb-reframe]))
 
 
 
@@ -131,7 +133,9 @@
     (let [_ (console :debug (str "ERROR: " response))]
       {:db (assoc db
                   :error (str "Error reading collection. Invalid user? Try again")
-                  :loading false)}))))
+                  :loading false)
+       :dispatch-later {:ms 3000
+                        :dispatch [::reset-error]}}))))
 
 ;; BAD REQUEST
 ;; core.cljs:200 Response:  
@@ -395,3 +399,28 @@
          :dispatch [::fetch-next-from-queue]})))
 
 
+
+
+
+
+;;
+;; fetch games from firebase
+;;
+(re-frame/reg-event-fx
+ ::fetch-games
+ (fn-traced [_ [_ _]]
+            {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "cached-games"]
+                                         :success ::read-fetched-games}}))
+
+(re-frame/reg-event-fx
+ ::read-fetched-games
+ [check-spec-interceptor ->games->local-store]
+ (fn-traced [{:keys [db]} [_ games]]
+            {:db (assoc db :games (read-string games))
+             :dispatch [:bbg-reframe.network-events/update-result]}))
+
+(comment
+  (on-value ["users" (fb-reframe/get-current-user-uid) "cached-games"] (fn [x] (prn x)) true)
+
+  ;
+  )

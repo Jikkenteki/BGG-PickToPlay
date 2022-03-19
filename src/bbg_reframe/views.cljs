@@ -11,8 +11,7 @@
 
    [bbg-reframe.routes :as routes]
    [bbg-reframe.game-view.views :refer [game-view-panel]]
-   [bbg-reframe.login-view.view :refer [login-view-panel]]
-   [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
+   [bbg-reframe.login-view.view :refer [login-view-panel]]))
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
@@ -22,7 +21,6 @@
 
 (defn home-panel []
   [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-   [naive-nav-bar]
    [:h1.text-3xl.font-bold.mb-2.px-1
     "HMPWTP "
     [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]

@@ -10,14 +10,23 @@
   []
   (let [route-params @(re-frame/subscribe [::subs/route-params 1])
         game @(re-frame/subscribe [::game-view-subs/game (:id route-params)])
-        id (:id game)]
+        id (:id game)
+        ;; subscriptions for reading from the DB
+        ;; sub events update :game-form which are used by the 
+        ;; elements in the form
+        ;; _ @(re-frame/subscribe [::game-view-subs/on-auth-path ["available" id]])
+        ;; _ @(re-frame/subscribe [::game-view-subs/on-auth-path ["group-with" id]])
+
+        _ @(re-frame/subscribe [::game-view-subs/available id])
+        _ @(re-frame/subscribe [::game-view-subs/group-with id])]
 
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
      [naive-nav-bar]
      [:h1 (:name game)]
+     [:h1 [:b (:id game)]]
      [:h2 (:rating game)]
 
-     [input "Available" :checkbox [:game-form :available (str id)]]
+     [input {:label "Available" :type :checkbox :path [:game-form :available  (str id)]}]
      [:div
       [:label "Group Item with"]
       (dropdown-search {:db-path [:game-form :group-with (str id)]
@@ -26,7 +35,8 @@
                         :display-keyword :name
                         :button-text-empty "Click to select a game"
                         :input-placeholder "Type to find a game"
-                        :select-nothing-text "(no selection)"})]
+                        :select-nothing-text "(no selection)"
+                        :sort? true})]
 
      [:button.button.min-w-fit.px-2.ml-1 {:on-click (fn [_]
                                                       ;;  (db-set-value! [:game-form :add-to-collection (str id)] nil)
