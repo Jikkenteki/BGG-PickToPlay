@@ -36,7 +36,7 @@
  (fn-traced [{:keys [db]} [_ error]]
             (println "Sign-in error" (js->clj error))
             {:db (assoc db :error "Error signing in!")
-             :dispatch-later {:ms 1000
+             :dispatch-later {:ms 2000
                               :dispatch [::events/reset-error]}}))
 
 
@@ -49,7 +49,7 @@
 (re-frame/reg-event-fx
  ::sign-in
  (fn-traced [_ [_ email password]]
-            {:fx [[:dispatch [::sign-out]]
+            {:fx [; [:dispatch [::sign-out]]
                   [::fb-reframe/firebase-sign-in {:email email
                                                   :password password
                                                   :success ::sign-in-success

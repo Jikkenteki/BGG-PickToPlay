@@ -14,7 +14,7 @@
   [funcool/tubax "2021.05.20-0"]
   ;; [cljs-http "0.1.46"]
   ;; [org.clojars.dranidis/vector-to-map "0.1.1-SNAPSHOT"]
-  [org.clojars.dranidis/re-frame-firebase-nine "0.1.7-SNAPSHOT"]]
+  [org.clojars.dranidis/re-frame-firebase-nine "0.1.8-SNAPSHOT"]]
 
 
  :dev-http

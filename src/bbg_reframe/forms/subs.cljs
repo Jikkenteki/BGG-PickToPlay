@@ -23,11 +23,14 @@
 
 (re-frame/reg-sub
  ::dropdown-select-options
- (fn [db [_ path all-options]]
-   (->> all-options
-        (filter
-         (fn [{:keys [_ name]}]
-           (or (nil? (get-in db path)) (is-substring? (get-in db path) name)))))))
+ (fn [db [_ path all-options {:keys [sort? by]}]]
+   (let [unsorted (->> all-options
+                       (filter
+                        (fn [{:keys [_ name]}]
+                          (or (nil? (get-in db path)) (is-substring? (get-in db path) name)))))]
+     (if sort?
+       (sort (fn [g1 g2] (< (get g1 by) (get g2 by))) unsorted)
+       unsorted))))
 
 (re-frame/reg-sub
  ::dropdown-select-size

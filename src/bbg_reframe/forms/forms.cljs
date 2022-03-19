@@ -68,7 +68,7 @@
    \n - button-text-empty is the button text when nothing is selected,
    \n - input-placeholder is the placeholder for the search text box,
    \n - select-nothing-text is the text in the first (Nothing) option."
-  [{:keys [db-path options id-keyword display-keyword button-text-empty input-placeholder select-nothing-text] :as config}]
+  [{:keys [db-path options id-keyword display-keyword button-text-empty input-placeholder select-nothing-text sort?] :as config}]
   {:pre [(is (spec/valid?
               (spec/keys :req-un [db-path options]) config))]}
   (let [[options id-keyword display-keyword]
@@ -92,7 +92,8 @@
         button-text (if-nil?->value value button-text-empty)
         visible? (db-get-ref (into [:dropdown-search :visible] db-path))
         display-style {:display (if (if-nil?->value @visible? false) "block" "none")}
-        select-options @(re-frame/subscribe [::form-subs/dropdown-select-options (into [:dropdown-search :search] db-path) options])
+        select-options @(re-frame/subscribe [::form-subs/dropdown-select-options (into [:dropdown-search :search] db-path)
+                                             options {:sort? sort? :by display-keyword}])
         style {:width "100%"}]
 
     [:div

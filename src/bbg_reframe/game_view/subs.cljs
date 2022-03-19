@@ -2,7 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [bbg-reframe.subs :as subs]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [bbg-reframe.forms.events :as form-events]))
+            [bbg-reframe.forms.events :as form-events]
+            [bbg-reframe.forms.utils :refer [if-nil?->value]]))
 
 
 
@@ -12,7 +13,7 @@
  ::on-auth-value
  :<- [::fb-reframe/on-auth-state-changed]
  (fn [uid [_ path]]
-   @(re-frame/subscribe [::fb-reframe/on-value (concat ["users" uid] path)])))
+   (if-nil?->value @(re-frame/subscribe [::fb-reframe/on-value (concat ["users" uid] path)]) nil)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

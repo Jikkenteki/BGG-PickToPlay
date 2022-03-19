@@ -35,7 +35,8 @@
                         :display-keyword :name
                         :button-text-empty "Click to select a game"
                         :input-placeholder "Type to find a game"
-                        :select-nothing-text "(no selection)"})]
+                        :select-nothing-text "(no selection)"
+                        :sort? true})]
 
      [:button.button.min-w-fit.px-2.ml-1 {:on-click (fn [_]
                                                       ;;  (db-set-value! [:game-form :add-to-collection (str id)] nil)
