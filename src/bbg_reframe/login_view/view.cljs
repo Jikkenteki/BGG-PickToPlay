@@ -9,7 +9,7 @@
             [clojure.string :refer [trim]]
             [bbg-reframe.forms.events :as form-events]
             [bbg-reframe.events :as events]
-            [bbg-reframe.game-view.subs :as game-subs]))
+            [bbg-reframe.network-events :as network-events]))
 
 (defn save-games
   []
@@ -19,8 +19,7 @@
 
 (defn fetch-games
   []
-  (let [cached @(re-frame/subscribe [::game-subs/cached-games])]
-    (println "Fetch" cached)))
+  (re-frame/dispatch [::network-events/fetch-games]))
 
 (defn login-comp
   []
@@ -43,12 +42,13 @@
      [:button.button.min-w-fit.px-2.ml-1
       {:on-click #(re-frame/dispatch [::login-events/sign-up email password])} "Sign up"]
      [:button.button.min-w-fit.px-2.ml-1
-      {:on-click #(re-frame/dispatch
+      {:disabled (nil? @(re-frame/subscribe [::login-subs/email]))
+       :on-click #(re-frame/dispatch
                    [::login-events/sign-out])} "Sign out"]
      [:button.button.min-w-fit.px-2.ml-1
-      {:on-click save-games} "Save games to account"]
+      {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click save-games} "Save games to account"]
      [:button.button.min-w-fit.px-2.ml-1
-      {:on-click fetch-games} "Fetch games from account"]]))
+      {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click fetch-games} "Fetch games from account"]]))
 
 (defn login-view-panel
   []

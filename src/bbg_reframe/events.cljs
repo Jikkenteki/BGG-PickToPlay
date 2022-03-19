@@ -123,6 +123,8 @@
                                         :data value
                                         :success #(println "Success")}}))
 
+
+
 (comment
 
   (fb-reframe/get-current-user-uid)
@@ -148,6 +150,10 @@
   allgames
 
   (re-frame/dispatch [::bbg-reframe.forms.events/set-value! [:games] (read-string cached)])
+
+
+
+  (println "HI")
 
 
 

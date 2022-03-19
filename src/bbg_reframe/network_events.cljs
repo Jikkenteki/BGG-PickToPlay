@@ -11,7 +11,9 @@
    [clojure.string :refer [split]]
    [re-frame.loggers :refer [console]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
-   [bbg-reframe.events :refer [check-spec-interceptor]]))
+   [bbg-reframe.events :refer [check-spec-interceptor]]
+   [re-frame-firebase-nine.firebase-database :refer [on-value]]
+   [re-frame-firebase-nine.fb-reframe :as fb-reframe]))
 
 
 
@@ -397,3 +399,32 @@
          :dispatch [::fetch-next-from-queue]})))
 
 
+
+;; effect for reading once
+(re-frame/reg-fx
+ ::on-value-once
+ (fn [{:keys [path success]}]
+   (on-value path #(re-frame/dispatch [success %]) true)))
+
+
+;;
+;; fetch games from firebase
+;;
+(re-frame/reg-event-fx
+ ::fetch-games
+ (fn-traced [_ [_ _]]
+            {::on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "cached-games"]
+                              :success ::read-fetched-games}}))
+
+(re-frame/reg-event-fx
+;;  [check-spec-interceptor ->games->local-store]
+ ::read-fetched-games
+ (fn-traced [{:keys [db]} [_ games]]
+            {:db (assoc db :games (read-string games))
+             :dispatch [:bbg-reframe.network-events/update-result]}))
+
+(comment
+  (on-value ["users" (fb-reframe/get-current-user-uid) "cached-games"] (fn [x] (prn x)) true)
+
+  ;
+  )
