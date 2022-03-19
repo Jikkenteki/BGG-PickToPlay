@@ -400,11 +400,7 @@
 
 
 
-;; effect for reading once
-(re-frame/reg-fx
- ::on-value-once
- (fn [{:keys [path success]}]
-   (on-value path #(re-frame/dispatch [success %]) true)))
+
 
 
 ;;
@@ -413,12 +409,12 @@
 (re-frame/reg-event-fx
  ::fetch-games
  (fn-traced [_ [_ _]]
-            {::on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "cached-games"]
-                              :success ::read-fetched-games}}))
+            {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "cached-games"]
+                                         :success ::read-fetched-games}}))
 
 (re-frame/reg-event-fx
-;;  [check-spec-interceptor ->games->local-store]
  ::read-fetched-games
+ [check-spec-interceptor ->games->local-store]
  (fn-traced [{:keys [db]} [_ games]]
             {:db (assoc db :games (read-string games))
              :dispatch [:bbg-reframe.network-events/update-result]}))
