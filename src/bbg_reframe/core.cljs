@@ -17,7 +17,7 @@
 
    [bbg-reframe.login-view.events :as login-events]
    [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config]]
-   [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed on-auth-state-changed-callback]]))
+   [re-frame-firebase-nine.firebase-auth :refer [get-auth on-auth-state-changed on-auth-state-changed-callback]]))
 
 
 (defn dev-setup []
@@ -40,6 +40,7 @@
                                         :storageBucket "help-me-pick-what-to-play.appspot.com",
                                         :messagingSenderId "780911312465",
                                         :appId "1:780911312465:web:bbd9007195b3c630910270"}})
+  (get-auth)
   (set-browser-session-persistence)
   (on-auth-state-changed on-auth-state-changed-callback)
 
