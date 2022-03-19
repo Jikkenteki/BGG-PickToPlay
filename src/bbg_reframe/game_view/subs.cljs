@@ -3,7 +3,8 @@
             [bbg-reframe.subs :as subs]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.forms.events :as form-events]
-            [bbg-reframe.forms.utils :refer [if-nil?->value]]))
+            [bbg-reframe.forms.utils :refer [if-nil?->value]]
+            [cljs.reader :refer [read-string]]))
 
 
 
@@ -51,3 +52,14 @@
    (let [val ((keyword id) value)]
      (re-frame/dispatch [::form-events/set-value! [:game-form :group-with id] val])
      val)))
+
+
+(re-frame/reg-sub
+ ::cached-games
+ :<- [::fb-reframe/on-value ["users" (fb-reframe/get-current-user-uid) "cached-games"]]
+ :<- [::subs/db]
+ (fn [[value db] [_ _]]
+   (let [games (read-string value)]
+     (println "Writing in db")
+     (assoc db :fetched-games games)
+     games)))

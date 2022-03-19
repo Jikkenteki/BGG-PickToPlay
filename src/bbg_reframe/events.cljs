@@ -10,7 +10,10 @@
    [bbg-reframe.spec.db-spec :as db-spec]
    [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]
    [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-   [re-frame.db :as db]))
+   [re-frame.db :as db]
+   [bbg-reframe.game-view.subs]
+   [cljs.reader :refer [read-string]]
+   [bbg-reframe.forms.events :as db-events]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -114,14 +117,15 @@
 
 ;; fb
 (re-frame/reg-event-fx
- ::fb-save-games
+ ::fb-set
  (fn-traced [_ [_ path value]]
-            {::fb-reframe/firebase-set {:path path
+            {::fb-reframe/firebase-set {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
                                         :data value
                                         :success #(println "Success")}}))
 
 (comment
 
+  (fb-reframe/get-current-user-uid)
   (def db @re-frame.db/app-db)
   (def first-game (-> (:games db)
                       (vals)
@@ -130,8 +134,21 @@
   (def first-game-value {(:id first-game) first-game})
   first-game-value
   (fb-reframe/get-current-user-uid)
-  (re-frame/dispatch [::fb-save-games ["users" (fb-reframe/get-current-user-uid) "cached-games"] (str first-game-value)])
+  (re-frame/dispatch [::fb-set ["cached-games"] (str first-game-value)])
 
-  (re-frame/dispatch [::fb-save-games ["users" (fb-reframe/get-current-user-uid) "bgg-user-name"] "ddmits"])
+  (re-frame/dispatch [::fb-set ["test"] "value"])
+
+  @(re-frame/subscribe [::cached-games])
+  (def cached @(re-frame/subscribe [::bbg-reframe.game-view.subs/on-auth-value ["cached-games"]]))
+  cached
+
+  (read-string cached)
+
+  (def allgames @(re-frame/subscribe [::bbg-reframe.forms.events/get-value [:games]]))
+  allgames
+
+  (re-frame/dispatch [::bbg-reframe.forms.events/set-value! [:games] (read-string cached)])
+
+
 
   {})

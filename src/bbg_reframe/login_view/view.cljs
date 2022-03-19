@@ -2,11 +2,25 @@
   (:require [re-frame.core :as re-frame]
             [bbg-reframe.forms.forms :refer [input]]
             [bbg-reframe.forms.subs :as subs]
-            [bbg-reframe.login-view.events :as events]
+            [bbg-reframe.login-view.events :as login-events]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.login-view.subs :as login-subs]
             [bbg-reframe.forms.utils :refer [if-nil?->value]]
-            [clojure.string :refer [trim]]))
+            [clojure.string :refer [trim]]
+            [bbg-reframe.forms.events :as form-events]
+            [bbg-reframe.events :as events]
+            [bbg-reframe.game-view.subs :as game-subs]))
+
+(defn save-games
+  []
+  (let [games @(re-frame/subscribe [::form-events/get-value [:games]])]
+    (println "Save" games)
+    (re-frame/dispatch [::events/fb-set ["cached-games"] (str games)])))
+
+(defn fetch-games
+  []
+  (let [cached @(re-frame/subscribe [::game-subs/cached-games])]
+    (println "Fetch" cached)))
 
 (defn login-comp
   []
@@ -25,12 +39,16 @@
 
 
      [:button.button.min-w-fit.px-2.ml-1
-      {:on-click #(re-frame/dispatch [::events/sign-in email password])} "Sign in"]
+      {:on-click #(re-frame/dispatch [::login-events/sign-in email password])} "Sign in"]
      [:button.button.min-w-fit.px-2.ml-1
-      {:on-click #(re-frame/dispatch [::events/sign-up email password])} "Sign up"]
+      {:on-click #(re-frame/dispatch [::login-events/sign-up email password])} "Sign up"]
      [:button.button.min-w-fit.px-2.ml-1
       {:on-click #(re-frame/dispatch
-                   [::events/sign-out])} "Sign out"]]))
+                   [::login-events/sign-out])} "Sign out"]
+     [:button.button.min-w-fit.px-2.ml-1
+      {:on-click save-games} "Save games to account"]
+     [:button.button.min-w-fit.px-2.ml-1
+      {:on-click fetch-games} "Fetch games from account"]]))
 
 (defn login-view-panel
   []
