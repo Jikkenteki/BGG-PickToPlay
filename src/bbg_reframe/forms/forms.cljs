@@ -34,9 +34,11 @@
 
 (defmulti input-element (fn [{:keys [type]}] type))
 
-(defmethod input-element :default [{:keys [type path post-fn]}]
-  [:input.input-box.min-w-0.grow.h-full {:type (name type) :value @(db-get-ref path)
-                                         :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}])
+(defmethod input-element :default [{:keys [type path post-fn class placeholder]}]
+  [:input {:class class
+           :type (name type) :value @(db-get-ref path)
+           :placeholder placeholder
+           :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}])
 
 (defmethod input-element :checkbox [{:keys [type path post-fn]}]
   (let [checked @(db-get-ref path)]

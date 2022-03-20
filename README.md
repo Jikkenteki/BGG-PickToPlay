@@ -7,7 +7,8 @@ games from [Boardgamegeek](https://boardgamegeek.com/).
 
 Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-what-to-play.web.app/)
 
-# Firebase instructions
+# Developer instructions
+## Firebase instructions
 
 Run to install tools and login
 ```
@@ -16,19 +17,23 @@ firebase login
 
 ```
 
-Run to create/connect to a project and follow the instructions:
+### To create a new Firebase configuration 
+
+This will overwrite the files ```firebase.json``` and ```.firebaserc```.
+
+Run to create/connect to a Firebase project and follow the instructions:
 ```
 firebase init
 ```
 
-Install firebase in the project
+### Install firebase in the project
 
 ```
 npm install firebase
 ```
 
 In the firebase console:
-* At Project settings: get the SDK setup and configuration of the app and update the file ```firebase/firebase_app.cljs```.
+* At Project settings: get the SDK setup and configuration of the app and update the file ```core.cljs```.
   * Example: 
   ```
   {
@@ -41,7 +46,7 @@ In the firebase console:
   appId: "1:1052651152055:web:4971b846529e25aa0ba332"}
   ```
 
-* At Authenication: enable the authentication with an email/password provider.
+* At Authentication: enable the authentication with an email/password provider.
 
 
 Edit the database rules in ```database.rules.json```. Deploy the database rules:

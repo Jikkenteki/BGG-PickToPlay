@@ -1,6 +1,6 @@
 (ns bbg-reframe.login-view.view
   (:require [re-frame.core :as re-frame]
-            [bbg-reframe.forms.forms :refer [input]]
+            [bbg-reframe.forms.forms :refer [input input-element]]
             [bbg-reframe.forms.subs :as subs]
             [bbg-reframe.login-view.events :as login-events]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
@@ -27,14 +27,16 @@
         password @(re-frame/subscribe [::subs/get-value [:login-form :password]])]
     [:div
      [:h1 "HMPWTP account"]
-     [:h1 " User: " (if-nil?->value @(re-frame/subscribe [::login-subs/email]) "(none)")]
-     [input {:label "email"
-             :type :text
-             :path [:login-form :email]
-             :post-fn trim}]
-     [input {:label "password"
-             :type :password
-             :path [:login-form :password]}]
+     [:h1 " Signed-in user email: " (if-nil?->value @(re-frame/subscribe [::login-subs/email]) "(not signed-in)")]
+     [input-element {:class "input-box min-w-0 grow h-full"
+                     :type :text
+                     :placeholder "email"
+                     :path [:login-form :email]
+                     :post-fn trim}]
+     [input-element {:class "input-box min-w-0 grow h-full"
+                     :type :password
+                     :placeholder "password"
+                     :path [:login-form :password]}]
 
 
      [:button.button.min-w-fit.px-2.ml-1
