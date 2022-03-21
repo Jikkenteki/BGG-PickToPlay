@@ -1,30 +1,23 @@
 (ns bbg-reframe.login-view.view
   (:require [re-frame.core :as re-frame]
-            [bbg-reframe.forms.forms :refer [input input-element]]
-            [bbg-reframe.forms.subs :as subs]
+            [bbg-reframe.forms.forms :refer [input-element]]
             [bbg-reframe.login-view.events :as login-events]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.login-view.subs :as login-subs]
             [bbg-reframe.forms.utils :refer [if-nil?->value]]
             [clojure.string :refer [trim]]
-            [bbg-reframe.forms.events :as form-events]
-            [bbg-reframe.events :as events]
-            [bbg-reframe.network-events :as network-events]))
+            [bbg-reframe.forms.subs :as form-subs]
+            [bbg-reframe.firebase.events :as fb-events]))
 
 (defn save-games
   []
-  (let [games @(re-frame/subscribe [::form-events/get-value [:games]])]
-    (println "Save" games)
-    (re-frame/dispatch [::events/fb-set ["cached-games"] (str games)])))
-
-(defn fetch-games
-  []
-  (re-frame/dispatch [::network-events/fetch-games]))
+  (let [games @(re-frame/subscribe [::form-subs/get-value [:games]])]
+    (re-frame/dispatch [::fb-events/fb-set ["cached-games"] (str games)])))
 
 (defn login-comp
   []
-  (let [email @(re-frame/subscribe [::subs/get-value [:login-form :email]])
-        password @(re-frame/subscribe [::subs/get-value [:login-form :password]])]
+  (let [email @(re-frame/subscribe [::form-subs/get-value [:login-form :email]])
+        password @(re-frame/subscribe [::form-subs/get-value [:login-form :password]])]
     [:div
      [:h1 "HMPWTP account"]
      [:h1 " Signed-in user email: " (if-nil?->value @(re-frame/subscribe [::login-subs/email]) "(not signed-in)")]
@@ -50,7 +43,7 @@
      [:button.button.min-w-fit.px-2.ml-1
       {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click save-games} "Save games to account"]
      [:button.button.min-w-fit.px-2.ml-1
-      {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click fetch-games} "Fetch games from account"]]))
+      {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click #(re-frame/dispatch [::fb-events/fetch-games])} "Fetch games from account"]]))
 
 (defn login-view-panel
   []

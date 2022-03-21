@@ -2,18 +2,18 @@
   (:require [re-frame.core :as re-frame]
             [clojure.spec.alpha :as spec]
             [clojure.test :refer [is]]
-            [bbg-reframe.forms.subs :as form-subs]
-            [bbg-reframe.forms.events :as form-events]
+            [bbg-reframe.forms.subs :as subs]
+            [bbg-reframe.forms.events :as events]
             [bbg-reframe.forms.utils :refer [find-key-value-in-map-list if-nil?->value]]))
 
 
 (defn db-get-ref
   [db-path]
-  (re-frame/subscribe [::form-events/get-value db-path]))
+  (re-frame/subscribe [::subs/get-value db-path]))
 
 (defn db-set-value!
   [db-path value]
-  (re-frame/dispatch [::form-events/set-value! db-path value]))
+  (re-frame/dispatch [::events/set-value! db-path value]))
 
 ;;
 ;; functions for generic form inputs
@@ -24,26 +24,29 @@
   (throw (js/Error. (str "No dispatch method for form input element of type: " type " for path: " path))))
 
 (defmethod dispatch :text [_ path value]
-  (re-frame/dispatch [::form-events/set-value! path value]))
+  (re-frame/dispatch [::events/set-value! path value]))
 
 (defmethod dispatch :password [_ path value]
-  (re-frame/dispatch [::form-events/set-value! path value]))
+  (re-frame/dispatch [::events/set-value! path value]))
 
 (defmethod dispatch :checkbox [_ path _]
-  (re-frame/dispatch [::form-events/update-value! path not]))
+  (re-frame/dispatch [::events/update-value! path not]))
 
 (defmulti input-element (fn [{:keys [type]}] type))
 
 (defmethod input-element :default [{:keys [type path post-fn class placeholder]}]
-  [:input {:class class
-           :type (name type) :value @(db-get-ref path)
-           :placeholder placeholder
-           :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}])
+  (let [post-fn (if-nil?->value post-fn identity)]
+    [:input {:class class
+             :type (name type) :value @(db-get-ref path)
+             :placeholder placeholder
+             :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
 
 (defmethod input-element :checkbox [{:keys [type path post-fn]}]
-  (let [checked @(db-get-ref path)]
+  (let [post-fn (if-nil?->value post-fn identity)
+        checked @(db-get-ref path)]
     [:input.checkbox {:type (name type) :checked (if (nil? checked) false checked)
                       :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
+
 (defn input
   [{:keys [label type path post-fn] :as params}]
   {:pre [(is (spec/valid?
@@ -97,7 +100,7 @@
         button-text (if-nil?->value value button-text-empty)
         visible? (db-get-ref (into [:dropdown-search :visible] db-path))
         display-style {:display (if (if-nil?->value @visible? false) "block" "none")}
-        select-options @(re-frame/subscribe [::form-subs/dropdown-select-options (into [:dropdown-search :search] db-path)
+        select-options @(re-frame/subscribe [::subs/dropdown-select-options (into [:dropdown-search :search] db-path)
                                              options {:sort? sort? :by display-keyword}])
         style {:width "100%"}]
 
@@ -113,7 +116,7 @@
                                             :on-change #(db-set-value! (into [:dropdown-search :search] db-path) (-> % .-target .-value))}]
 
      [:select.select {:style (merge display-style style)
-                      :size @(re-frame/subscribe [::form-subs/dropdown-select-size (into [:dropdown-search :search] db-path) options])
+                      :size @(re-frame/subscribe [::subs/dropdown-select-size (into [:dropdown-search :search] db-path) options])
                       :value (if-nil?->value value "")
                       :on-change
                       (fn [e]
