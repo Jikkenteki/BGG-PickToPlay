@@ -2,11 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
-(re-frame/reg-sub
- ::get-value
- (fn [db [_ path]]
-   (get-in db path)))
-
 (re-frame/reg-event-db
  ::set-value!
  (fn-traced

@@ -10,9 +10,6 @@
   [v default]
   (if (nil? v) default v))
 
-
-
-
 (defn find-key-value-in-map-list
   "Search a list of maps and return the first map in which the key value pair exists."
   [list keyword value]
