@@ -11,12 +11,6 @@
   (let [route-params @(re-frame/subscribe [::subs/route-params 1])
         game @(re-frame/subscribe [::game-view-subs/game (:id route-params)])
         id (:id game)
-        ;; subscriptions for reading from the DB
-        ;; sub events update :game-form which are used by the 
-        ;; elements in the form
-        ;; _ @(re-frame/subscribe [::game-view-subs/on-auth-path ["available" id]])
-        ;; _ @(re-frame/subscribe [::game-view-subs/on-auth-path ["group-with" id]])
-
         _ @(re-frame/subscribe [::game-view-subs/available id])
         _ @(re-frame/subscribe [::game-view-subs/group-with id])]
 
