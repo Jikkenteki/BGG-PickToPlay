@@ -34,17 +34,16 @@
 (re-frame/reg-event-fx
  ::sign-in-error
  (fn-traced [{:keys [db]} [_ error]]
-            (println "Sign-in error" (js->clj error))
+            (.log js/console error)
             {:db (assoc db :error "Error signing in!")
              :dispatch-later {:ms 2000
                               :dispatch [::events/reset-error]}}))
 
-
 (re-frame/reg-event-db
  ::sign-out-success
  (fn-traced [db [_]]
-            (let [_ (println "User signed-out")] (dissoc db :email))))
-
+            (let [_ (println "User signed-out")]
+              (dissoc db :email))))
 
 (re-frame/reg-event-fx
  ::sign-in
@@ -59,6 +58,7 @@
  ::sign-up-success
  (fn-traced [db [_ userCredential]]
             (println "User created")
+            (.log js/console userCredential)
             (let [email (.-email (.-user userCredential))]
               (assoc db :email email))))
 

@@ -4,15 +4,15 @@
    [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
    [ajax.core :as ajax]
    [clojure.tools.reader.edn :refer [read-string]]
+   [clojure.string :refer [split]]
+   [re-frame.loggers :refer [console]]
+
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games game-weight]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players should-show-expansions?]]
-   [clojure.string :refer [split]]
-   [re-frame.loggers :refer [console]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
    [bbg-reframe.events :refer [check-spec-interceptor]]))
-
 
 
 (defn games->local-store

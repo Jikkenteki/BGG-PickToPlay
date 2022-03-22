@@ -16,9 +16,6 @@
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
 
-
-
-
 (defn home-panel []
   [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
    [:h1.text-3xl.font-bold.mb-2.px-1
@@ -34,9 +31,7 @@
 (defmethod routes/panels :game-view-panel [] [game-view-panel])
 (defmethod routes/panels :login-view-panel [] [login-view-panel])
 
-
 ;; main
-
 (defn main-panel []
   (let [active-panel (re-frame/subscribe [::subs/active-panel])]
     (routes/panels @active-panel)))

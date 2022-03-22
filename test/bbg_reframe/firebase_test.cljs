@@ -43,5 +43,7 @@
            _ (db-set-value! [:games] games)
            _ (save-games)
            _ (re-frame/dispatch-sync [::events/initialize-db])
-           _ (re-frame/dispatch [::fb-events/fetch-games])]
+           _ (println (:games  @db))
+           _ (re-frame/dispatch [::fb-events/fetch-games])
+           _ (println (:games  @db))]
        (is (= games (:games @db)))))))
