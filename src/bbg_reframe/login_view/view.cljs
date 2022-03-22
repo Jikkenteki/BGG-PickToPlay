@@ -1,18 +1,17 @@
 (ns bbg-reframe.login-view.view
   (:require [re-frame.core :as re-frame]
-            [bbg-reframe.forms.forms :refer [input-element]]
-            [bbg-reframe.login-view.events :as login-events]
-            [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
-            [bbg-reframe.login-view.subs :as login-subs]
-            [bbg-reframe.forms.utils :refer [if-nil?->value]]
             [clojure.string :refer [trim]]
+            [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
+            [bbg-reframe.forms.forms :refer [input-element]]
+            [bbg-reframe.forms.utils :refer [if-nil?->value]]
             [bbg-reframe.forms.subs :as form-subs]
-            [bbg-reframe.firebase.events :as fb-events]))
+            [bbg-reframe.firebase.events :as fb-events]
+            [bbg-reframe.login-view.events :as login-events]
+            [bbg-reframe.login-view.subs :as login-subs]))
 
 (defn save-games
   []
-  (let [games @(re-frame/subscribe [::form-subs/get-value [:games]])]
-    (re-frame/dispatch [::fb-events/fb-set ["cached-games"] (str games)])))
+  (re-frame/dispatch [::fb-events/fb-save-games]))
 
 (defn login-comp
   []
@@ -30,7 +29,6 @@
                      :type :password
                      :placeholder "password"
                      :path [:login-form :password]}]
-
 
      [:button.button.min-w-fit.px-2.ml-1
       {:on-click #(re-frame/dispatch [::login-events/sign-in email password])} "Sign in"]

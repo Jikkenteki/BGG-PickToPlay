@@ -17,7 +17,7 @@
                                                                ["group-with" id] (get-in db [:game-form :group-with id])
                                                         ;;    ["collections" (get-in db [:game-form :add-to-collection id]) "games" id] true
                                                                }
-                                               :success #(println "Success")}}))))
+                                               :success #(println "Successfully saved game: " id)}}))))
 
 (comment
 

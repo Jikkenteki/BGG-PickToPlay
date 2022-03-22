@@ -25,8 +25,7 @@
 (re-frame/reg-sub
  ::form
  (fn [db [_ id]]
-   (let [value (get-in db [:form id])]
-     value)))
+   (get-in db [:form id])))
 
 (re-frame/reg-sub
  ::loading
@@ -76,7 +75,3 @@
  (fn [db _]
    (get-in db [:route :route-params])))
 
-(re-frame/reg-sub
- ::email
- (fn [db]
-   (:email db)))
