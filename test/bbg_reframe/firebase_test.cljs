@@ -64,7 +64,7 @@
                                       (on-auth-state-changed-callback x)))
            _ (re-frame/dispatch-sync [::events/initialize-db])
            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
-       (rf-test/wait-for [::login-events/auth-state-changed]
-                         (is (= email @db-email)))))))
+       (rf-test/wait-for [::login-events/sign-in-success]
+                         (is (= email (fb-reframe/get-current-user-email))))))))
 
 
