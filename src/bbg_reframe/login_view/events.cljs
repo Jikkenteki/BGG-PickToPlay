@@ -5,31 +5,23 @@
             [bbg-reframe.network-events :as events]
             [re-frame-firebase-nine.firebase-auth :refer [get-current-user on-auth-state-changed on-auth-state-changed-callback]]))
 
-(def poll-time-interval-ms 1000)
+(re-frame/reg-event-db
+ ::auth-state-changed
+ (fn-traced [db [_ _]]
+            (if (get-current-user)
+              (assoc db :email (fb-reframe/get-current-user-email))
+              db)))
 
-(re-frame/reg-event-fx
- ::poll-user
- (fn-traced [cofx [_ timeout]]
-            (let [time (::time (:db cofx))]
-              (if (> time timeout)
-                (do
-                  (println "Log in")
-                  {})
-                (if (get-current-user)
-                  {:db (assoc (:db cofx) :email (fb-reframe/get-current-user-email))}
-                  {:db (assoc (:db cofx) ::time (+ time poll-time-interval-ms))
-                   :dispatch-later {:ms poll-time-interval-ms
-                                    :dispatch [::poll-user timeout]}})))))
-
+(re-frame/reg-event-db
+ ::set-uid
+ (fn-traced [db [_ uid]]
+            (assoc db :uid uid)))
 
 (re-frame/reg-event-fx
  ::sign-in-success
- (fn-traced [{:keys [db]} [_ userCredential]]
-            (println "User signed-in")
-            (let [email (.-email (.-user userCredential))]
-              {:db (assoc db :email email)
-              ;;  :dispatch [::events/navigate [:home]]
-               })))
+ (fn-traced [_ [_ userCredential]]
+            (println "User signed-in: " (.-email (.-user userCredential)))
+            {}))
 
 (re-frame/reg-event-fx
  ::sign-in-error
@@ -59,8 +51,7 @@
  (fn-traced [db [_ userCredential]]
             (println "User created")
             (.log js/console userCredential)
-            (let [email (.-email (.-user userCredential))]
-              (assoc db :email email))))
+            db))
 
 (re-frame/reg-event-fx
  ::sign-up

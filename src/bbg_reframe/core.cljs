@@ -45,7 +45,6 @@
 
   (get-auth)
   (set-browser-session-persistence)
-  (on-auth-state-changed on-auth-state-changed-callback)
 
   (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
   (remove-item! "bgg-ui-settings")
@@ -62,10 +61,10 @@
     (re-frame/dispatch [::events/update-ui-settings (read-string (get-item "bgg-ui-settings"))]))
   (re-frame/dispatch [::network-events/update-result])
 
-    ;; poll for a signed-in user for 2 seconds
   ;; auth is not ready
-  (re-frame/dispatch [::login-events/poll-user 20000])
-
+  (on-auth-state-changed (fn [x]
+                           (re-frame/dispatch [::login-events/auth-state-changed])
+                           (on-auth-state-changed-callback x)))
   (dev-setup)
   (mount-root))
 

@@ -11,8 +11,7 @@
 
 (defn save-games
   []
-  (let [games @(re-frame/subscribe [::form-subs/get-value [:games]])]
-    (re-frame/dispatch [::fb-events/fb-set ["cached-games"] (str games)])))
+  (re-frame/dispatch [::fb-events/fb-save-games]))
 
 (defn login-comp
   []
@@ -30,7 +29,6 @@
                      :type :password
                      :placeholder "password"
                      :path [:login-form :password]}]
-
 
      [:button.button.min-w-fit.px-2.ml-1
       {:on-click #(re-frame/dispatch [::login-events/sign-in email password])} "Sign in"]

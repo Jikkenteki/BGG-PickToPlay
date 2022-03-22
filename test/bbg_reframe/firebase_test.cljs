@@ -40,8 +40,10 @@
            _ (re-frame/dispatch-sync [::events/initialize-db])
            games {"1" {:id "1" :name "game1"}
                   "2" {:id "2" :name "game2"}}
+           _ (println (:games  @db))
            _ (db-set-value! [:games] games)
            _ (save-games)
+           _ (println (:games  @db))
            _ (re-frame/dispatch-sync [::events/initialize-db])
            _ (println (:games  @db))
            _ (re-frame/dispatch [::fb-events/fetch-games])

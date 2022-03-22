@@ -6,10 +6,10 @@
 
 ;; fb
 (re-frame/reg-event-fx
- ::fb-set
- (fn-traced [_ [_ path value]]
-            {::fb-reframe/firebase-set {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
-                                        :data value
+ ::fb-save-games
+ (fn-traced [{:keys [db]} [_]]
+            {::fb-reframe/firebase-set {:path (into ["users" (fb-reframe/get-current-user-uid)] ["cached-games"])
+                                        :data (str (:games db))
                                         :success #(println "Success")}}))
 ;;
 ;; fetch games from firebase
