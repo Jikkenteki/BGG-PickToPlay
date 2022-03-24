@@ -102,7 +102,7 @@
         display-style {:display (if (if-nil?->value @visible? false) "block" "none")}
         select-options @(re-frame/subscribe [::subs/dropdown-select-options (into [:dropdown-search :search] db-path)
                                              options {:sort? sort? :by display-keyword}])
-        style {:width "100%"}]
+        style {:width "98%"}]
 
     [:div
      [:button.button.min-w-fit.px-2.ml-1 {:style style

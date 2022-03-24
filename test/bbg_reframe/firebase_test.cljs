@@ -17,7 +17,6 @@
 (defn connect-fb-emulator
   []
   (fb-reframe-config config/fb-reframe-config-map)
-
   (connect-emulator))
 
 (deftest test-db-test-value
@@ -60,5 +59,3 @@
            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
        (rf-test/wait-for [::login-events/sign-in-success]
                          (is (= email (fb-reframe/get-current-user-email))))))))
-
-
