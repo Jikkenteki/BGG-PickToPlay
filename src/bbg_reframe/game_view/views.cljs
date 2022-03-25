@@ -3,7 +3,7 @@
             [bbg-reframe.subs :as subs]
             [bbg-reframe.game-view.subs :as game-view-subs]
             [bbg-reframe.game-view.events :as game-view-events]
-            [bbg-reframe.forms.forms :refer [input dropdown-search   db-get-ref]]
+            [bbg-reframe.forms.forms :refer [dropdown-search   db-get-ref input-element]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
 
 (defn personal-info
@@ -11,10 +11,18 @@
   (let [form-path [:game-form game-id]
         ;; subscribe for side-effects: one-time dispatch of stored value
         _ @(re-frame/subscribe [::game-view-subs/available game-id (into form-path [:available])])
-        _ @(re-frame/subscribe [::game-view-subs/group-with game-id (into form-path [:group-with])])]
+        _ @(re-frame/subscribe [::game-view-subs/group-with game-id (into form-path [:group-with])])
+        _ @(re-frame/subscribe [::game-view-subs/comment game-id (into form-path [:comment])])]
     [:div.border-2.p-2
      [:h2 "Personal Information"]
-     [input {:label "Available" :type :checkbox :path (into form-path [:available])}]
+     [:div
+      [:label "Comment"] [:br]
+      [input-element {:type :textarea :path (into form-path [:comment])
+                      :placeholder "Write a comment..."
+                      :class "input-box min-w-0 grow h-full"}]]
+     [:div
+      [:label "Available"]
+      [input-element {:type :checkbox :path (into form-path [:available])}]]
      [:div
       [:label "Group Item with"]
       (dropdown-search {:db-path (into form-path [:group-with])
@@ -24,7 +32,10 @@
                         :button-text-empty "Click to select a game"
                         :input-placeholder "Type to find a game"
                         :select-nothing-text "(no game)"
-                        :sort? true})]
+                        :sort? true
+                        :button-class "button min-w-fit px-2 ml-1"
+                        :input-class "input-box min-w-0 grow h-full"
+                        :option-class "option bg-stone-800 text-neutral-200"})]
 
      [:button.button.min-w-fit.px-2.ml-1
       {:on-click (fn [_]
@@ -33,6 +44,7 @@
                     [::game-view-events/save-game {:id game-id
                                                    :available @(db-get-ref (into form-path [:available]))
                                                    :group-with @(db-get-ref (into form-path [:group-with]))
+                                                   :comment @(db-get-ref (into form-path [:comment]))
                                                     ;; :add-to-collection  @(db-get-ref [:game-form :add-to-collection id])
                                                    }]))}"Save"]]))
 (defn game-view-panel

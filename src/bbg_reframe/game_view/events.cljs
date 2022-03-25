@@ -6,7 +6,7 @@
 
 (re-frame/reg-event-fx
  ::save-game
- (fn-traced [{:keys [db]} [_ {:keys [id available group-with
+ (fn-traced [{:keys [db]} [_ {:keys [id available group-with comment
                                      ;add-to-collection
                                      ]}]]
             (let [user-id (fb-reframe/get-current-user-uid)]
@@ -17,6 +17,7 @@
                 {::fb-reframe/firebase-update {:path ["users" user-id]
                                                :path-data-map {["available" id] (if available available nil)
                                                                ["group-with" id] group-with
+                                                               ["comment" id] comment
                                                           ;;  ["collections" add-to-collection "games" id] true
                                                                }
                                                :success #(println "Successfully saved game: " id)}}))))
