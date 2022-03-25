@@ -17,7 +17,6 @@
 (defn connect-fb-emulator
   []
   (fb-reframe-config config/fb-reframe-config-map)
-
   (connect-emulator))
 
 (deftest test-db-test-value
@@ -50,8 +49,7 @@
 (deftest test-sign-in
   (testing "sign-up"
     (rf-test/run-test-async
-     (let [db-email (re-frame/subscribe [::login-subs/email])
-           email "dranidis@gmail.com"
+     (let [email "dranidis@gmail.com"
            _ (connect-fb-emulator-empty-db)
            _ (on-auth-state-changed (fn [x]
                                       (re-frame/dispatch [::login-events/auth-state-changed])
@@ -60,5 +58,3 @@
            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
        (rf-test/wait-for [::login-events/sign-in-success]
                          (is (= email (fb-reframe/get-current-user-email))))))))
-
-

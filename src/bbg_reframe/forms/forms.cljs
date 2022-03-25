@@ -24,13 +24,26 @@
   (throw (js/Error. (str "No dispatch method for form input element of type: " type " for path: " path))))
 
 (defmethod dispatch :text [_ path value]
-  (re-frame/dispatch [::events/set-value! path value]))
+  (re-frame/dispatch [::events/set-value! path value])
+  ;; (re-frame/dispatch [::events/set-value! (into [:form-changed-value] path) true])
+  )
+
+(defmethod dispatch :textarea [_ path value]
+  (re-frame/dispatch [::events/set-value! path value])
+  ;; (re-frame/dispatch [::events/set-value! (into [:form-changed-value] path) true])
+  )
 
 (defmethod dispatch :password [_ path value]
-  (re-frame/dispatch [::events/set-value! path value]))
+  (re-frame/dispatch [::events/set-value! path value])
+  ;; (re-frame/dispatch [::events/set-value! (into [:form-changed-value] path) true])
+  )
+
 
 (defmethod dispatch :checkbox [_ path _]
-  (re-frame/dispatch [::events/update-value! path not]))
+  (re-frame/dispatch [::events/update-value! path not])
+  ;; (re-frame/dispatch [::events/update-value! (into [:form-changed-value] path) not])
+  )
+
 
 (defmulti input-element (fn [{:keys [type]}] type))
 
@@ -41,20 +54,20 @@
              :placeholder placeholder
              :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
 
+(defmethod input-element :textarea [{:keys [type path post-fn class placeholder]}]
+  (let [post-fn (if-nil?->value post-fn identity)]
+    [:textarea {:class class
+                :rows "3"
+                :cols "25"
+                :type (name type) :value @(db-get-ref path)
+                :placeholder placeholder
+                :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
+
 (defmethod input-element :checkbox [{:keys [type path post-fn]}]
   (let [post-fn (if-nil?->value post-fn identity)
         checked @(db-get-ref path)]
-    [:input.checkbox {:type (name type) :checked (if (nil? checked) false checked)
-                      :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
-
-(defn input
-  [{:keys [label type path post-fn] :as params}]
-  {:pre [(is (spec/valid?
-              (spec/keys :req-un [label type path]) params))]}
-  (let [post-fn (if-nil?->value post-fn identity)]
-    [:div
-     [:label label]
-     [input-element {:type type :path path :post-fn post-fn}]]))
+    [:input {:type (name type) :checked (if (nil? checked) false checked)
+             :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn string-list->map-list
@@ -75,8 +88,14 @@
    \n - display-keyword is a keyword within the maps; the value is shown in the options,
    \n - button-text-empty is the button text when nothing is selected,
    \n - input-placeholder is the placeholder for the search text box,
-   \n - select-nothing-text is the text in the first (Nothing) option."
-  [{:keys [db-path options id-keyword display-keyword button-text-empty input-placeholder select-nothing-text sort?] :as config}]
+   \n - select-nothing-text is the text in the first (Nothing) option.
+   \n - sort? boolean
+   \n - button-class css class
+   \n - input-class css class
+   \n - option-class css class"
+  [{:keys [db-path options id-keyword display-keyword button-text-empty
+           input-placeholder select-nothing-text sort?
+           style button-class input-class option-class] :as config}]
   {:pre [(is (spec/valid?
               (spec/keys :req-un [db-path options]) config))]}
   (let [[options id-keyword display-keyword]
@@ -102,36 +121,41 @@
         display-style {:display (if (if-nil?->value @visible? false) "block" "none")}
         select-options @(re-frame/subscribe [::subs/dropdown-select-options (into [:dropdown-search :search] db-path)
                                              options {:sort? sort? :by display-keyword}])
-        style {:width "100%"}]
+        style (if-nil?->value style {:width "98%"})]
 
     [:div
-     [:button.button.min-w-fit.px-2.ml-1 {:style style
-                                          :on-click #(db-set-value! (into [:dropdown-search :visible] db-path)
-                                                                    (not (if-nil?->value @visible? false)))} button-text]
+     [:button {:class button-class
+               :style style
+               :on-click #(db-set-value! (into [:dropdown-search :visible] db-path)
+                                         (not (if-nil?->value @visible? false)))} button-text]
 
-     [:input.input-box.min-w-0.grow.h-full {:style (merge display-style style)
-                                            :type :text
-                                            :placeholder input-placeholder
-                                            :value @(db-get-ref (into [:dropdown-search :search] db-path))
-                                            :on-change #(db-set-value! (into [:dropdown-search :search] db-path) (-> % .-target .-value))}]
+     [:input {:class input-class
+              :style (merge display-style style)
+              :type :text
+              :placeholder input-placeholder
+              :value @(db-get-ref (into [:dropdown-search :search] db-path))
+              :on-change #(db-set-value! (into [:dropdown-search :search] db-path) (-> % .-target .-value))}]
 
-     [:select.select {:style (merge display-style style)
-                      :size @(re-frame/subscribe [::subs/dropdown-select-size (into [:dropdown-search :search] db-path) options])
-                      :value (if-nil?->value value "")
-                      :on-change
-                      (fn [e]
-                        (let [selected-index (-> e .-target .-selectedIndex)
+     [:select {:style (merge display-style style)
+               :size @(re-frame/subscribe [::subs/dropdown-select-size (into [:dropdown-search :search] db-path)
+                                           options
+                                           {:sort? sort? :by display-keyword}])
+               :value (if-nil?->value value "")
+               :on-change
+               (fn [e]
+                 (let [selected-index (-> e .-target .-selectedIndex)
                        ;; first option is (Nothing to select)
-                              selected-id (if (= 0 selected-index)
-                                            nil
-                                            (id-keyword (nth select-options (dec selected-index))))]
-                          (db-set-value! (into [:dropdown-search :visible] db-path) false)                 ;; hide the search text and select elements
-                          (db-set-value! (into [:dropdown-search :search] db-path) "")                     ;; clear the search text
-                          (db-set-value! (into [:dropdown-search :value] db-path) (-> e .-target .-value)) ;; change the selected value
-                          (db-set-value! db-path selected-id)))}                                           ;; change in db the id of the selected element
-      [:option.option.bg-stone-800.text-neutral-200 {:value ""} select-nothing-text]
+                       selected-id (if (= 0 selected-index)
+                                     nil
+                                     (id-keyword (nth select-options (dec selected-index))))]
+                   (db-set-value! (into [:dropdown-search :visible] db-path) false)                 ;; hide the search text and select elements
+                   (db-set-value! (into [:dropdown-search :search] db-path) "")                     ;; clear the search text
+                   (db-set-value! (into [:dropdown-search :value] db-path) (-> e .-target .-value)) ;; change the selected value
+                   (db-set-value! (into db-path) selected-id)))}                                           ;; change in db the id of the selected element
+      [:option {:class option-class :value ""} select-nothing-text]
       (map (fn [m] [:option.option.bg-stone-800.text-neutral-200 {:key (id-keyword m) :id (id-keyword m) :value (display-keyword m)} (display-keyword m)])
            select-options)]]))
+
 
 
 
