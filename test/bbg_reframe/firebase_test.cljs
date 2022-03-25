@@ -6,7 +6,6 @@
             [re-frame.core :as re-frame]
             [bbg-reframe.firebase.events :as fb-events]
             [bbg-reframe.login-view.view :refer [save-games]]
-            [bbg-reframe.login-view.subs :as login-subs]
             [re-frame-firebase-nine.fb-reframe :refer [fb-reframe-config connect-emulator] :as fb-reframe]
             [bbg-reframe.events :as events]
             [bbg-reframe.login-view.events :as login-events]

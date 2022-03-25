@@ -17,15 +17,16 @@
 (js/goog.exportSymbol "sax" sax)
 
 (defn home-panel []
-  [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-   [:h1.text-3xl.font-bold.mb-2.px-1
-    "HMPWTP "
-    [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
-   [loading-games-info-comp]
-   [games-list-comp]
-   [search-results-comp]
-   [search-comp]
-   [bottom-buttons-bar-comp]])
+  (let [_ @(re-frame/subscribe [::subs/available-games])]
+    [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+     [:h1.text-3xl.font-bold.mb-2.px-1
+      "HMPWTP "
+      [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
+     [loading-games-info-comp]
+     [games-list-comp]
+     [search-results-comp]
+     [search-comp]
+     [bottom-buttons-bar-comp]]))
 
 (defmethod routes/panels :home-panel [] [home-panel])
 (defmethod routes/panels :game-view-panel [] [game-view-panel])

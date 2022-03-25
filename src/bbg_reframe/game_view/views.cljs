@@ -43,7 +43,7 @@
 (defn game-view-panel
   []
   (let [route-params @(re-frame/subscribe [::subs/route-params 1])
-        game @(re-frame/subscribe [::game-view-subs/game (:id route-params)])]
+        game @(re-frame/subscribe [::subs/game (:id route-params)])]
     [:div.max-w-xl.mx-auto.flex-col.h-full.bg-stone-800.text-neutral-100
      [naive-nav-bar]
      [:img.h-50. {:src (:thumbnail game)}]

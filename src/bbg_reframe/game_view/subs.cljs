@@ -1,6 +1,5 @@
 (ns bbg-reframe.game-view.subs
   (:require [re-frame.core :as re-frame]
-            [bbg-reframe.subs :as subs]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.forms.utils :refer [if-nil?->value]]))
 
@@ -17,16 +16,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(re-frame/reg-sub
- ::game
- :<- [::subs/games]
- (fn [games [_ id]]
-   (get games id)))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FIREBASE
 ;;
+
 
 (defn if-not-nil->get-value-with-keyword-id
   [value [_ id]]

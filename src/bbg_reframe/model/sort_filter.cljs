@@ -118,6 +118,12 @@
       (= (:type game) :expansion)
       (not= (:type game) :expansion))))
 
+(defn should-show-only-available?
+  [only-available?]
+  {:pre [(spec/valid? boolean? only-available?)]}
+  (fn [game]
+    (if only-available? (:available game) true)))
+
 (defn is-best-with-num-of-players
   [num-players]
   (fn [game]

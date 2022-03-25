@@ -10,7 +10,9 @@
    [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
    [bbg-reframe.model.db :refer [game-votes  indexed-games game-weight]]
    [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer [sorting-fun rating-higher-than? with-number-of-players? and-filters is-playable-with-num-of-players should-show-expansions?]]
+   [bbg-reframe.model.sort-filter :refer
+    [sorting-fun rating-higher-than? with-number-of-players? and-filters
+     is-playable-with-num-of-players should-show-expansions? should-show-only-available?]]
    [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
    [bbg-reframe.events :refer [check-spec-interceptor]]))
 
@@ -187,6 +189,7 @@
                            (filter
                             (and-filters
                              (should-show-expansions? (get-in db [:form :show-expansions?])) ;; show only 
+                             (should-show-only-available? (get-in db [:form :only-available?])) ;; show only 
                              (with-number-of-players?
                                (read-string (get-in db [:form :players])))
                              (rating-higher-than?
