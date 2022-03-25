@@ -35,10 +35,10 @@
 (re-frame/reg-sub
  ::available
  :<- [::on-auth-value ["available"]]
- (fn [available-games [_ id]]
+ (fn [available-games [_ id form-path]]
   ;;  (println "::available " id available-games)
    (let [value ((keyword id) available-games)]
-     (re-frame/dispatch [::form-events/set-value! [:game-form :available id] value])
+     (re-frame/dispatch [::form-events/set-value! form-path value])
      value)))
 
 ;;
@@ -47,8 +47,8 @@
 (re-frame/reg-sub
  ::group-with
  :<- [::on-auth-value ["group-with"]]
- (fn [value [_ id]]
+ (fn [value [_ id  form-path]]
    (let [val ((keyword id) value)]
-     (re-frame/dispatch [::form-events/set-value! [:game-form :group-with id] val])
+     (re-frame/dispatch [::form-events/set-value! form-path val])
      val)))
 

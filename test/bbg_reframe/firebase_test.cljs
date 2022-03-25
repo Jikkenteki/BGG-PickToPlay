@@ -49,8 +49,7 @@
 (deftest test-sign-in
   (testing "sign-up"
     (rf-test/run-test-async
-     (let [db-email (re-frame/subscribe [::login-subs/email])
-           email "dranidis@gmail.com"
+     (let [email "dranidis@gmail.com"
            _ (connect-fb-emulator-empty-db)
            _ (on-auth-state-changed (fn [x]
                                       (re-frame/dispatch [::login-events/auth-state-changed])
