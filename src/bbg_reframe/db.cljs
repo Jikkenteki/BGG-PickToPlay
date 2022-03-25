@@ -9,7 +9,8 @@
           :players "4"
           :threshold "0.5"
           :time-available "120"
-          :show-expansions? false}
+          :show-expansions? false
+          :only-available? false}
    :games {}
    :queue #{}
    :fetching #{}

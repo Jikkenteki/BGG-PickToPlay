@@ -1,8 +1,8 @@
 (ns bbg-reframe.components.checkbox-with-connector-comp)
 
-(defn checkbox-with-connector-comp [{:keys [label on-click checked?]}]
+(defn checkbox-with-connector-comp [{:keys [label on-click checked? disabled?]}]
   [:div.flex
-   [:p label]
+   [:p label (when disabled? " (disabled)")]
    [:div.connector-line.grow.my-auto.ml-2.bg-stone-600]
    [:div.w-7.h-7.border-2.rounded.border-stone-600.flex
     {:on-click on-click}
