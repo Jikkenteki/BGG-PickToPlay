@@ -25,7 +25,7 @@
 
 (defn playability
   [game num-players]
-  (/ (* (:rating game) (:rating game) (:rating game) (:rating game) (rating-for-number-of-players game num-players)) 1000))
+  (/ (* (:rating game) (:rating game)  (rating-for-number-of-players game num-players)) 10))
 
 (defn time-rating-fun
   [playing-time available-time]
@@ -33,15 +33,18 @@
   ;; (/ 1 (Math/log10 (+ (Math/abs (- (:playingtime game) time)) 10)))    
   (if (>= available-time playing-time)
       ;; (/ game-time time)
-    (- 1 (* 0.002 (- available-time playing-time)))
+    (- 1 (* 0.005 (- available-time playing-time)))
       ;; (/ 1 (- game-time time))
       ;; (/ time game-time)
-    (- 1 (* 0.01 (- playing-time available-time)))))
+    (- 1 (* 0.02 (- playing-time available-time)))))
 
 (comment
-  (time-rating-fun 90 60) ; 0.7
-  (time-rating-fun 60 60) ; 1.0
-  (time-rating-fun 30 60) ; 0.94
+  (time-rating-fun 180 180)
+  (time-rating-fun 120 180)
+  (time-rating-fun 60 180)
+  (time-rating-fun 30 180)
+  (map #(time-rating-fun % 120) [30 60 90 120 150 180 210 240])
+
 ;
   )
 
