@@ -5,7 +5,9 @@
             [bbg-reframe.game-view.events :as game-view-events]
             [bbg-reframe.forms.forms :refer [dropdown-search   db-get-ref input-element]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
-            [bbg-reframe.forms.bind :refer [bind-form-to-sub!]]))
+            [bbg-reframe.forms.bind :refer [bind-form-to-sub!]]
+            [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]
+            [bbg-reframe.components.game-css-class :refer [game-icon-players]]))
 
 (defn personal-info
   [game-id]
@@ -43,7 +45,9 @@
 (defn game-view-panel
   []
   (let [route-params @(re-frame/subscribe [::subs/route-params 1])
-        game @(re-frame/subscribe [::subs/game (:id route-params)])]
+        game @(re-frame/subscribe [::subs/game (:id route-params)])
+        minplayers (:minplayers game)
+        maxplayers (:maxplayers game)]
     [:div.max-w-xl.mx-auto.flex-col.h-full.bg-stone-800.text-neutral-100
      [naive-nav-bar]
      [:img.h-50. {:src (:thumbnail game)}]
@@ -52,9 +56,36 @@
      [:h2 "Rating: " (:rating game)]
      [:h2 "Weight: " (:weight game)]
      [:h2 "Playing time: "  (:playingtime game) " min"]
-     [:h2 "Players: "  (:minplayers game) " - " (:maxplayers game)]
+     [:span "Players: "
+      [:span (map
+              (fn [p] [:span p (game-icon-players game p)])
+              (map
+               #(+ % minplayers)
+               (range (inc (- maxplayers minplayers)))))]]
      [:h2 "Year: " (:yearpublished game)]
      [:a {:href (str "https://boardgamegeek.com/boardgame/" (:id game)) :target "_blank"} "Visit game at Boardgamegeek"]
 
      [:br]
      [personal-info (:id game)]]))
+
+(comment
+  (def game @(db-get-ref [:games "324856"]))
+  game
+  (def minplayers (:minplayers game))
+  (def maxplayers (:maxplayers game))
+  (:votes game)
+  minplayers
+  maxplayers
+  (map #(+ % minplayers) (range (inc (- maxplayers minplayers))))
+  (map #(game->best-rec-not game %) [2 3 4 5])
+  (game->best-rec-not game 2)
+  (map #(game->best-rec-not game %) (map #(+ % minplayers) (range (inc (- maxplayers minplayers)))))
+  (game-icon-players game 2)
+  (map #(game-icon-players game %) (map
+                                    #(+ % minplayers)
+                                    (range (inc (- maxplayers minplayers)))))
+
+
+
+  ;
+  )
