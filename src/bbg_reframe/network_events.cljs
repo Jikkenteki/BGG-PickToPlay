@@ -1,20 +1,26 @@
 (ns bbg-reframe.network-events
-  (:require
-   [re-frame.core :as re-frame]
-   [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
-   [ajax.core :as ajax]
-   [clojure.tools.reader.edn :refer [read-string]]
-   [clojure.string :refer [split]]
-   [re-frame.loggers :refer [console]]
-
-   [bbg-reframe.model.xmlapi :refer [xml->game item-game-id item-game-type]]
-   [bbg-reframe.model.db :refer [game-votes  indexed-games game-weight]]
-   [bbg-reframe.model.localstorage :refer [set-item!]]
-   [bbg-reframe.model.sort-filter :refer
-    [sorting-fun rating-higher-than? with-number-of-players? and-filters
-     is-playable-with-num-of-players should-show-expansions? should-show-only-available?]]
-   [bbg-reframe.config :refer [cors-server-uri delay-between-fetches xml-api]]
-   [bbg-reframe.events :refer [check-spec-interceptor]]))
+  (:require [ajax.core :as ajax]
+            [bbg-reframe.config :refer [cors-server-uri delay-between-fetches
+                                        xml-api]]
+            [bbg-reframe.events :refer [check-spec-interceptor]]
+            [bbg-reframe.model.db :refer [game-votes game-weight indexed-games
+                                          update-plays-in-games]]
+            [bbg-reframe.model.localstorage :refer [set-item!]]
+            [bbg-reframe.model.sort-filter :refer
+             [and-filters
+              is-playable-with-num-of-players
+              rating-higher-than? should-show-expansions? should-show-only-available? sorting-fun
+              with-number-of-players?]]
+            [bbg-reframe.model.xmlapi :refer [clj->plays item-game-id
+                                              item-game-type play->play xml->game
+                                              clj->page clj->total-games]]
+            [clojure.string :refer [split]]
+            [clojure.tools.reader.edn :refer [read-string]]
+            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
+            [re-frame-firebase-nine.example.forms.forms :refer [db-get-ref]]
+            [re-frame.core :as re-frame]
+            [re-frame.loggers :refer [console]]
+            [tubax.core :refer [xml->clj]]))
 
 
 (defn games->local-store
@@ -399,9 +405,116 @@
                     :loading false)
          :dispatch [::fetch-next-from-queue]})))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Fetch plays
+;;
+(defn api-plays-uri
+  [username page]
+  (if (= xml-api 1)
+    (str cors-server-uri "https://boardgamegeek.com//xmlapi2/plays?username=" username "&page=" page)
+    (str cors-server-uri "https://boardgamegeek.com//xmlapi2/plays?username=" username "&page=" page)))
+
+(re-frame/reg-event-fx                             ;; note the trailing -fx
+ ::fetch-plays                      ;; usage:  (dispatch [:handler-with-http])
+ [check-spec-interceptor]
+ (fn-traced [{:keys [db] {:keys [user cors-running]} :db} [_ page]]                    ;; the first param will be "world"
+            (console :debug "Fetching plays")
+            (if cors-running
+              {:db   (assoc db :page page)
+               :http-xhrio {:method          :get
+                            :uri             (api-plays-uri user (str page))
+                            :timeout         8000                                           ;; optional see API docs
+                            :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
+                            :on-success      [::success-fetch-plays]
+                            :on-failure      [::failure-fetch-plays]}}
+              {:db (assoc db
+                          :error "CORS server not responding. Trying again in 2 seconds")
+               :dispatch [::cors-check]
+               :dispatch-later {:ms 2000
+                                :dispatch [::fetch-plays page]}})))
+;;
+;; Handler for successfully fetched game
+;;
+(defn fetched-plays-handler
+  [{:keys [db] {:keys [games user]} :db} plays total page]
+  (let [total-pages (.round js/Math (/ total 100))
+        _  (console :debug (str "SUCCESS plays: " page "/" total-pages))]
+    {:db (-> db
+             (assoc :games (update-plays-in-games games plays))
+             (assoc :error nil))
+     :fx (if (< page total-pages)
+           [[:dispatch [::fetch-plays (inc page)]]]
+           [[:dispatch [::fetch-plays-finished]]])}))
+
+(defn-traced success-fetch-plays-handler
+  [cofx [_ response]]
+  (console :debug "Fetched.. processing")
+  (let [plays-clj (xml->clj response)]
+    (fetched-plays-handler cofx
+                           (map play->play (clj->plays plays-clj))
+                           (clj->total-games plays-clj)
+                           (clj->page plays-clj))))
+
+(re-frame/reg-event-fx
+ ::success-fetch-plays
+ ;; check db state; stores games in local storage
+ [check-spec-interceptor ->games->local-store]
+ success-fetch-plays-handler)
+
+
+;; 429
+;; <error>
+;; <message>Rate limit exceeded.</message>
+;; </error>
+(re-frame/reg-event-fx
+ ::failure-fetch-plays
+ [check-spec-interceptor]
+ (fn-traced
+  [{:keys [db]} [_ response]]
+  (console :debug "BAD REQUEST")
+  (console :debug "Response: " response)
+  (cond (= 0 (:status response))
+        {:db (assoc db
+                    :error "CORS server is not responding"
+                    :loading false
+                    :cors-running false)}
+        (#{500 503 429} (:status response))
+        ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
+        ;; the server will give you 500 or 503 return codes, reporting that it is too busy.
+        (let [_ (console :debug (str (:status-text response) " Refetching page " (:page db)))]
+          {:db db
+           :dispatch-later {:ms 3000
+                            :dispatch [::fetch-plays (:page db)]}})
+        (= 404 (:status response))
+        {:db (assoc db
+                    :error (str "Page not found or bad address!")
+                    :loading false)}
+        :else
+        {:db (assoc db
+                    :error "Problem with BGG??"
+                    :loading false)})))
+
+(re-frame/reg-event-fx
+ ::fetch-plays-finished
+ (fn-traced [_]
+            (console :debug "All Plays loaded")
+            {}))
+
+
 (re-frame/reg-event-fx
  ::read-fetched-games
  [check-spec-interceptor ->games->local-store]
  (fn-traced [{:keys [db]} [_ games]]
             {:db (assoc db :games (read-string games))
              :dispatch [:bbg-reframe.network-events/update-result]}))
+
+(comment
+  (re-frame/dispatch [::fetch-plays 1])
+  (def games @(db-get-ref [:games]))
+  games
+
+  (games "25613")
+  1
+  ;
+  )

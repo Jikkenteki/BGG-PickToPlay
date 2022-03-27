@@ -1,10 +1,13 @@
 (ns bbg-reframe.model.xmlapi
-  (:require [clojure.tools.reader.edn :refer [read-string]]
-            [tubax.core :refer [xml->clj]]
-            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag has-tag? has-attr-with-value?]]
-            [bbg-reframe.config :refer [xml-api]]
+  (:require [bbg-reframe.config :refer [xml-api]]
             [bbg-reframe.model.examples.game :refer [powergrid-xml]]
-            [clojure.pprint :as pp]))
+            [bbg-reframe.model.examples.plays :refer [plays-page-1]]
+            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag
+                                                   has-attr-with-value? has-tag?]]
+            [clojure.pprint :as pp]
+            [clojure.tools.reader.edn :refer [read-string]]
+            [re-frame-firebase-nine.example.forms.forms :refer [db-get-ref]]
+            [tubax.core :refer [xml->clj]]))
 
 
 ;; 
@@ -154,3 +157,74 @@
        xml->clj
        :content
        first))
+
+;;
+;; BGG XML plays
+;;
+(defn clj->plays
+  [clj]
+  (clj :content))
+
+(defn clj->total-games
+  [clj]
+  (->> clj :attrs :total))
+
+(defn clj->page
+  [clj]
+  (->> clj :attrs :page read-string))
+
+(defn play-date
+  [a-play]
+  (->> a-play :attrs :date))
+
+(defn play-objectid
+  [a-play]
+  (->> a-play :content first :attrs :objectid))
+
+(defn play-id
+  [a-play]
+  (->> a-play :attrs :id))
+
+(defn- play-players
+  [a-play]
+  (->> a-play :content second :content))
+
+(defn- play-player-username
+  [a-player]
+  (->> a-player :attrs :username))
+
+(defn- play-player-name
+  [a-player]
+  (->> a-player :attrs :name))
+
+(defn- play-player->player
+  [a-player]
+  {:name (->> a-player :attrs :name)
+   :username (->> a-player :attrs :username)})
+
+(defn play->play
+  [a-play]
+  {:id (play-id a-play)
+   :game-id (play-objectid a-play)
+   :date (play-date a-play)
+   :players (into [] (map play-player->player (->> a-play play-players)))})
+
+(comment
+
+
+
+  (->> plays-page-1
+       xml->clj
+       clj->plays
+       first
+       play->play)
+
+
+
+  ;
+  )
+
+
+
+
+
