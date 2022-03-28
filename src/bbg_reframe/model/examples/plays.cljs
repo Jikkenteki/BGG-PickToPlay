@@ -1,6 +1,4 @@
-(ns bbg-reframe.model.examples.plays
-  (:require [clojure.tools.reader.edn :refer [read-string]]
-            [tubax.core :refer [xml->clj]]))
+(ns bbg-reframe.model.examples.plays)
 
 (def plays-page-1 "<plays username=\"ddmits\" userid=\"119790\" total=\"355\" page=\"1\" termsofuse=\"https://boardgamegeek.com/xmlapi/termsofuse\">
 <play id=\"48077780\" date=\"2021-01-01\" quantity=\"1\" length=\"0\" incomplete=\"0\" nowinstats=\"0\" location=\"\">

@@ -132,10 +132,10 @@
   [{:keys [db]} [_ response]]
   (if-let [indexed-games (indexed-games response)]
     (let [_ (console :debug "SUCCESS: collection fetched: " (count indexed-games) " games.")]
-      {:dispatch [::update-result]
-       :db (assoc db
+      {:db (assoc db
                   :games indexed-games
-                  :loading false)})
+                  :loading false)
+       :dispatch [::update-result]})
     (let [_ (console :debug (str "ERROR: " response))]
       {:db (assoc db
                   :error (str "Error reading collection. Invalid user? Try again")
@@ -437,7 +437,7 @@
 ;; Handler for successfully fetched game
 ;;
 (defn fetched-plays-handler
-  [{:keys [db] {:keys [games user]} :db} plays total page]
+  [{:keys [db] {:keys [games]} :db} plays total page]
   (let [total-pages (.round js/Math (/ total 100))
         _  (console :debug (str "SUCCESS plays: " page "/" total-pages))]
     {:db (-> db

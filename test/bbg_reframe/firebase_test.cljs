@@ -6,17 +6,12 @@
             [re-frame.core :as re-frame]
             [bbg-reframe.firebase.events :as fb-events]
             [bbg-reframe.login-view.view :refer [save-games]]
-            [re-frame-firebase-nine.fb-reframe :refer [fb-reframe-config connect-emulator] :as fb-reframe]
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.events :as events]
             [bbg-reframe.login-view.events :as login-events]
             [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
-            [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed on-auth-state-changed-callback]]
-            [bbg-reframe.config :as config]))
+            [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed on-auth-state-changed-callback]]))
 
-(defn connect-fb-emulator
-  []
-  (fb-reframe-config config/fb-reframe-config-map)
-  (connect-emulator))
 
 (deftest test-db-test-value
   (testing "db-set-value!"
