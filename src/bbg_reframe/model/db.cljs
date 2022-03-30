@@ -2,6 +2,7 @@
   (:require [bbg-reframe.model.examples.collection2 :refer [collection-2]]
             [bbg-reframe.model.examples.game2 :refer [powergrid2]]
             [bbg-reframe.model.localstorage :refer [get-item]]
+            [bbg-reframe.model.plays :refer [last-played]]
             [bbg-reframe.model.tag-helpers :refer [find-element-with-tag]]
             [bbg-reframe.model.xmlapi :refer [create-votes-for-results
                                               game-attribute game-id game-my-rating
@@ -118,7 +119,8 @@
         game (get games game-id)]
     ;; (println play-id game-id game)
     (if game
-      (assoc-in games [game-id :plays play-id] play)
+      (-> (assoc-in games [game-id :plays play-id] play)
+          (assoc-in [game-id :last-played] (last-played game)))
       games)))
 
 (comment
