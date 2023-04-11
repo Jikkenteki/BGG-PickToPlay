@@ -8,13 +8,28 @@ games from [Boardgamegeek](https://boardgamegeek.com/).
 Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-what-to-play.web.app/)
 
 # Developer instructions
+
+## Run the app 
+```
+npm run dev
+```
+
+## Run firebase emulator importing data for test:
+```
+firebase emulators:start --import=./firebase-export
+```
+
+## Run tests:
+```
+npx karma start
+```
+
 ## Firebase instructions
 
 Run to install tools and login
 ```
 npm install -g firebase-tools
 firebase login
-
 ```
 
 ### To create a new Firebase configuration 
