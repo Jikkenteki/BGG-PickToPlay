@@ -12,11 +12,6 @@
               (assoc db :email (fb-reframe/get-current-user-email))
               db)))
 
-(re-frame/reg-event-db
- ::set-uid
- (fn-traced [db [_ uid]]
-            (assoc db :uid uid)))
-
 (re-frame/reg-event-fx
  ::sign-in-success
  (fn-traced [_ [_ userCredential]]

@@ -18,6 +18,9 @@
         :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]
       [:button.button.min-w-fit.px-2.ml-1
        {:disabled (empty? user)
-        :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]]
+        :on-click #(re-frame/dispatch [::network-events/fetch-collection])} "Fetch collection"]
+      [:button.button.min-w-fit.px-2.ml-1
+       {:disabled (empty? user)
+        :on-click #(re-frame/dispatch [::network-events/fetch-plays 1])} "Fetch plays"]]
      [:div.flex.items-center.mb-1;.h-full 
       [login-comp]]]))

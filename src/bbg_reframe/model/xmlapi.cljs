@@ -1,10 +1,12 @@
 (ns bbg-reframe.model.xmlapi
-  (:require [clojure.tools.reader.edn :refer [read-string]]
-            [tubax.core :refer [xml->clj]]
-            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag has-tag? has-attr-with-value?]]
-            [bbg-reframe.config :refer [xml-api]]
+  (:require [bbg-reframe.config :refer [xml-api]]
             [bbg-reframe.model.examples.game :refer [powergrid-xml]]
-            [clojure.pprint :as pp]))
+            [bbg-reframe.model.examples.plays :refer [plays-page-1]]
+            [bbg-reframe.model.tag-helpers :refer [find-element-with-tag
+                                                   has-attr-with-value? has-tag?]]
+            [clojure.pprint :as pp]
+            [clojure.tools.reader.edn :refer [read-string]]
+            [tubax.core :refer [xml->clj]]))
 
 
 ;; 
@@ -154,3 +156,162 @@
        xml->clj
        :content
        first))
+
+;;
+;; BGG XML plays
+;;
+(defn clj->plays
+  [clj]
+  (clj :content))
+
+(defn clj->total-games
+  [clj]
+  (->> clj :attrs :total))
+
+(defn clj->page
+  [clj]
+  (->> clj :attrs :page read-string))
+
+(defn play-date
+  [a-play]
+  (->> a-play :attrs :date))
+
+(defn play-objectid
+  [a-play]
+  (->> a-play :content first :attrs :objectid))
+
+(defn play-id
+  [a-play]
+  (->> a-play :attrs :id))
+
+(defn- play-players
+  [a-play]
+  (->> a-play :content second :content))
+
+(defn- play-player->player
+  [a-player]
+  {:name (->> a-player :attrs :name)
+   :username (->> a-player :attrs :username)})
+
+(defn play->play
+  [a-play]
+  {:id (play-id a-play)
+   :game-id (play-objectid a-play)
+   :date (play-date a-play)
+   :players (into [] (map play-player->player (->> a-play play-players)))})
+
+(comment
+
+  (def xml "<plays username=\"ddmits\" userid=\"119790\" total=\"355\" page=\"1\" termsofuse=\"https://boardgamegeek.com/xmlapi/termsofuse\">
+<play id=\"48077780\" date=\"2021-01-01\" quantity=\"1\" length=\"0\" incomplete=\"0\" nowinstats=\"0\" location=\"\">
+<item name=\"Maracaibo\" objecttype=\"thing\" objectid=\"276025\">
+<subtypes>
+<subtype value=\"boardgame\"/>
+</subtypes>
+</item>
+<players>
+<player username=\"ddmits\" userid=\"119790\" name=\"Dimitris Dranidis\" startposition=\"1\" color=\"\" score=\"142\" new=\"0\" rating=\"0\" win=\"0\"/>
+<player username=\"adranidis\" userid=\"162973\" name=\"Andreas\" startposition=\"2\" color=\"\" score=\"145\" new=\"0\" rating=\"0\" win=\"1\"/>
+</players>
+</play>
+<play id=\"47761710\" date=\"2020-12-24\" quantity=\"1\" length=\"0\" incomplete=\"0\" nowinstats=\"0\" location=\"\">
+<item name=\"Maracaibo\" objecttype=\"thing\" objectid=\"276025\">
+<subtypes>
+<subtype value=\"boardgame\"/>
+</subtypes>
+</item>
+<players>
+<player username=\"ddmits\" userid=\"119790\" name=\"Dimitris Dranidis\" startposition=\"1\" color=\"\" score=\"123\" new=\"0\" rating=\"0\" win=\"0\"/>
+<player username=\"adranidis\" userid=\"162973\" name=\"Andreas\" startposition=\"2\" color=\"\" score=\"178\" new=\"0\" rating=\"0\" win=\"1\"/>
+</players>
+</play>
+</plays>")
+
+
+
+  (defn parse-element ;; with :attrs and :content
+    [clj]
+    {(:tag clj) {:attrs (:attrs clj)
+                 :content (into [] (map parse-element (:content clj)))}})
+
+  (defn parse-element
+    [clj]
+    {(:tag clj)
+     (into [] (map parse-element (:content clj)))})
+
+  (defn parse-element;; hiccup
+    [clj]
+    (let [attrs (:attrs clj)
+          content (:content clj)]
+      [(:tag clj) (when attrs attrs)
+       (when content (into [] (map parse-element (:content clj))))]))
+
+  (defn parse-element
+    [clj]
+    (let [attrs (:attrs clj)
+          content (:content clj)]
+      (if (string? clj) clj
+          [(:tag clj) attrs (into [] (map parse-element content))])))
+
+
+  (->> plays-page-1
+       xml->clj
+       clj->plays
+       first
+       play->play)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (defn process-content
+    [[x & args]]
+    (reduce-kv (fn [m k v] (update m k conj v))
+               (if args (process-content args) {})
+               x))
+
+  (defn parse-element
+    [clj]
+    {(:tag clj) (reduce-kv
+                 (fn [m k v] (assoc m k v))
+                 (process-content (into [] (map parse-element (:content clj))))
+                 (:attrs clj))})
+
+  (def item "<item name=\"Maracaibo\" objecttype=\"thing\" objectid=\"276025\">
+<subtypes>
+<subtype value=\"boardgame\"/>
+</subtypes>
+</item>")
+
+  (->> item
+       xml->clj
+       parse-element)
+
+  (->> xml
+       xml->clj
+       parse-element)
+
+
+  (->> xml
+       xml->clj
+       parse-element
+       :plays
+       :play
+       first
+       :item)
+
+  (->> xml
+       xml->clj
+       :content)
+
+
+
+
+  (process-content [{:play {:i 1}} {:items {:a 2}} {:play {:i 2}}])
+
+
+  ;
+  )
+
+
+
+
+

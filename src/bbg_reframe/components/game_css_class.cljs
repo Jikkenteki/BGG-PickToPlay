@@ -9,7 +9,7 @@
 
 
 (defn game-css-class
-  [game players available-time]
+  [_ _ _]
   (string/join " " [(game-color)]))
 
 (defn game-icon-players

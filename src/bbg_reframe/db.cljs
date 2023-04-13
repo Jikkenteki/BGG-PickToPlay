@@ -4,7 +4,7 @@
   {:result []
    :fields ["name"]
    :form {:sort-id :playability-time
-          :take "20"
+          :take "200"
           :higher-than "7.0"
           :players "4"
           :threshold "0.5"

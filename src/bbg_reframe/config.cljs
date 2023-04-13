@@ -4,7 +4,7 @@
   ^boolean goog.DEBUG)
 
 (def delay-between-fetches 500)
-(def cors-server-uri "https://guarded-wildwood-02993.herokuapp.com/")
+(def cors-server-uri "https://cors-anywhere.herokuapp.com/")
 (def xml-api 2)
 
 (def fb-reframe-config-map {:temp-path [:firebase-temp-storage]

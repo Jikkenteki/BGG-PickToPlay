@@ -21,7 +21,8 @@
 
     [:p {:class (game-css-class game players time)}
      (when SHOW_PLAYABILITY
-       (str "[" time-rating " : " playing-time " : " playability-time  "]"
+       (str (:last-played game)
+            "[" time-rating " : " playing-time " : " playability-time  "]"
                             ;;  (:id game) " "
             (case (game->best-rec-not game players)
               0 "B"

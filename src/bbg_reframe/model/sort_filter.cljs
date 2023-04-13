@@ -1,9 +1,9 @@
 (ns bbg-reframe.model.sort-filter
-  (:require [clojure.string :as s]
-            [clojure.tools.reader.edn :refer [read-string]]
-            [bbg-reframe.model.examples.data :refer [local-storage-db]]
+  (:require [bbg-reframe.model.examples.data :refer [local-storage-db]]
+            [clojure.pprint :as pp]
             [clojure.spec.alpha :as spec]
-            [clojure.pprint :as pp]))
+            [clojure.string :as s]
+            [clojure.tools.reader.edn :refer [read-string]]))
 
 ;; 
 ;; Sorters
@@ -96,13 +96,23 @@
         (last percentages)))
     1.0))
 
+(defn sort-by-field
+  ([field] (sort-by-field field false))
+  ([field inverse?]
+   (fn [e1 e2]
+     (* (if inverse? -1 1) (compare (field e2) (field e1))))))
+
 (def sorting-fun
   {:rating (fn [_ _] game-better?)
    :time (fn [_ _] game-shorter?)
+   :last-played (fn [_ _] (sort-by-field :last-played true))
    :playability-time game-more-time-playable?
    :playability game-more-playable?})
 
-(map name (keys sorting-fun))
+(comment
+  (map name (keys sorting-fun))
+  ;
+  )
 
 ;; 
 ;; Filters

@@ -1,17 +1,22 @@
 (ns bbg-reframe.model.db
-  (:require [bbg-reframe.model.xmlapi :refer [game-attribute game-id game-name game-rating game-my-rating create-votes-for-results list-results-of-votes-per-playernum game-thumbnail game-ranks game-yearpublished]]
-            [tubax.core :refer [xml->clj]]
-            [re-frame.loggers :refer [console]]
-            [clojure.tools.reader.edn :refer [read-string]]
+  (:require [bbg-reframe.model.examples.collection2 :refer [collection-2]]
+            [bbg-reframe.model.examples.game2 :refer [powergrid2]]
             [bbg-reframe.model.localstorage :refer [get-item]]
-            [clojure.spec.alpha :as s]
-            [bbg-reframe.model.examples.collection2 :refer [collection-2]]
+            [bbg-reframe.model.plays :refer [last-played]]
             [bbg-reframe.model.tag-helpers :refer [find-element-with-tag]]
-            [clojure.pprint :as pp]
+            [bbg-reframe.model.xmlapi :refer [create-votes-for-results
+                                              game-attribute game-id game-my-rating
+                                              game-name game-ranks game-rating game-thumbnail game-yearpublished
+                                              list-results-of-votes-per-playernum]]
             [bbg-reframe.spec.game-spec :as game-spec]
             [cljs.test :refer [is]]
-            [bbg-reframe.model.examples.game2 :refer [powergrid2]]
-            [clojure.string :refer [includes? upper-case]]))
+            [clojure.pprint :as pp]
+            [clojure.spec.alpha :as s]
+            [clojure.string :refer [includes? upper-case]]
+            [clojure.tools.reader.edn :refer [read-string]]
+            [re-frame-firebase-nine.example.forms.forms :refer [db-get-ref]]
+            [re-frame.loggers :refer [console]]
+            [tubax.core :refer [xml->clj]]))
 
 (comment
   (->> powergrid2
@@ -105,6 +110,58 @@
                            {} games)]
         indexed-games)
       nil)))
+
+(defn update-games-with-play
+  [games play]
+  ;; (println games play)
+  (let [play-id (:id play)
+        game-id (:game-id play)
+        game (get games game-id)]
+    ;; (println play-id game-id game)
+    (if game
+      (-> (assoc-in games [game-id :plays play-id] play)
+          (assoc-in [game-id :last-played] (last-played game)))
+      games)))
+
+(comment
+
+  (def games @(db-get-ref [:games]))
+  (get games "276025")
+  (:plays (get games "276025"))
+
+  (def play {:date "2021-01-01",
+             :game-id "276025",
+             :id "48077780",
+             :players [{:name "Dimitris Dranidis", :username "ddmits"}
+                       {:name "Andreas", :username "adranidis"}]})
+
+  (update-games-with-play games play)
+
+  (def games {"0" {:id "0"}
+              "1" {:id "1"}
+              "2" {:id "2"}
+              "3" {:id "3"}
+              "4" {:id "4"}})
+
+  (def play {:id "123"
+             :date "2019-05-04",
+             :game-id "3",
+             :players '({:name "Dimitris Dranidis", :username "ddmits"}
+                        {:name "Andreas", :username "adranidis"}
+                        {:name "Kostas", :username "dimopoulosk"})})
+
+  (update-games-with-play games play)
+
+   ;
+  )
+
+(defn update-plays-in-games
+  [games plays]
+  (if (empty? plays)
+    games
+    (update-plays-in-games (update-games-with-play games (first plays)) (rest plays))))
+
+
 
 (comment
   (sort (map read-string (keys (read-string (get-item "bgg-games")))))

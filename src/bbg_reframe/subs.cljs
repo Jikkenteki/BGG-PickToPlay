@@ -90,8 +90,3 @@
    (re-frame/dispatch [::events/make-available games])
    games))
 
-(re-frame/reg-sub
- ::available-games-id
- :<- [::available-games]
- (fn [[games] [_ id]]
-   (id games)))

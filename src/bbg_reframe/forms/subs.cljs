@@ -8,13 +8,6 @@
    (get-in db path)))
 
 (re-frame/reg-sub
- ::changed-value
- (fn [db [_ path]]
-   ;; Logical DISJUNCTION of all the changed-values (which are either true or false)
-   (reduce-kv (fn [init _ v] (or init v)) false
-              (get-in db (into [:form-changed-value] path)))))
-
-(re-frame/reg-sub
  ::dropdown-select-options
  (fn [db [_ path all-options {:keys [sort? by]}]]
    (let [unsorted (->> all-options
