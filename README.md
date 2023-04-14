@@ -1,4 +1,4 @@
-# bbg-reframe
+# BGG-PickToPlay
 
 # HMPWTP aka 'Help me pick what to play'
 
@@ -8,6 +8,10 @@ games from [Boardgamegeek](https://boardgamegeek.com/).
 Deployed at: [https://help-me-pick-what-to-play.web.app/](https://help-me-pick-what-to-play.web.app/)
 
 # Developer instructions
+
+## Env file
+
+Edit the `env_variables.cljs.example` file with the necessary information and rename it to `env_variables.cljs`.
 
 ## Run the app 
 ```
@@ -22,6 +26,15 @@ firebase emulators:start --import=./firebase-export
 ## Run tests:
 ```
 npx karma start
+```
+
+## Release and deploy locally
+```
+npm run release
+```
+
+```
+firebase serve --only hosting
 ```
 
 ## Firebase instructions
@@ -80,8 +93,8 @@ firebase deploy
 ```
 
 
-Inspired by re-frame-firebase.
 
+----
 
 ## Getting Started
 

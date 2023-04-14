@@ -31,6 +31,8 @@ jobs:
 
       - run: |
            npm install -g firebase-tools
+           sed -i 's#<CORS URL>#${{ secrets.CORS_URL }}#g; s#<Firebase API KEY>#${{ secrets.FIREBASE_API_KEY }}#g' src/bbg_reframe/env_variables.cljs.example
+           mv src/bbg_reframe/env_variables.cljs.example src/bbg_reframe/env_variables.cljs
            firebase emulators:exec --only "auth","database" --import=./firebase-export 'npm i && npm run release'
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:

@@ -1,0 +1,7 @@
+(ns bbg-reframe.env-variables)
+
+;; CORS server 
+(def cors-server-uri-env "<CORS URL>")
+
+;; Firebase API key
+(def api-key-env "<Firebase API KEY>")
