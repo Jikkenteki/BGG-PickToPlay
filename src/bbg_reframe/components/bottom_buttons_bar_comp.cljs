@@ -16,9 +16,8 @@
                     :on-click #(re-frame/dispatch [::events/set-open-tab :sliders-tab])
                     :children [:i.mx-auto.my-auto {:class "fa-solid fa-sliders fa-xl"}]}]
       [button-comp {:style {:flex-grow "4"}
-                    :active (= open-tab :sort-tab)
-                    :on-click #(re-frame/dispatch [::events/set-open-tab :sort-tab])
-                    :children [:i.mx-auto.my-auto {:class "fa-solid fa-sort fa-xl"}]}]
+                    :on-click #(re-frame/dispatch [::events/navigate [:collections-view]])
+                    :children [:i.mx-auto.my-auto {:class "fa-solid fa-object-group fa-xl"}]}]
       [button-comp {:active (= open-tab :user-name-tab)
                     :on-click #(re-frame/dispatch [::events/set-open-tab :user-name-tab])
                     :children [:i.mx-auto.my-auto {:class "fa-solid fa-user fa-xl"}]}]]]))

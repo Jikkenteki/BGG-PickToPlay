@@ -11,7 +11,8 @@
 
    [bbg-reframe.routes :as routes]
    [bbg-reframe.game-view.views :refer [game-view-panel]]
-   [bbg-reframe.login-view.view :refer [login-view-panel]]))
+   [bbg-reframe.login-view.view :refer [login-view-panel]]
+   [bbg-reframe.collections-view.view :refer [collections-view-panel]]))
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)
@@ -30,6 +31,7 @@
 (defmethod routes/panels :home-panel [] [home-panel])
 (defmethod routes/panels :game-view-panel [] [game-view-panel])
 (defmethod routes/panels :login-view-panel [] [login-view-panel])
+(defmethod routes/panels :collections-view-panel [] [collections-view-panel])
 
 ;; main
 (defn main-panel []

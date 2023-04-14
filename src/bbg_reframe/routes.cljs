@@ -14,6 +14,7 @@
    ["/" {""   :home
          "fb" :fb
          "login" :login-view
+         "collections" :collections-view
          "game" {"" :home
                  ["/" :id] :game-view}}]))
 
