@@ -6,7 +6,7 @@
    [re-frame.core :as re-frame]
    [bbg-reframe.events :as events]
    [bbg-reframe.config :refer [debug?]]
-   [bbg-reframe.components.game-css-class :refer [game-css-class game-icon-span]]))
+   [bbg-reframe.components.game-css-class :refer [game-icon-span]]))
 
 (def SHOW_PLAYABILITY debug?)
 ;; (def SHOW_PLAYABILITY false)
@@ -19,7 +19,7 @@
         time-rating (gstring/format "%.1f" (time-rating game time))
         rating (gstring/format "%.1f"  (:rating game))]
 
-    [:p {:class (game-css-class game players time)}
+    [:div {:class "p-2 my-2 bg-slate-700 rounded border-2 border-slate-300"}
     ;;  (when SHOW_PLAYABILITY
     ;;    (str (:last-played game)
     ;;         "[" time-rating " : " playing-time " : " playability-time  "]"

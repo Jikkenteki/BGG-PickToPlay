@@ -19,9 +19,8 @@
 (defn home-panel []
   (let [_ @(re-frame/subscribe [::subs/available-games])]
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-     [:h1.text-3xl.font-bold.mb-2.px-1
-      "HMPWTP "
-      [:span.text-sm.font-normal "aka 'Help me pick what to play'"]]
+     [:h1.text-3xl.font-bold.mb-2.mt-4.px-1
+      "PickToPlay"]
      [loading-games-info-comp]
      [games-list-comp]
      [search-results-comp]

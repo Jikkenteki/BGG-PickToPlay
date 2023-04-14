@@ -1,16 +1,6 @@
 (ns bbg-reframe.components.game-css-class
   (:require
-   [clojure.string :as string]
    [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]))
-
-(defn game-color
-  []
-  "text-white")
-
-
-(defn game-css-class
-  [_ _ _]
-  (string/join " " [(game-color)]))
 
 (defn game-icon-players
   [game players]
