@@ -9,7 +9,9 @@
             [bbg-reframe.model.sort-filter :refer
              [and-filters
               is-playable-with-num-of-players
-              rating-higher-than? should-show-expansions? should-show-only-available? sorting-fun
+              should-show-expansions?
+              should-show-only-available?
+              sorting-fun
               with-number-of-players?]]
             [bbg-reframe.model.xmlapi :refer [clj->plays item-game-id
                                               item-game-type play->play xml->game
@@ -198,8 +200,6 @@
                              (should-show-only-available? (get-in db [:form :only-available?])) ;; show only 
                              (with-number-of-players?
                                (read-string (get-in db [:form :players])))
-                             (rating-higher-than?
-                              (read-string (get-in db [:form :higher-than])))
                             ;;  (playingtime-between? 0 (read-string (get-in db [:form :time-available])))
                              (is-playable-with-num-of-players
                               (get-in db [:form :players])

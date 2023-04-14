@@ -20,7 +20,12 @@
 (s/def ::cors-running boolean?)
 (s/def ::fetches non-negative-number?)
 (s/def ::form (s/keys :req-un
-                      [::sort-id ::take ::higher-than ::players ::threshold ::time-available ::show-expansions?]))
+                      [::sort-id
+                       ::take
+                       ::players
+                       ::threshold
+                       ::time-available
+                       ::show-expansions?]))
 (s/def ::games (s/map-of ::id ::game-unchecked))
 (s/def ::result (s/coll-of ::game-unchecked))
 (s/def ::error string-or-nil?)

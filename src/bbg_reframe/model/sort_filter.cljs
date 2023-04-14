@@ -175,11 +175,6 @@
               (>= (:maxplayers game) num)
               (<= (:minplayers game) num))))
 
-(defn rating-higher-than? [rating]
-  (fn [game]
-    (let [game-rating (:rating game)]
-      (and (not (nil? game-rating)) (>= game-rating rating)))))
-
 ;; (defn and-filters
 ;;   "Composes filters into one."
 ;;   [filter1 filter2]
