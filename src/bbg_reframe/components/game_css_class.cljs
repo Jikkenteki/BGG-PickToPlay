@@ -33,6 +33,6 @@
       [:i.mr-1 {:class (str "fa-regular fa-clock " (if (> time game-time) "text-green-900" "text-red-900"))}])))
 
 (defn game-icon-span
-  [game players available-time]
-  [:span.mr-2 [game-icon-players game players] [game-icon-time game available-time]] ;"B"
+  [game players available-time rating]
+  [:span.mr-2 [:span {:class "mr-2 text-sm font-bold"} rating] [game-icon-players game players] [game-icon-time game available-time]] ;"B"
   )

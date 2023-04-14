@@ -20,17 +20,17 @@
         rating (gstring/format "%.1f"  (:rating game))]
 
     [:p {:class (game-css-class game players time)}
-     (when SHOW_PLAYABILITY
-       (str (:last-played game)
-            "[" time-rating " : " playing-time " : " playability-time  "]"
-                            ;;  (:id game) " "
-            (case (game->best-rec-not game players)
-              0 "B"
-              1 "R "
-              2 "N "
-              "_") " , "
-            playability " : " rating  " : "))
-     (game-icon-span game players time)
+    ;;  (when SHOW_PLAYABILITY
+    ;;    (str (:last-played game)
+    ;;         "[" time-rating " : " playing-time " : " playability-time  "]"
+    ;;                         ;;  (:id game) " "
+    ;;         (case (game->best-rec-not game players)
+    ;;           0 "B"
+    ;;           1 "R "
+    ;;           2 "N "
+    ;;           "_") " , "
+    ;;         playability " : " rating  " : "))
+     (game-icon-span game players time rating)
      [:a {:on-click #(re-frame/dispatch [::events/navigate [:game-view :id (:id game)]])}
       (:name game)]]))
 
