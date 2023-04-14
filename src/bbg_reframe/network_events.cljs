@@ -61,7 +61,7 @@
  ::bad-cors
  [check-spec-interceptor]
  (fn-traced [{:keys [db]} [_ response]]
-            (console :error "CORS server down")
+            (console :error (str "CORS server at " cors-server-uri " down..."))
             (console :debug "status: " (:status response))
             (console :debug "status-text: " (:status-text response))
             {:db (assoc db :error "CORS server down")

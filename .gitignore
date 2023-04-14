@@ -24,3 +24,7 @@
 # firebase
 .firebase
 users.json
+
+
+# env variables
+env_variables.cljs

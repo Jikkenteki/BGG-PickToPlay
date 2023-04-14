@@ -1,14 +1,15 @@
-(ns bbg-reframe.config)
+(ns bbg-reframe.config
+  (:require [bbg-reframe.env-variables  :refer [cors-server-uri-env api-key-env]]))
 
 (def debug?
   ^boolean goog.DEBUG)
 
 (def delay-between-fetches 500)
-(def cors-server-uri "https://cors-anywhere.herokuapp.com/")
+(def cors-server-uri cors-server-uri-env)
 (def xml-api 2)
 
 (def fb-reframe-config-map {:temp-path [:firebase-temp-storage]
-                            :firebase-config {:apiKey "AIzaSyCLH4BlNSOfTrMlB_90Hsxg5cr3bn3p-7E",
+                            :firebase-config {:apiKey api-key-env,
                                               :authDomain "help-me-pick-what-to-play.firebaseapp.com",
                                               :databaseURL "https://help-me-pick-what-to-play-default-rtdb.europe-west1.firebasedatabase.app",
                                               :projectId "help-me-pick-what-to-play",
