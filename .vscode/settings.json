@@ -1,0 +1,13 @@
+{
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.experimental.classRegex": [
+    ":class\\s+\"([^\"]*)\"",
+    ":[\\w-.#>]+\\.([\\w-]*)"
+  ],
+  "tailwindCSS.includeLanguages": {
+    "clojure": "html"
+  }
+}
