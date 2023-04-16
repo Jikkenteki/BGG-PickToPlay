@@ -77,6 +77,19 @@
   [db _]
   (assoc db :error nil)))
 
+;;
+;; event to be dispatched when we want to return an error
+;; the UI can subscribe to ::error-msg to get and show the error
+;; the error is reset after a period of ms
+;;
+(re-frame/reg-event-fx
+ ::set-error
+ (fn-traced [{:keys [db]} [_ error-message]]
+            {:db (assoc db :error error-message)
+             :dispatch-later {:ms 1000
+                              :dispatch [::reset-error]}}))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EVENT GRAPH
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

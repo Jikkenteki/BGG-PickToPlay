@@ -65,7 +65,7 @@ In the firebase console:
   * Example: 
   ```
   {
-  apiKey: "AIzaSyCpMjjOO9t-TVrzJ-seEy-4MUnH9PWc-uc",
+  apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   authDomain: "test-firebase-refr.firebaseapp.com",
   databaseURL: "https://test-firebase-refr-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "test-firebase-refr",

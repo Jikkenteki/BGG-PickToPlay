@@ -11,9 +11,7 @@
                                      ]}]]
             (let [user-id (fb-reframe/get-current-user-uid)]
               (if (nil? user-id)
-                {:db (assoc db :error "Login to save extra info about games")
-                 :dispatch-later {:ms 1000
-                                  :dispatch [::events/reset-error]}}
+                {:dispatch [::events/set-error "Login to save extra info about games"]}
                 {::fb-reframe/firebase-update {:path ["users" user-id]
                                                :path-data-map {["available" id] (if available available nil)
                                                                ["group-with" id] group-with

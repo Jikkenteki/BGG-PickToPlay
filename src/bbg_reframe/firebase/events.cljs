@@ -1,9 +1,12 @@
 (ns bbg-reframe.firebase.events
-  (:require [re-frame.core :as re-frame]
-            [day8.re-frame.tracing :refer-macros [fn-traced]]
-            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [bbg-reframe.network-events :as events]
-            [clojure.string :as string]))
+  (:require
+   [bbg-reframe.login-view.events :as login-events]
+   [bbg-reframe.network-events :as events]
+   [clojure.string :as string]
+   [day8.re-frame.tracing :refer-macros [fn-traced]]
+   [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+   [re-frame.core :as re-frame]
+   [re-frame.loggers :refer [console]]))
 
 ;; fb
 (re-frame/reg-event-fx
@@ -21,9 +24,59 @@
             {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "cached-games"]
                                          :success ::events/read-fetched-games}}))
 
+;; set event
+(re-frame/reg-event-fx
+ ::fb-set
+ (fn-traced [_ [_ {:keys [path data]}]]
+            {::fb-reframe/firebase-set {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
+                                        :data data}}))
+
+;; adds a new key-data pair under the path. The key is sored in key-path in db
+;; note normally a :success and :error events are expected
+(re-frame/reg-event-fx
+ ::fb-push
+ (fn-traced [_ [_ {:keys [path data key-path success]}]]
+            {::fb-reframe/firebase-push {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
+                                         :data data
+                                         :success #(println (str "Successfully pushed: " data %))
+                                         :key-path key-path}}))
+
+
+
 (comment
+
+  (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
+
   (into ["users" (fb-reframe/get-current-user-uid)] ["cached-games"])
 
   (string/join "/" (into ["users" (fb-reframe/get-current-user-uid)] ["cached-games"]))
+
+  (re-frame/dispatch [::fb-set {:path ["collections" "new collection"] :data "games"}])
+  (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "name"] :data "collection name"}])
+  (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "games" 123] :data true}])
+  (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "games" 123] :data nil}])
+
+  (re-frame/dispatch [::fb-push {:path ["collections"]
+                                 :data {:name "aaa" :games {"123" true}}
+                                 :key-path [:firebase :new-collection-id]}])
+
+  (re-frame/reg-event-fx
+   ::handle-collections
+   (fn-traced [{:keys [db]} [_ collections]]
+              (js/console.log collections)
+              {:db (assoc db :collections collections)}))
+
+  (re-frame/reg-event-fx
+   ::fetch-collections
+   (fn-traced [_ [_ _]]
+              {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "collections"]
+                                           :success ::handle-collections}}))
+
+  (re-frame/dispatch [::fetch-collections])
+  (js/console.log @(re-frame/subscribe [::collections]))
+  (console :log (str @(re-frame/subscribe [::collections])))
+
+
+
   ;
   )

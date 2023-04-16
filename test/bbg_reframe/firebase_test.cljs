@@ -1,16 +1,19 @@
 (ns bbg-reframe.firebase-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
-            [day8.re-frame.test :as rf-test]
-            [bbg-reframe.forms.forms :refer [db-set-value!]]
-            [bbg-reframe.subs :as subs]
-            [re-frame.core :as re-frame]
-            [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.login-view.view :refer [save-games]]
-            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+  (:require [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
             [bbg-reframe.events :as events]
+            [bbg-reframe.firebase.events :as fb-events]
+            [bbg-reframe.forms.forms :refer [db-set-value!]]
             [bbg-reframe.login-view.events :as login-events]
-            [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
-            [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed on-auth-state-changed-callback]]))
+            [bbg-reframe.login-view.view :refer [save-games]]
+            [bbg-reframe.model.collections :refer [add-if-not-exists
+                                                   get-collection-names get-collections]]
+            [bbg-reframe.subs :as subs]
+            [cljs.test :refer-macros [deftest testing is]]
+            [day8.re-frame.test :as rf-test]
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe :refer [get-current-user-uid]]
+            [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed
+                                                          on-auth-state-changed-callback]]
+            [re-frame.core :as re-frame]))
 
 
 (deftest test-db-test-value
@@ -29,15 +32,15 @@
            _ (re-frame/dispatch-sync [::events/initialize-db])
            games {"1" {:id "1" :name "game1"}
                   "2" {:id "2" :name "game2"}}
-           _ (println (:games  @db))
+           _ (println (str "INIT " (:games  @db)))
            _ (db-set-value! [:games] games)
            _ (println "UID" (fb-reframe/get-current-user-uid))
            _ (save-games)
-           _ (println (:games  @db))
+           _ (println (str "After save " (:games  @db)))
            _ (re-frame/dispatch-sync [::events/initialize-db])
-           _ (println (:games  @db))
+           _ (println (str "After init " (:games  @db)))
            _ (re-frame/dispatch [::fb-events/fetch-games])
-           _ (println (:games  @db))]
+           _ (println (str "After dispatch fetch " (:games  @db)))]
        (is (= games (:games @db)))))))
 
 (deftest test-sign-in
@@ -52,3 +55,42 @@
            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
        (rf-test/wait-for [::login-events/sign-in-success]
                          (is (= email (fb-reframe/get-current-user-email))))))))
+
+(deftest test-new-collection
+  (testing "new collection"
+    (rf-test/run-test-async
+     (let [email "dranidis@gmail.com"
+           _ (connect-fb-emulator-empty-db)
+           _ (re-frame/dispatch-sync [::events/initialize-db])
+           _ (re-frame/dispatch [::login-events/sign-in email "password"])]
+       (rf-test/wait-for
+        [::login-events/sign-in-success]
+        (let [_ (println "New collection UID" (fb-reframe/get-current-user-uid))
+              key (add-if-not-exists "collection name")
+              _ (println (str "RETURNED:" key))
+              ;; key2 (add-if-not-exists "collection name")
+              ;; _ (println (str "RETURNED:" key2))
+              _ (println (str "Collections: " (get-collections)))]
+          (is (not (nil? key)))))))))
+
+
+;; (deftest test-new-collection-1
+;;   (testing "new collection sync"
+;;     (rf-test/run-test-sync
+;;      (let [email "dranidis@gmail.com"
+;;            _ (connect-fb-emulator-empty-db)
+;;            _ (re-frame/dispatch [::events/initialize-db])
+;;            _ (re-frame/dispatch [::login-events/sign-in email "password"])
+;;            _ (println "New collection UID" (fb-reframe/get-current-user-uid))
+;;            key (add-if-not-exists "collection name")
+;;            _ (println (str "RETURNED:" key))
+;;               ;; key2 (add-if-not-exists "collection name")
+;;               ;; _ (println (str "RETURNED:" key2))
+;;            _ (println (str "Collections: " (get-collection-names (get-collections))))]
+;;        (is (not (nil? key)))))))
+
+(comment
+  (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
+  (get-current-user-uid)
+  ;
+  )
