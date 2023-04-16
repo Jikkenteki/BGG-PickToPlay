@@ -73,19 +73,14 @@
 ;;           _ (push-new-collection! name)]
 ;;       @(db-get-ref [:firebase :new-collection-id]))))
 
-(defn add-if-not-exists [name]
-  (js/console.log name)
+
+(defn add-if-not-exists
+  "Creates a new collection and returns the key created by firebase.
+   If the collection name already exists it does not create a new collection and returns nil."
+  [name]
   (if (or (nil? (collections-path)) (exists-collection-name name))
     nil
-    (let [_ (db-set-value! [:firebase :new-collection-id] nil)
-          key (push-new-collection! name)]
-      key)))
-
-(fn [form-path]
-  (if (not (nil? (add-if-not-exists (:new-collection @(db-get-ref form-path)))))
-    (db-set-value! form-path {})
-    (re-frame/dispatch [::events/set-error "Login to save collections"])))
-
+    (push-new-collection! name)))
 
 (re-frame/reg-event-fx
  ::new-collection
@@ -94,7 +89,7 @@
               (if (nil? user-id)
                 {:dispatch [::events/set-error "Login to save collections"]}
                 (if (not (nil? (add-if-not-exists (:new-collection @(db-get-ref form-path)))))
-                  {:dispatch [::form-events/set-value! form-path {}] }
+                  {:dispatch [::form-events/set-value! form-path {}]}
                   {:dispatch [::events/set-error "Collection with this name already exists!"]})))))
 
 
@@ -102,7 +97,7 @@
   (collections-path)
 
   (nil? (collections-path))
-  (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])  
+  (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
   (re-frame/dispatch [::login-events/sign-out])
 
   (get-collection-names @(re-frame/subscribe [::collections]))
