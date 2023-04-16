@@ -1,4 +1,4 @@
-(ns bbg-reframe.login-view.view
+(ns bbg-reframe.views.loginView.loginView
   (:require [re-frame.core :as re-frame]
             [clojure.string :refer [trim]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]

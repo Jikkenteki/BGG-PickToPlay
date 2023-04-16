@@ -1,4 +1,4 @@
-(ns bbg-reframe.collections-view.view
+(ns bbg-reframe.views.collectionsView.collectionsView
   (:require [re-frame.core :as re-frame]
             [clojure.string :refer [trim]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]

@@ -1,13 +1,11 @@
-(ns bbg-reframe.game-view.views
+(ns bbg-reframe.views.gameView.gameView
   (:require [bbg-reframe.components.game-css-class :refer [game-icon-players]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.forms.bind :refer [bind-form-to-sub!]]
-            [bbg-reframe.forms.forms :refer [db-get-ref dropdown-search
-                                             input-element]]
+            [bbg-reframe.forms.forms :refer [db-get-ref dropdown-search input-element]]
             [bbg-reframe.game-view.events :as game-view-events]
             [bbg-reframe.game-view.subs :as game-view-subs]
-            [bbg-reframe.model.plays :refer [last-played number-of-plays
-                                             played-rank]]
+            [bbg-reframe.model.plays :refer [last-played number-of-plays played-rank]]
             [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]
             [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]))

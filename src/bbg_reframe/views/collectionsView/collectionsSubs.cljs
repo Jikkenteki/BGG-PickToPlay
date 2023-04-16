@@ -1,4 +1,4 @@
-(ns bbg-reframe.collections-view.subs
+(ns bbg-reframe.views.collectionsView.collectionsSubs
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub

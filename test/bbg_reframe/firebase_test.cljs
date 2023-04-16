@@ -5,7 +5,7 @@
             [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]
             [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.login-view.view :refer [save-games]]
+            [bbg-reframe.views.loginView.loginView :refer [save-games]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.events :as events]
             [bbg-reframe.login-view.events :as login-events]
