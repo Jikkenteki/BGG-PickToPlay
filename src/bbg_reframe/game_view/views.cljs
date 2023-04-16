@@ -62,7 +62,7 @@
      [:h2 "Playing time: "  (:playingtime game) " min"]
      [:span "Players: "
       [:span (map
-              (fn [p] [:span p (game-icon-players game p)])
+              (fn [p] [:span {:key p} p  (game-icon-players game p)])
               (map
                #(+ % minplayers)
                (range (inc (- maxplayers minplayers)))))]]

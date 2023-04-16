@@ -20,7 +20,6 @@
   []
   (let [collections @(re-frame/subscribe [::colls/collections-auth])]
     [:div.overflow-auto.grow.px-3
-     [:h1 "Collections"]
      [create-collection]
      [:ul
       (map (fn [li] [:li li]) (get-collection-names collections))]]))

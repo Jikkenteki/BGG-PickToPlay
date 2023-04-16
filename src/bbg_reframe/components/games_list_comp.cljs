@@ -8,7 +8,7 @@
   (let [result @(re-frame/subscribe [::subs/result])
         players @(re-frame/subscribe [::subs/form :players])
         time @(re-frame/subscribe [::subs/form :time-available])]
-    [:div.overflow-auto.grow.px-3
+    [:div.overflow-auto.grow
      [:pre players " PLAYERS, TIME: " time " min"]
      (map
       (fn [game]
