@@ -5,8 +5,7 @@
             [bbg-reframe.forms.forms :refer [db-set-value!]]
             [bbg-reframe.login-view.events :as login-events]
             [bbg-reframe.login-view.view :refer [save-games]]
-            [bbg-reframe.model.collections :refer [add-if-not-exists
-                                                   get-collection-names get-collections]]
+            [bbg-reframe.model.collections :refer [add-if-not-exists get-collections]]
             [bbg-reframe.subs :as subs]
             [cljs.test :refer-macros [deftest testing is]]
             [day8.re-frame.test :as rf-test]

@@ -93,7 +93,13 @@ firebase deploy
 ```
 
 
+## Project creation
 
+This project has been created with the command line:
+```
+lein new re-frame <project-name> +routes +10x +test
+npm i
+```
 ----
 
 ## Getting Started
