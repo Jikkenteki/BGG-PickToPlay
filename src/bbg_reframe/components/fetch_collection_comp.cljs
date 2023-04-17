@@ -4,7 +4,7 @@
    [bbg-reframe.subs :as subs]
    [bbg-reframe.network-events :as network-events]
    [bbg-reframe.events :as events]
-   [bbg-reframe.login-view.view :refer [login-comp]]))
+   [bbg-reframe.views.login-view.login-view :refer [login-comp]]))
 
 (defn fetch-collection-comp []
   (let [user @(re-frame/subscribe [::subs/user])]

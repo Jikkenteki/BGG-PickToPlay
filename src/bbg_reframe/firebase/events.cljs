@@ -1,6 +1,6 @@
 (ns bbg-reframe.firebase.events
   (:require
-   [bbg-reframe.login-view.events :as login-events]
+   [bbg-reframe.views.login-view.login-events :as login-events]
    [bbg-reframe.network-events :as events]
    [clojure.string :as string]
    [day8.re-frame.tracing :refer-macros [fn-traced]]

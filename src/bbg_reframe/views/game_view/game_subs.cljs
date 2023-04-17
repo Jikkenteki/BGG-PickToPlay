@@ -1,4 +1,4 @@
-(ns bbg-reframe.game-view.subs
+(ns bbg-reframe.views.game-view.game-subs
   (:require [re-frame.core :as re-frame]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.forms.utils :refer [if-nil?->value]]))

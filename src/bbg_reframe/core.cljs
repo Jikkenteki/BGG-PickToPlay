@@ -7,15 +7,15 @@
    [bbg-reframe.events :as events]
    [bbg-reframe.network-events :as network-events]
 
-   [bbg-reframe.views :as views]
-   [bbg-reframe.routes :as routes]
+   [bbg-reframe.routes :as views]
+   [bbg-reframe.router :as routes]
 
    [bbg-reframe.config :as config]
    [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
    [clojure.tools.reader.edn :refer [read-string]]
    [re-frame.loggers :refer [console]]
 
-   [bbg-reframe.login-view.events :as login-events]
+   [bbg-reframe.views.login-view.login-events :as login-events]
    [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config connect-emulator]]
    [re-frame-firebase-nine.firebase-auth :refer [get-auth on-auth-state-changed on-auth-state-changed-callback]]))
 

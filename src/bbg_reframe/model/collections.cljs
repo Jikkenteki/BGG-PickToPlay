@@ -1,9 +1,9 @@
 (ns bbg-reframe.model.collections
   (:require [bbg-reframe.firebase.events :as fb-events]
             [bbg-reframe.forms.events :as form-events]
-            [bbg-reframe.forms.forms :refer [db-get-ref db-set-value!]]
-            [bbg-reframe.game-view.subs :as auth-subs]
-            [bbg-reframe.login-view.events :as login-events]
+            [bbg-reframe.forms.forms :refer [db-get-ref]]
+            [bbg-reframe.views.game-view.game-subs :as auth-subs]
+            [bbg-reframe.views.login-view.login-events :as login-events]
             [bbg-reframe.network-events :as events]
             [day8.re-frame.tracing :refer [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]

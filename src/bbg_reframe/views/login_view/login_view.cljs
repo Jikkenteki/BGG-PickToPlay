@@ -1,4 +1,4 @@
-(ns bbg-reframe.login-view.view
+(ns bbg-reframe.views.login-view.login-view
   (:require [re-frame.core :as re-frame]
             [clojure.string :refer [trim]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
@@ -6,8 +6,8 @@
             [bbg-reframe.forms.utils :refer [if-nil?->value]]
             [bbg-reframe.forms.subs :as form-subs]
             [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.login-view.events :as login-events]
-            [bbg-reframe.login-view.subs :as login-subs]))
+            [bbg-reframe.views.login-view.login-events :as login-events]
+            [bbg-reframe.views.login-view.login-subs :as login-subs]))
 
 (defn save-games
   []

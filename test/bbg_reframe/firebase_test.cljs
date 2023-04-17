@@ -3,13 +3,14 @@
             [bbg-reframe.events :as events]
             [bbg-reframe.firebase.events :as fb-events]
             [bbg-reframe.forms.forms :refer [db-set-value!]]
-            [bbg-reframe.login-view.events :as login-events]
-            [bbg-reframe.login-view.view :refer [save-games]]
-            [bbg-reframe.model.collections :refer [add-if-not-exists get-collections]]
+            [bbg-reframe.model.collections :refer [add-if-not-exists
+                                                   get-collections]]
             [bbg-reframe.subs :as subs]
+            [bbg-reframe.views.login-view.login-events :as login-events]
+            [bbg-reframe.views.login-view.login-view :refer [save-games]]
             [cljs.test :refer-macros [deftest testing is]]
             [day8.re-frame.test :as rf-test]
-            [re-frame-firebase-nine.fb-reframe :as fb-reframe :refer [get-current-user-uid]]
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed
                                                           on-auth-state-changed-callback]]
             [re-frame.core :as re-frame]))
@@ -90,6 +91,5 @@
 
 (comment
   (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
-  (get-current-user-uid)
   ;
   )
