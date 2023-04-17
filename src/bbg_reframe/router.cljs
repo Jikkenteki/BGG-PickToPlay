@@ -5,10 +5,6 @@
    [re-frame.core :as re-frame]
    [bbg-reframe.events :as events]))
 
-(defmulti panels identity)
-(defmethod panels :default []
-  [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200 "No panel found for this route."])
-
 (def routes
   (atom
    ["/" {""   :home
