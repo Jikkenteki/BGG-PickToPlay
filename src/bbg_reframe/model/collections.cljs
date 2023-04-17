@@ -1,14 +1,9 @@
 (ns bbg-reframe.model.collections
   (:require [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.forms.events :as form-events]
-            [bbg-reframe.forms.forms :refer [db-get-ref]]
-            [bbg-reframe.views.game-view.game-subs :as auth-subs]
+            [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
             [bbg-reframe.views.login-view.login-events :as login-events]
-            [bbg-reframe.network-events :as events]
-            [day8.re-frame.tracing :refer [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [re-frame-firebase-nine.firebase-database :refer [on-value
-                                                              push-value!]]
+            [re-frame-firebase-nine.firebase-database :refer [on-value push-value!]]
             [re-frame.core :as re-frame]))
 
 ;; helpers
@@ -45,15 +40,10 @@
 ;;      {}
 ;;      collections)))
 
-;; auth-collections
-(re-frame/reg-sub
- ::collections-auth
- :<- [::auth-subs/on-auth-value ["collections"]]
- (fn [coll [_]]
-   coll))
+
 
 (defn get-collections []
-  @(re-frame/subscribe [::collections-auth]))
+  @(re-frame/subscribe [::collections-subs/collections-auth]))
 
 (defn exists-collection-name [name]
   (in? (get-collection-names (get-collections)) name))
@@ -82,15 +72,7 @@
     nil
     (push-new-collection! name)))
 
-(re-frame/reg-event-fx
- ::new-collection
- (fn-traced [_ [_ form-path]]
-            (let [user-id (fb-reframe/get-current-user-uid)]
-              (if (nil? user-id)
-                {:dispatch [::events/set-error "Login to save collections"]}
-                (if (not (nil? (add-if-not-exists (:new-collection @(db-get-ref form-path)))))
-                  {:dispatch [::form-events/set-value! form-path {}]}
-                  {:dispatch [::events/set-error "Collection with this name already exists!"]})))))
+
 
 
 (comment
@@ -109,7 +91,7 @@
   (exists-collection-name "collection name")
   (get-collections)
   ;; @(re-frame/subscribe [::collections])
-  @(re-frame/subscribe [::collections-auth])
+  ;; @(re-frame/subscribe [::collections-auth])
 
   (on-value (collections-path) (fn [v] (js/console.log (get-collection-names v))))
 

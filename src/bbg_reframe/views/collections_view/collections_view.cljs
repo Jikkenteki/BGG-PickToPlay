@@ -1,5 +1,5 @@
 (ns bbg-reframe.views.collections-view.collections-view
-  (:require [bbg-reframe.components.collections-temp-comp :refer [collections-comp]]
+  (:require [bbg-reframe.components.collections-comp :refer [collections-comp]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
 
 

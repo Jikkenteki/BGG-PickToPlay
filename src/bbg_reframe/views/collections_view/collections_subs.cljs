@@ -1,8 +1,10 @@
 (ns bbg-reframe.views.collections-view.collections-subs
-  (:require [re-frame.core :as re-frame]))
+  (:require             [bbg-reframe.views.game-view.game-subs :as auth-subs]
+                        [re-frame.core :as re-frame]))
 
+;; auth-collections
 (re-frame/reg-sub
- ::email
- (fn [db]
-   (:email db)))
-
+ ::collections-auth
+ :<- [::auth-subs/on-auth-value ["collections"]]
+ (fn [coll [_]]
+   coll))

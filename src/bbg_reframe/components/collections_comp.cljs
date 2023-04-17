@@ -1,7 +1,9 @@
-(ns bbg-reframe.components.collections-temp-comp
+(ns bbg-reframe.components.collections-comp
   (:require [bbg-reframe.forms.bind :refer [bind-form-to-value!]]
             [bbg-reframe.forms.forms :refer [input-element]]
-            [bbg-reframe.model.collections :as colls :refer [get-collection-names]]
+            [bbg-reframe.model.collections :refer [get-collection-names]]
+            [bbg-reframe.views.collections-view.collections-events :as collections-events]
+            [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
             [re-frame.core :as re-frame]))
 
 
@@ -14,11 +16,11 @@
                      :placeholder "Collection name"
                      :path (into form-path [:new-collection])}]
      [:button {:on-click #(re-frame/dispatch
-                           [::colls/new-collection form-path])} "Create"]]))
+                           [::collections-events/new-collection form-path])} "Create"]]))
 
 (defn collections-comp
   []
-  (let [collections @(re-frame/subscribe [::colls/collections-auth])]
+  (let [collections @(re-frame/subscribe [::collections-subs/collections-auth])]
     [:div.overflow-auto.grow.px-3
      [create-collection]
      [:ul
