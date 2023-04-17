@@ -1,4 +1,4 @@
-(ns bbg-reframe.views.game-view.game-events
+(ns bbg-reframe.panels.game.game-events
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]

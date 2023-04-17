@@ -1,11 +1,11 @@
-(ns bbg-reframe.components.sliders-comp
+(ns bbg-reframe.panels.home.components.sliders-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
-   [bbg-reframe.components.slider-comp :refer [slider-comp]]
-   [bbg-reframe.components.checkbox-with-connector-comp :refer [checkbox-with-connector-comp]]
-   [bbg-reframe.views.login-view.login-subs :as login-subs]))
+   [bbg-reframe.panels.home.components.slider-comp :refer [slider-comp]]
+   [bbg-reframe.panels.home.components.checkbox-with-connector-comp :refer [checkbox-with-connector-comp]]
+   [bbg-reframe.panels.login.login-subs :as login-subs]))
 
 (defn sliders-comp []
   (let [only-available? @(re-frame/subscribe [::subs/form :only-available?])

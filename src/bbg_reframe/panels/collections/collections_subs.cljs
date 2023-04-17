@@ -1,5 +1,5 @@
-(ns bbg-reframe.views.collections-view.collections-subs
-  (:require             [bbg-reframe.views.game-view.game-subs :as auth-subs]
+(ns bbg-reframe.panels.collections.collections-subs
+  (:require             [bbg-reframe.panels.game.game-subs :as auth-subs]
                         [re-frame.core :as re-frame]))
 
 ;; auth-collections

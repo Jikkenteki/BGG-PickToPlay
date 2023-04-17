@@ -1,4 +1,4 @@
-(ns bbg-reframe.components.slider-comp
+(ns bbg-reframe.panels.home.components.slider-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]

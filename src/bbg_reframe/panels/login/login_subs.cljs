@@ -1,4 +1,4 @@
-(ns bbg-reframe.views.login-view.login-subs
+(ns bbg-reframe.panels.login.login-subs
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub

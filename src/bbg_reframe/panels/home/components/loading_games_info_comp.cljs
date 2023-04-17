@@ -1,4 +1,4 @@
-(ns bbg-reframe.components.loading-games-info-comp
+(ns bbg-reframe.panels.home.components.loading-games-info-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]))

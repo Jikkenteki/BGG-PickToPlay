@@ -1,10 +1,10 @@
-(ns bbg-reframe.components.bottom-buttons-bar-comp
+(ns bbg-reframe.panels.home.components.bottom-buttons-bar-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
    [bbg-reframe.events :as events]
    [bbg-reframe.components.button-comp :refer [button-comp]]
-   [bbg-reframe.components.bottom-overlay-comp :refer [bottom-overlay-comp]]))
+   [bbg-reframe.panels.home.components.bottom-overlay-comp :refer [bottom-overlay-comp]]))
 
 (defn bottom-buttons-bar-comp []
   (let [open-tab @(re-frame/subscribe [::subs/ui :open-tab])]

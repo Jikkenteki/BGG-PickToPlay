@@ -1,4 +1,4 @@
-(ns bbg-reframe.components.checkbox-with-connector-comp)
+(ns bbg-reframe.panels.home.components.checkbox-with-connector-comp)
 
 (defn checkbox-with-connector-comp [{:keys [label on-click checked? disabled?]}]
   [:div.flex

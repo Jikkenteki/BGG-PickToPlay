@@ -1,14 +1,14 @@
-(ns bbg-reframe.views.collections-view.collections-events
-  (:require  [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
-   [bbg-reframe.forms.forms :refer [db-get-ref]]
-            [bbg-reframe.forms.events :as form-events]
-            [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.network-events :as events]
-            [day8.re-frame.tracing :refer-macros [fn-traced]]
-            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [re-frame-firebase-nine.firebase-database :refer [on-value push-value!]]
-            [bbg-reframe.views.login-view.login-events :as login-events]
-            [re-frame.core :as re-frame]))
+(ns bbg-reframe.panels.collections.collections-events
+  (:require  [bbg-reframe.panels.collections.collections-subs :as collections-subs]
+             [bbg-reframe.forms.forms :refer [db-get-ref]]
+             [bbg-reframe.forms.events :as form-events]
+             [bbg-reframe.firebase.events :as fb-events]
+             [bbg-reframe.network-events :as events]
+             [day8.re-frame.tracing :refer-macros [fn-traced]]
+             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+             [re-frame-firebase-nine.firebase-database :refer [on-value push-value!]]
+             [bbg-reframe.panels.login.login-events :as login-events]
+             [re-frame.core :as re-frame]))
 
 ;; helpers
 

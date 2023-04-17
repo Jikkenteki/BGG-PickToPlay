@@ -1,4 +1,4 @@
-(ns bbg-reframe.components.game-css-class
+(ns bbg-reframe.panels.game.components.game-css-class
   (:require
    [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]))
 
