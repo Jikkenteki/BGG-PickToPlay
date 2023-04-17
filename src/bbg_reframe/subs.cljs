@@ -1,7 +1,7 @@
 (ns bbg-reframe.subs
   (:require
    [re-frame.core :as re-frame]
-   [bbg-reframe.game-view.subs :as game-subs]
+   [bbg-reframe.views.game-view.game-subs :as game-subs]
    [bbg-reframe.events :as events]))
 
 (re-frame/reg-sub

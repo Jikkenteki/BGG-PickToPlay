@@ -1,4 +1,4 @@
-(ns bbg-reframe.views.loginView.loginView
+(ns bbg-reframe.views.collections-view.collections-view
   (:require [re-frame.core :as re-frame]
             [clojure.string :refer [trim]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
@@ -6,8 +6,8 @@
             [bbg-reframe.forms.utils :refer [if-nil?->value]]
             [bbg-reframe.forms.subs :as form-subs]
             [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.login-view.events :as login-events]
-            [bbg-reframe.login-view.subs :as login-subs]))
+            [bbg-reframe.views.login-view.login-events :as login-events]
+            [bbg-reframe.views.login-view.login-subs :as login-subs]))
 
 (defn save-games
   []
@@ -43,10 +43,9 @@
      [:button.button.min-w-fit.px-2.ml-1
       {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click #(re-frame/dispatch [::fb-events/fetch-games])} "Fetch games from account"]]))
 
-(defn login-view-panel
+(defn collections-view-panel
   []
   [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
    [naive-nav-bar]
 
-   [:h1 "Login"]
-   [login-comp]])
+   [:h1 "Collections"]])

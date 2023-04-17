@@ -1,4 +1,4 @@
-(ns bbg-reframe.views.homeView.homeView
+(ns bbg-reframe.views.home-view.home-view
   (:require [re-frame.core :as re-frame]
             [bbg-reframe.subs :as subs]
             [bbg-reframe.components.loading-games-info-comp :refer [loading-games-info-comp]]

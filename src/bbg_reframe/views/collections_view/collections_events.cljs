@@ -1,4 +1,4 @@
-(ns bbg-reframe.views.collectionsView.collectionsEvents
+(ns bbg-reframe.views.collections-view.collections-events
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]

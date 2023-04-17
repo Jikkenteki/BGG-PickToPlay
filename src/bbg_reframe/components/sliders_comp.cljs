@@ -5,7 +5,7 @@
    [bbg-reframe.events :as events]
    [bbg-reframe.components.slider-comp :refer [slider-comp]]
    [bbg-reframe.components.checkbox-with-connector-comp :refer [checkbox-with-connector-comp]]
-   [bbg-reframe.login-view.subs :as login-subs]))
+   [bbg-reframe.views.login-view.login-subs :as login-subs]))
 
 (defn sliders-comp []
   (let [only-available? @(re-frame/subscribe [::subs/form :only-available?])

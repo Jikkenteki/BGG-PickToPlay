@@ -5,10 +5,10 @@
             [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]
             [bbg-reframe.firebase.events :as fb-events]
-            [bbg-reframe.views.loginView.loginView :refer [save-games]]
+            [bbg-reframe.views.login-view.login-view :refer [save-games]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [bbg-reframe.events :as events]
-            [bbg-reframe.login-view.events :as login-events]
+            [bbg-reframe.views.login-view.login-events :as login-events]
             [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
             [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed on-auth-state-changed-callback]]))
 

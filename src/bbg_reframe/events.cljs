@@ -10,7 +10,6 @@
    [bbg-reframe.db :refer [default-db]]
    [bbg-reframe.spec.db-spec :as db-spec]
    [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]
-   [bbg-reframe.game-view.subs]
    [bbg-reframe.forms.utils :refer [if-nil?->value]]))
 
 (defn check-and-throw
