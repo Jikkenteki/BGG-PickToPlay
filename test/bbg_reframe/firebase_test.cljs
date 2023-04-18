@@ -1,14 +1,13 @@
 (ns bbg-reframe.firebase-test
   (:require [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
             [bbg-reframe.events :as events]
-            [bbg-reframe.network-events :as network-events]
-
             [bbg-reframe.firebase.events :as fb-events]
             [bbg-reframe.forms.forms :refer [db-set-value!]]
+            [bbg-reframe.network-events :as network-events]
+            [bbg-reframe.panels.collections.collections-events :as collections-events :refer [in?]]
+            [bbg-reframe.panels.login.login-events :as login-events]
+            [bbg-reframe.panels.login.login-panel :refer [save-games]]
             [bbg-reframe.subs :as subs]
-            [bbg-reframe.views.collections-view.collections-events :as collections-events :refer [in?]]
-            [bbg-reframe.views.login-view.login-events :as login-events]
-            [bbg-reframe.views.login-view.login-view :refer [save-games]]
             [cljs.test :refer-macros [deftest testing is]]
             [day8.re-frame.test :as rf-test]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]

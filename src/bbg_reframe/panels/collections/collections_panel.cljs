@@ -1,8 +1,6 @@
-(ns bbg-reframe.views.collections-view.collections-view
-  (:require [bbg-reframe.components.collections-comp :refer [collections-comp]]
+(ns bbg-reframe.panels.collections.collections-panel
+  (:require [bbg-reframe.panels.collections.components.collections-comp :refer [collections-comp]]
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]))
-
-
 
 (defn collections-view-panel
   []

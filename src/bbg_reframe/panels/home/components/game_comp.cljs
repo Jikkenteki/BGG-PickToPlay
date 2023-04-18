@@ -1,4 +1,4 @@
-(ns bbg-reframe.components.game-comp
+(ns bbg-reframe.panels.home.components.game-comp
   (:require
    [bbg-reframe.model.sort-filter :refer [game->best-rec-not playability time-rating playability-time]]
    [goog.string :as gstring]
@@ -6,7 +6,7 @@
    [re-frame.core :as re-frame]
    [bbg-reframe.events :as events]
    [bbg-reframe.config :refer [debug?]]
-   [bbg-reframe.components.game-css-class :refer [game-icon-span]]))
+   [bbg-reframe.panels.game.components.game-css-class :refer [game-icon-span]]))
 
 (def SHOW_PLAYABILITY debug?)
 ;; (def SHOW_PLAYABILITY false)

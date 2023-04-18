@@ -1,10 +1,10 @@
 (ns bbg-reframe.routes
   (:require ["sax" :as sax]
             [bbg-reframe.subs :as subs]
-            [bbg-reframe.views.collections-view.collections-view :refer [collections-view-panel]]
-            [bbg-reframe.views.game-view.game-view :refer [game-view-panel]]
-            [bbg-reframe.views.home-view.home-view :refer [home-panel]]
-            [bbg-reframe.views.login-view.login-view :refer [login-view-panel]]
+            [bbg-reframe.panels.collections.collections-panel :refer [collections-view-panel]]
+            [bbg-reframe.panels.game.game-panel :refer [game-view-panel]]
+            [bbg-reframe.panels.home.home-panel :refer [home-panel]]
+            [bbg-reframe.panels.login.login-panel :refer [login-view-panel]]
             [re-frame.core :as re-frame]))
 
 ; required for tubax to work

@@ -1,8 +1,8 @@
-(ns bbg-reframe.components.games-list-comp
+(ns bbg-reframe.panels.home.components.games-list-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
-   [bbg-reframe.components.game-comp :refer [game-comp]]))
+   [bbg-reframe.panels.home.components.game-comp :refer [game-comp]]))
 
 (defn games-list-comp []
   (let [result @(re-frame/subscribe [::subs/result])

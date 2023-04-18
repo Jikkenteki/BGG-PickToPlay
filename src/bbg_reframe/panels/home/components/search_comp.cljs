@@ -1,4 +1,4 @@
-(ns bbg-reframe.components.search-comp
+(ns bbg-reframe.panels.home.components.search-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]

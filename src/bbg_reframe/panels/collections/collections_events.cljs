@@ -1,13 +1,12 @@
-(ns bbg-reframe.views.collections-view.collections-events
+(ns bbg-reframe.panels.collections.collections-events
   (:require [bbg-reframe.forms.forms :refer [db-set-value!]]
             [bbg-reframe.network-events :as events]
-            [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
-            [bbg-reframe.views.login-view.login-events :as login-events]
+            [bbg-reframe.panels.collections.collections-subs :as collections-subs]
+            [bbg-reframe.panels.login.login-events :as login-events]
             [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :refer [inject-cofx reg-cofx]]
             [day8.re-frame.tracing :refer-macros [fn-traced] :refer [defn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame.core :as re-frame]))
-
 
 (defn in?
   "true if coll contains elm"

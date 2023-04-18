@@ -1,10 +1,10 @@
-(ns bbg-reframe.components.fetch-collection-comp
+(ns bbg-reframe.panels.home.components.fetch-collection-comp
   (:require
    [re-frame.core :as re-frame]
    [bbg-reframe.subs :as subs]
    [bbg-reframe.network-events :as network-events]
    [bbg-reframe.events :as events]
-   [bbg-reframe.views.login-view.login-view :refer [login-comp]]))
+   [bbg-reframe.panels.login.login-panel :refer [login-comp]]))
 
 (defn fetch-collection-comp []
   (let [user @(re-frame/subscribe [::subs/user])]

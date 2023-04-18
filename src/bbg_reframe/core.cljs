@@ -15,7 +15,7 @@
    [clojure.tools.reader.edn :refer [read-string]]
    [re-frame.loggers :refer [console]]
 
-   [bbg-reframe.views.login-view.login-events :as login-events]
+   [bbg-reframe.panels.login.login-events :as login-events]
    [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config connect-emulator]]
    [re-frame-firebase-nine.firebase-auth :refer [get-auth on-auth-state-changed on-auth-state-changed-callback]]))
 

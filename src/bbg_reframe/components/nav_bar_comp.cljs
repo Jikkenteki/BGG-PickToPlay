@@ -3,7 +3,7 @@
             [bbg-reframe.components.error-box-comp :refer [error-box-comp]]
             [bbg-reframe.events :as events]
             [bbg-reframe.subs :as subs]
-            [bbg-reframe.views.login-view.login-subs :as login-subs]))
+            [bbg-reframe.panels.login.login-subs :as login-subs]))
 
 (defn naive-nav-bar
   []

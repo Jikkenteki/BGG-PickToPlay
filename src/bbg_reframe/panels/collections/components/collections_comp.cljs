@@ -1,8 +1,8 @@
-(ns bbg-reframe.components.collections-comp
+(ns bbg-reframe.panels.collections.components.collections-comp
   (:require [bbg-reframe.forms.bind :refer [bind-form-to-value!]]
             [bbg-reframe.forms.forms :refer [input-element]]
-            [bbg-reframe.views.collections-view.collections-events :as collections-events :refer [get-collection-names]]
-            [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
+            [bbg-reframe.panels.collections.collections-events :as collections-events :refer [get-collection-names]]
+            [bbg-reframe.panels.collections.collections-subs :as collections-subs]
             [re-frame.core :as re-frame]))
 
 
