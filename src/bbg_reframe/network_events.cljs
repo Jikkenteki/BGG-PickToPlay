@@ -3,19 +3,17 @@
             [bbg-reframe.config :refer [cors-server-uri delay-between-fetches
                                         xml-api]]
             [bbg-reframe.events :refer [check-spec-interceptor]]
+            [bbg-reframe.localstorage.localstorage-events :refer [->fb-collections->local-store]]
             [bbg-reframe.model.db :refer [game-votes game-weight indexed-games
                                           update-plays-in-games]]
             [bbg-reframe.model.localstorage :refer [set-item!]]
             [bbg-reframe.model.sort-filter :refer
-             [and-filters
-              is-playable-with-num-of-players
-              should-show-expansions?
-              should-show-only-available?
-              sorting-fun
+             [and-filters is-playable-with-num-of-players
+              should-show-expansions? should-show-only-available? sorting-fun
               with-number-of-players?]]
-            [bbg-reframe.model.xmlapi :refer [clj->plays item-game-id
-                                              item-game-type play->play xml->game
-                                              clj->page clj->total-games]]
+            [bbg-reframe.model.xmlapi :refer [clj->page clj->plays
+                                              clj->total-games item-game-id
+                                              item-game-type play->play xml->game]]
             [clojure.string :refer [split]]
             [clojure.tools.reader.edn :refer [read-string]]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
@@ -521,6 +519,12 @@
  (fn-traced [{:keys [db]} [_ games]]
             {:db (assoc db :games (read-string games))
              :dispatch [:bbg-reframe.network-events/update-result]}))
+
+(re-frame/reg-event-fx
+ ::handle-fb-fetched-collections
+ [check-spec-interceptor ->fb-collections->local-store]
+ (fn-traced [{:keys [db]} [_ collections]]
+            {:db (assoc db :collections collections)}))
 
 (comment
   (re-frame/dispatch [::fetch-plays 1])

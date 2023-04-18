@@ -1,5 +1,6 @@
 (ns bbg-reframe.panels.collections.collections-events
   (:require [bbg-reframe.forms.forms :refer [db-set-value!]]
+            [bbg-reframe.localstorage.localstorage-events :refer [->fb-collections->local-store]]
             [bbg-reframe.network-events :as events]
             [bbg-reframe.panels.collections.collections-subs :as collections-subs]
             [bbg-reframe.panels.login.login-events :as login-events]
@@ -14,7 +15,9 @@
   (some #(= elm %) coll))
 
 (defn get-collection-names [collections]
-  (reduce-kv (fn [m _ v] (conj m (:name v))) [] collections))
+  (if (nil? collections)
+    []
+    (reduce-kv (fn [m _ v] (conj m (:name v))) [] collections)))
 
 ;;
 ;; reg-cofx
@@ -55,16 +58,16 @@
     {:dispatch [::events/set-error "Login to save collections"]}
     (let [collections (:collections db)
           new-collection-name (:new-collection (get-in db form-path))
-          data {:name new-collection-name}]
-      (if (not (in? (get-collection-names collections) new-collection-name))
-        {:db (-> db
-                 (assoc-in form-path {}) ;; clear the input form
-                 (assoc :collections (conj collections data)))
-         ::fb-reframe/firebase-push
-         {:path ["users" uid "collections"]
-          :data data
-          :success #(re-frame/dispatch [::saved-collection new-collection-name])
-          :key-path [:firebase :new-collection-id]}}
+          data {:name new-collection-name}
+          collection-names (get-collection-names collections)]
+      (if (not (in? collection-names new-collection-name))
+        {:fx
+         [[::fb-reframe/firebase-push
+           {:path ["users" uid "collections"]
+            :data data
+            :success #(re-frame/dispatch [::saved-collection new-collection-name])
+            :key-path [:firebase :new-collection-id]}]
+          [:dispatch [::update-db {:form-path form-path :data data}]]]}
         {:dispatch [::events/set-error "Collection with this name already exists!"]}))))
 
 ;;
@@ -74,6 +77,20 @@
  [;; (inject-cofx :collections) 
   (inject-cofx :uid)]
  new-collection-handler)
+
+(defn get-collection-key [db]
+  (keyword (get-in db [:firebase :new-collection-id])))
+
+(re-frame/reg-event-fx
+ ::update-db
+ [->fb-collections->local-store]
+ (fn-traced [{:keys [db]} [_ {:keys [form-path data]}]]
+            (let [key (get-collection-key db)]
+              {:db (-> db
+                       (assoc-in form-path {}) ;; clear the input form
+                      ;;  (assoc :collections (conj collections {key data}))
+                       (assoc-in [:collections key] data)
+                       )})))
 
 (re-frame/reg-event-db
  ::saved-collection
@@ -89,5 +106,9 @@
   ;; the ui dispatches
   (re-frame/dispatch [::new-collection [:form :create-collection]])
 
+  
+  (get-collection-names {:-NTK-cZZcAJzjdrG6ifV {:name "ac"}})
+  (get-collection-names {:-NTK-cZZcAJzjdrG6ifV {:name "ac"}
+                         :af {:name "ab"}})
   ;
   )

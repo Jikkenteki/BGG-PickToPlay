@@ -5,13 +5,13 @@
             [bbg-reframe.forms.forms :refer [input-element]]
             [bbg-reframe.forms.utils :refer [if-nil?->value]]
             [bbg-reframe.forms.subs :as form-subs]
-            [bbg-reframe.firebase.events :as fb-events]
+            [bbg-reframe.firebase.firebase-events :as firebase-events]
             [bbg-reframe.panels.login.login-events :as login-events]
             [bbg-reframe.panels.login.login-subs :as login-subs]))
 
 (defn save-games
   []
-  (re-frame/dispatch [::fb-events/fb-save-games]))
+  (re-frame/dispatch [::firebase-events/fb-save-games]))
 
 (defn login-comp
   []
@@ -41,7 +41,7 @@
      [:button.button.min-w-fit.px-2.ml-1
       {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click save-games} "Save games to account"]
      [:button.button.min-w-fit.px-2.ml-1
-      {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click #(re-frame/dispatch [::fb-events/fetch-games])} "Fetch games from account"]]))
+      {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click #(re-frame/dispatch [::firebase-events/fetch-games])} "Fetch games from account"]]))
 
 (defn login-view-panel
   []

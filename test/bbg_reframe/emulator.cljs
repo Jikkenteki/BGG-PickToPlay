@@ -1,8 +1,6 @@
 (ns bbg-reframe.emulator
   (:require [bbg-reframe.env-variables :refer [api-key-env]]
-            [re-frame-firebase-nine.fb-reframe :refer [connect-emulator
-                                                       fb-reframe-config]]
-            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+            [re-frame-firebase-nine.fb-reframe :refer [connect-emulator fb-reframe-config] :as fb-reframe]
             [re-frame-firebase-nine.firebase-database :refer [fb-ref fb-set!
                                                               get-db]]))
 

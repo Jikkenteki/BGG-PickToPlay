@@ -1,16 +1,27 @@
 (ns bbg-reframe.panels.login.login-events
-  (:require [re-frame.core :as re-frame]
+  (:require [bbg-reframe.firebase.firebase-events :as firebase-events]
+            [bbg-reframe.localstorage.localstorage-events :refer [remove-fb-collections-if-signed-out remove-fb-collections-local-store-when-signed-out]]
+            [bbg-reframe.network-events :as events]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [bbg-reframe.network-events :as events]
-            [re-frame-firebase-nine.firebase-auth :refer [get-current-user on-auth-state-changed on-auth-state-changed-callback]]))
+            [re-frame-firebase-nine.firebase-auth :refer [get-current-user
+                                                          on-auth-state-changed
+                                                          on-auth-state-changed-callback]]
+            [re-frame.core :as re-frame]))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  ::auth-state-changed
- (fn-traced [db [_ _]]
+ [remove-fb-collections-local-store-when-signed-out]
+ (fn-traced [{:keys [db]} [_ _]]
             (if (get-current-user)
-              (assoc db :email (fb-reframe/get-current-user-email))
-              db)))
+              {:db (-> db
+                  (assoc :email (fb-reframe/get-current-user-email))
+                  (assoc :uid (fb-reframe/get-current-user-uid)))}
+              ;; for some reasons collections are still there
+              {:db (-> db
+                       (dissoc :email)
+                       (dissoc :uid)
+                       (dissoc :collections))})))
 
 (re-frame/reg-event-fx
  ::sign-in-success
@@ -28,9 +39,13 @@
 
 (re-frame/reg-event-db
  ::sign-out-success
+ [remove-fb-collections-local-store-when-signed-out]
  (fn-traced [db [_]]
             (let [_ (println "User signed-out")]
-              (dissoc db :email))))
+              (-> db
+                  (dissoc :email)
+                  (dissoc :uid)
+                  (dissoc :collections)))))
 
 (re-frame/reg-event-fx
  ::sign-in
@@ -65,13 +80,18 @@
  ::sync-with-fb
  (fn-traced [_ [_]]
             (println "Dummy Syncing")
-            ))
+            {:dispatch [::firebase-events/sync-fb-user-data]}))
 
 
 (comment
 
+  (re-frame/dispatch [::sign-up "new@gmail.com" "password"])
+
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
+  (re-frame/dispatch [::sign-in "new@gmail.com" "password"])
+  
   (re-frame/dispatch [::sign-out])
+
 
   (on-auth-state-changed on-auth-state-changed-callback)
  ;

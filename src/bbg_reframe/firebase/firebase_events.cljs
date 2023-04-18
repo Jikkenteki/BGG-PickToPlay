@@ -1,6 +1,5 @@
-(ns bbg-reframe.firebase.events
+(ns bbg-reframe.firebase.firebase-events
   (:require
-   [bbg-reframe.panels.login.login-events :as login-events]
    [bbg-reframe.network-events :as events]
    [clojure.string :as string]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
@@ -42,10 +41,19 @@
                                          :key-path key-path}}))
 
 
+;;
+;; sync user data from firebase
+;;
+(re-frame/reg-event-fx
+ ::sync-fb-user-data
+ (fn-traced
+  [_ [_ _]]
+  {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "collections"]
+                               :success ::events/handle-fb-fetched-collections}}))
+
+
 
 (comment
-
-  (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
 
   (into ["users" (fb-reframe/get-current-user-uid)] ["cached-games"])
 

@@ -28,6 +28,17 @@ firebase emulators:start --import=./firebase-export
 npx karma start
 ```
 
+## Run firebase emulator importing data and exporting on exit
+Useful for keeping all data from previous sessions.
+```
+firebase emulators:start --import=./tmp-firebase-export --export-on-exit=./tmp-firebase-export
+```
+Note: in order to create the `./tmp-firebase-export` directory run once:
+```
+firebase emulators:start --import=./firebase-export --export-on-exit=./tmp-firebase-export
+```
+and exit.
+
 ## Release and deploy locally
 ```
 npm run release

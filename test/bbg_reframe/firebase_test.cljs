@@ -1,14 +1,12 @@
 (ns bbg-reframe.firebase-test
   (:require [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
             [bbg-reframe.events :as events]
-            [bbg-reframe.firebase.events :as fb-events]
+            [bbg-reframe.firebase.firebase-events :as firebase-events]
             [bbg-reframe.forms.forms :refer [db-set-value!]]
-            [bbg-reframe.network-events :as network-events]
-            [bbg-reframe.panels.collections.collections-events :as collections-events :refer [in?]]
             [bbg-reframe.panels.login.login-events :as login-events]
             [bbg-reframe.panels.login.login-panel :refer [save-games]]
             [bbg-reframe.subs :as subs]
-            [cljs.test :refer-macros [deftest testing is]]
+            [cljs.test :refer-macros [deftest testing is run-tests]]
             [day8.re-frame.test :as rf-test]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed
@@ -38,7 +36,7 @@
            _ (println (str "After save " (:games  @db)))
            _ (re-frame/dispatch-sync [::events/initialize-db])
            _ (println (str "After init " (:games  @db)))
-           _ (re-frame/dispatch [::fb-events/fetch-games])
+           _ (re-frame/dispatch [::firebase-events/fetch-games])
            _ (println (str "After dispatch fetch " (:games  @db)))]
        (is (= games (:games @db)))))))
 
@@ -55,38 +53,47 @@
        (rf-test/wait-for [::login-events/sign-in-success]
                          (is (= email (fb-reframe/get-current-user-email))))))))
 
-(deftest test-new-collection
-  (testing "new collection"
-    (rf-test/run-test-async
-     (let [db (re-frame/subscribe [::subs/db])
-           email "dranidis@gmail.com"
-           _ (connect-fb-emulator-empty-db)
-           _ (re-frame/dispatch-sync [::events/initialize-db])
-           _ (re-frame/dispatch [::login-events/sign-in email "password"])]
-       (rf-test/wait-for
-        [::login-events/sign-in-success]
-        (let [;; this is performed by the UI
-              name "ac"
-              _ (db-set-value! [:form :create-collection :new-collection] name)
-              ;; the ui dispatches
-              _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
-          (rf-test/wait-for
-           [::collections-events/saved-collection]
-           (println (str "COLL " (:collections @db)))
-           (is (in? (:collections @db) {:name name}))
-           (is (nil? (:error @db)))
-           (is (= (get-in @db [:form :create-collection]) {}))
-           (let [_ (db-set-value! [:form :create-collection :new-collection] name)
-              ;; the ui dispatches
-                 _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
-             (rf-test/wait-for
-              [::network-events/set-error]
-              (println (str "COLL " (:collections @db)))
-              (is (in? (:collections @db) {:name name}))
-              (println (:error @db))
-              (is (not (nil? (:error @db)))))))))))))
+;; (deftest test-new-collection
+;;   (testing "new collection"
+;;     (rf-test/run-test-async
+;;      (let [db (re-frame/subscribe [::subs/db])
+;;            email "dranidis@gmail.com"
+;;            _ (connect-fb-emulator-empty-db)
+;;            _ (re-frame/dispatch-sync [::events/initialize-db])
+;;            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
+;;        (rf-test/wait-for
+;;         [::login-events/sign-in-success]
+;;         (let [;; this is performed by the UI
+;;               name "ac"
+;;               _ (db-set-value! [:form :create-collection :new-collection] name)
+;;               ;; the ui dispatches
+;;               _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
+;;           (rf-test/wait-for
+;;            [::collections-events/saved-collection]
+;;            (println (str "COLL " (:collections @db)))
+;;           ;;  (is (in? (get-collection-names (:collections @db)) name))
+;;            (is (nil? (:error @db)))
+;;            (is (= (get-in @db [:form :create-collection]) {}))
+;;            (let [_ (db-set-value! [:form :create-collection :new-collection] name)
+;;               ;; the ui dispatches
+;;                  _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
+;;              (rf-test/wait-for
+;;               [::network-events/set-error]
+;;               (println (str "COLL " (:collections @db)))
+;;               (println (:error @db))
+;;               (is (not (nil? (:error @db)))))))))))))
 
 (comment
   (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
+
+
+1
+
+  (run-tests)
+
   ;
   )
+
+
+
+

@@ -3,18 +3,14 @@
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
-
    [bbg-reframe.events :as events]
+   [bbg-reframe.localstorage.localstorage :refer [init-localstorage]]
+   [bbg-reframe.model.localstorage :refer [remove-item!]]
    [bbg-reframe.network-events :as network-events]
-
    [bbg-reframe.routes :as views]
    [bbg-reframe.router :as routes]
-
    [bbg-reframe.config :as config]
-   [bbg-reframe.model.localstorage :refer [item-exists? get-item remove-item!]]
-   [clojure.tools.reader.edn :refer [read-string]]
    [re-frame.loggers :refer [console]]
-
    [bbg-reframe.panels.login.login-events :as login-events]
    [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config connect-emulator]]
    [re-frame-firebase-nine.firebase-auth :refer [get-auth on-auth-state-changed on-auth-state-changed-callback]]))
@@ -46,12 +42,9 @@
   (routes/start!)
 
   (re-frame/dispatch [::network-events/cors-check])
-  (when (and (item-exists? "bgg-user") (item-exists? "bgg-games"))
-    (console :log "Using local storage data")
-    (re-frame/dispatch [::events/update-user (get-item "bgg-user")])
-    (re-frame/dispatch [::events/update-games (read-string (get-item "bgg-games"))]))
-  (when (item-exists? "bgg-ui-settings")
-    (re-frame/dispatch [::events/update-ui-settings (read-string (get-item "bgg-ui-settings"))]))
+
+  (init-localstorage)
+
   (re-frame/dispatch [::network-events/update-result])
 
   ;; auth is not ready
@@ -62,5 +55,4 @@
   (mount-root))
 
 (comment
-  (remove-item! "bgg-ui-settings")
   (init))
