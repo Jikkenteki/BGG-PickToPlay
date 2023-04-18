@@ -16,7 +16,7 @@
  ::sign-in-success
  (fn-traced [_ [_ userCredential]]
             (println "User signed-in: " (.-email (.-user userCredential)))
-            {}))
+            {:dispatch [::sync-with-fb]}))
 
 (re-frame/reg-event-fx
  ::sign-in-error
@@ -61,11 +61,16 @@
  (fn-traced [_ [_]]
             {::fb-reframe/firebase-sign-out {:success ::sign-out-success}}))
 
+(re-frame/reg-event-fx
+ ::sync-with-fb
+ (fn-traced [_ [_]]
+            (println "Dummy Syncing")
+            ))
+
+
 (comment
 
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
-
-  (re-frame/dispatch [::sign-in "adranidisb@gmail.com" "password"])
   (re-frame/dispatch [::sign-out])
 
   (on-auth-state-changed on-auth-state-changed-callback)

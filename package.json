@@ -11,7 +11,8 @@
     "dev": "run-p -l *:watch",
     "release": "run-s *:release",
     "postinstall": "./post-install.sh",
-    "emulators:start": "firebase emulators:start --import=./firebase-export"
+    "emulators:start": "firebase emulators:start --import=./firebase-export",
+    "test": "karma start --auto -watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",

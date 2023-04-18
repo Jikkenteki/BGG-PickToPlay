@@ -1,27 +1,13 @@
 (ns bbg-reframe.views.collections-view.collections-events
-  (:require  [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
-   [bbg-reframe.forms.forms :refer [db-get-ref]]
-            [bbg-reframe.forms.events :as form-events]
-            [bbg-reframe.firebase.events :as fb-events]
+  (:require [bbg-reframe.forms.forms :refer [db-set-value!]]
             [bbg-reframe.network-events :as events]
-            [day8.re-frame.tracing :refer-macros [fn-traced]]
-            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [re-frame-firebase-nine.firebase-database :refer [on-value push-value!]]
+            [bbg-reframe.views.collections-view.collections-subs :as collections-subs]
             [bbg-reframe.views.login-view.login-events :as login-events]
+            [day8.re-frame-10x.inlined-deps.re-frame.v1v1v2.re-frame.core :refer [inject-cofx reg-cofx]]
+            [day8.re-frame.tracing :refer-macros [fn-traced] :refer [defn-traced]]
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame.core :as re-frame]))
 
-;; helpers
-
-(def collections-subpath "collections")
-
-(defn collections-path
-  "Returns the path to collections including the user id.
-   If not authenticated returns nil."
-  []
-  (let [uId (fb-reframe/get-current-user-uid)]
-    (if uId
-      ["users" uId collections-subpath]
-      nil)))
 
 (defn in?
   "true if coll contains elm"
@@ -31,80 +17,78 @@
 (defn get-collection-names [collections]
   (reduce-kv (fn [m _ v] (conj m (:name v))) [] collections))
 
-  ;;
-  ;; subscribe to collections
-  ;; 
-;; (re-frame/reg-sub
-;;  ::collections
-;;  (fn []
-;;    (re-frame/subscribe [::fb-reframe/on-value (collections-path)]))
-;;  (fn [collections]
-;;    (js/console.log "SUB collections " (collections-path))
-;;    (if (nil? (collections-path))
-;;      {}
-;;      collections)))
+;;
+;; reg-cofx
+;;
+;; This function is also part of the re-frame API.
+;; It allows you to associate a cofx-id (like :now or :local-store) with 
+;; a handler function that injects the right key/value pair.
+;; The function you register will be passed two arguments:
+;; a :coeffects map (to which it should add a key/value pair), and
+;; optionally, the additional value supplied to inject-cofx
+;; and it is expected to return a modified :coeffects map.
+;;
+;; https://github.com/day8/re-frame/blob/master/docs/Coeffects.md
+;;
+(reg-cofx               ;; registration function
+ :collections           ;; what cofx-id are we registering
+ (fn [coeffects _]      ;; second parameter not used in this case
+   (assoc coeffects :collections @(re-frame/subscribe [::collections-subs/collections-auth]))))   ;; add :collections key, with value
 
+(reg-cofx               ;; registration function
+ :uid           ;; what cofx-id are we registering
+ (fn [coeffects _]      ;; second parameter not used in this case
+   (assoc coeffects :uid (fb-reframe/get-current-user-uid))))   ;; add :collections key, with value
 
-(defn push-new-collection [name]
-  (re-frame/dispatch-sync [::fb-events/fb-push {:path collections-subpath
-                                                :data {:name name}
-                                                :key-path [:firebase :new-collection-id]}]))
+;; handler for new collection
+;; in the coeffects we have 
+;; the db 
+;; the collections
+;; the uid of the logged in user
+;; 
+;; If the user is not logged-in there is an error message
+;; Otherwise the new collection name is checked for uniqueness
+;; If it is unique it is saved locally and pushed to fb.
+;;
+(defn-traced new-collection-handler
+  [{:keys [db uid]} [_ form-path]]
+  (if (nil? uid)
+    {:dispatch [::events/set-error "Login to save collections"]}
+    (let [collections (:collections db)
+          new-collection-name (:new-collection (get-in db form-path))
+          data {:name new-collection-name}]
+      (if (not (in? (get-collection-names collections) new-collection-name))
+        {:db (-> db
+                 (assoc-in form-path {}) ;; clear the input form
+                 (assoc :collections (conj collections data)))
+         ::fb-reframe/firebase-push
+         {:path ["users" uid "collections"]
+          :data data
+          :success #(re-frame/dispatch [::saved-collection new-collection-name])
+          :key-path [:firebase :new-collection-id]}}
+        {:dispatch [::events/set-error "Collection with this name already exists!"]}))))
 
-(defn push-new-collection! [name]
-  (push-value! (collections-path) {:name name}))
-
-;; (defn add-if-not-exists [name]
-;;   (if (exists-collection-name name)
-;;     nil
-;;     (let [_ (db-set-value! [:firebase :new-collection-id] nil)
-;;           _ (push-new-collection! name)]
-;;       @(db-get-ref [:firebase :new-collection-id]))))
-
-
-(defn get-collections []
-  @(re-frame/subscribe [::collections-subs/collections-auth]))
-
-(defn exists-collection-name [name]
-  (in? (get-collection-names (get-collections)) name))
-
-(defn add-if-not-exists
-  "Creates a new collection and returns the key created by firebase.
-   If the collection name already exists it does not create a new collection and returns nil."
-  [name]
-  (if (or (nil? (collections-path)) (exists-collection-name name))
-    nil
-    (push-new-collection! name)))
-
+;;
+;; event for adding a new collection
 (re-frame/reg-event-fx
  ::new-collection
- (fn-traced [_ [_ form-path]]
-            (let [user-id (fb-reframe/get-current-user-uid)]
-              (if (nil? user-id)
-                {:dispatch [::events/set-error "Login to save collections"]}
-                (if (not (nil? (add-if-not-exists (:new-collection @(db-get-ref form-path)))))
-                  {:dispatch [::form-events/set-value! form-path {}]}
-                  {:dispatch [::events/set-error "Collection with this name already exists!"]})))))
+ [;; (inject-cofx :collections) 
+  (inject-cofx :uid)]
+ new-collection-handler)
+
+(re-frame/reg-event-db
+ ::saved-collection
+ (fn-traced [_ [_ name]]
+            (println (str "Successfully pushed a collection in fb:" name))))
 
 (comment
-  (collections-path)
-
-  (nil? (collections-path))
   (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
   (re-frame/dispatch [::login-events/sign-out])
 
-  (get-collection-names @(re-frame/subscribe [::collections]))
+  ;; this is performed by the UI
+  (db-set-value! [:form :create-collection :new-collection] "ac")
+  ;; the ui dispatches
+  (re-frame/dispatch [::new-collection [:form :create-collection]])
 
-  (get-collection-names (get-collections))
-
-  (add-if-not-exists "a collection's name 1")
-  (add-if-not-exists "collection name")
-  (exists-collection-name "collection name")
-  (get-collections)
-  ;; @(re-frame/subscribe [::collections])
-  ;; @(re-frame/subscribe [::collections-auth])
-
-  (on-value (collections-path) (fn [v] (js/console.log (get-collection-names v))))
-
-  (println (str "Collections: " (get-collections)))
   ;
   )

@@ -11,6 +11,7 @@
           :show-expansions? false
           :only-available? false}
    :games {}
+   :collections []
    :queue #{}
    :fetching #{}
    :fetches 0

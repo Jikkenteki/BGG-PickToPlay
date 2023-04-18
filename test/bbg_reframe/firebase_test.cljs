@@ -1,11 +1,12 @@
 (ns bbg-reframe.firebase-test
   (:require [bbg-reframe.emulator :refer [connect-fb-emulator-empty-db]]
             [bbg-reframe.events :as events]
+            [bbg-reframe.network-events :as network-events]
+
             [bbg-reframe.firebase.events :as fb-events]
             [bbg-reframe.forms.forms :refer [db-set-value!]]
-            [bbg-reframe.model.collections :refer [add-if-not-exists
-                                                   get-collections]]
             [bbg-reframe.subs :as subs]
+            [bbg-reframe.views.collections-view.collections-events :as collections-events :refer [in?]]
             [bbg-reframe.views.login-view.login-events :as login-events]
             [bbg-reframe.views.login-view.login-view :refer [save-games]]
             [cljs.test :refer-macros [deftest testing is]]
@@ -14,7 +15,6 @@
             [re-frame-firebase-nine.firebase-auth :refer [on-auth-state-changed
                                                           on-auth-state-changed-callback]]
             [re-frame.core :as re-frame]))
-
 
 (deftest test-db-test-value
   (testing "db-set-value!"
@@ -59,35 +59,33 @@
 (deftest test-new-collection
   (testing "new collection"
     (rf-test/run-test-async
-     (let [email "dranidis@gmail.com"
+     (let [db (re-frame/subscribe [::subs/db])
+           email "dranidis@gmail.com"
            _ (connect-fb-emulator-empty-db)
            _ (re-frame/dispatch-sync [::events/initialize-db])
            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
        (rf-test/wait-for
         [::login-events/sign-in-success]
-        (let [_ (println "New collection UID" (fb-reframe/get-current-user-uid))
-              key (add-if-not-exists "collection name")
-              _ (println (str "RETURNED:" key))
-              ;; key2 (add-if-not-exists "collection name")
-              ;; _ (println (str "RETURNED:" key2))
-              _ (println (str "Collections: " (get-collections)))]
-          (is (not (nil? key)))))))))
-
-
-;; (deftest test-new-collection-1
-;;   (testing "new collection sync"
-;;     (rf-test/run-test-sync
-;;      (let [email "dranidis@gmail.com"
-;;            _ (connect-fb-emulator-empty-db)
-;;            _ (re-frame/dispatch [::events/initialize-db])
-;;            _ (re-frame/dispatch [::login-events/sign-in email "password"])
-;;            _ (println "New collection UID" (fb-reframe/get-current-user-uid))
-;;            key (add-if-not-exists "collection name")
-;;            _ (println (str "RETURNED:" key))
-;;               ;; key2 (add-if-not-exists "collection name")
-;;               ;; _ (println (str "RETURNED:" key2))
-;;            _ (println (str "Collections: " (get-collection-names (get-collections))))]
-;;        (is (not (nil? key)))))))
+        (let [;; this is performed by the UI
+              name "ac"
+              _ (db-set-value! [:form :create-collection :new-collection] name)
+              ;; the ui dispatches
+              _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
+          (rf-test/wait-for
+           [::collections-events/saved-collection]
+           (println (str "COLL " (:collections @db)))
+           (is (in? (:collections @db) {:name name}))
+           (is (nil? (:error @db)))
+           (is (= (get-in @db [:form :create-collection]) {}))
+           (let [_ (db-set-value! [:form :create-collection :new-collection] name)
+              ;; the ui dispatches
+                 _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
+             (rf-test/wait-for
+              [::network-events/set-error]
+              (println (str "COLL " (:collections @db)))
+              (is (in? (:collections @db) {:name name}))
+              (println (:error @db))
+              (is (not (nil? (:error @db)))))))))))))
 
 (comment
   (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
