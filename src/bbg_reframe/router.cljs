@@ -12,7 +12,9 @@
          "login" :login-view
          "collections" :collections-view
          "game" {"" :home
-                 ["/" :id] :game-view}}]))
+                 ["/" :id] :game-view}
+         "collection" {"" :home
+                 ["/" :id] :collection-view}}]))
 
 (defn parse
   "Parse a url string and return a map with the :handler keyword according to
@@ -90,7 +92,8 @@
   (navigate! [:home])
 
   (navigate! [:fb])
-  (navigate! [:game-view :id 102680])
+  (navigate! [:game-view :id "102680"])
+  (navigate! [:collection :id "1"])
 
   (def route (parse "/game/102680"))
   route

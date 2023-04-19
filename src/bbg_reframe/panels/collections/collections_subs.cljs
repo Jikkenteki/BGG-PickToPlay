@@ -15,3 +15,8 @@
  ::collections
  (fn [db]
    (get-collections (:collections db))))
+
+(re-frame/reg-sub
+ ::collection
+  (fn [db [_ id]]
+   (get-in db [:collections (keyword id)])))

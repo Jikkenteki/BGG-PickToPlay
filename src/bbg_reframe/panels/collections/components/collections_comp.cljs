@@ -1,6 +1,7 @@
 (ns bbg-reframe.panels.collections.components.collections-comp
   (:require [bbg-reframe.forms.bind :refer [bind-form-to-value!]]
             [bbg-reframe.forms.forms :refer [input-element]]
+            [bbg-reframe.events :as events]
             [bbg-reframe.panels.collections.collections-events :as collections-events]
             [bbg-reframe.panels.collections.collections-subs :as collections-subs]
             [re-frame.core :as re-frame]))
@@ -25,5 +26,6 @@
      [:div
       (map (fn [collection]
              ^{:key (:id collection)}
-             [:div (:name collection)])
+             [:div [:a {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
+                    (:name collection)]])
            collections)]]))
