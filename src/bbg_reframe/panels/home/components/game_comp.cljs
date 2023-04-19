@@ -1,6 +1,6 @@
 (ns bbg-reframe.panels.home.components.game-comp
   (:require
-   [bbg-reframe.model.sort-filter :refer [game->best-rec-not playability time-rating playability-time]]
+   [bbg-reframe.model.sort-filter :refer [playability time-rating playability-time]]
    [goog.string :as gstring]
    [goog.string.format]
    [re-frame.core :as re-frame]

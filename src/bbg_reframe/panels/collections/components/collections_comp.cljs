@@ -1,7 +1,7 @@
 (ns bbg-reframe.panels.collections.components.collections-comp
   (:require [bbg-reframe.forms.bind :refer [bind-form-to-value!]]
             [bbg-reframe.forms.forms :refer [input-element]]
-            [bbg-reframe.panels.collections.collections-events :as collections-events :refer [get-collection-names]]
+            [bbg-reframe.panels.collections.collections-events :as collections-events]
             [bbg-reframe.panels.collections.collections-subs :as collections-subs]
             [re-frame.core :as re-frame]))
 
@@ -19,8 +19,11 @@
 
 (defn collections-comp
   []
-  (let [collections @(re-frame/subscribe [::collections-subs/collections-auth])]
+  (let [collections @(re-frame/subscribe [::collections-subs/collections])]
     [:div.overflow-auto.grow.px-3
      [create-collection]
-     [:ul
-      (map (fn [li] [:li li]) (get-collection-names collections))]]))
+     [:div
+      (map (fn [collection]
+             ^{:key (:id collection)}
+             [:div (:name collection)])
+           collections)]]))

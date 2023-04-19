@@ -1,6 +1,6 @@
 (ns bbg-reframe.panels.collections.collections-subs
-  (:require             [bbg-reframe.panels.game.game-subs :as auth-subs]
-                        [re-frame.core :as re-frame]))
+  (:require [bbg-reframe.model.collection :refer [get-collections]]
+            [re-frame.core :as re-frame]))
 
 ;; ;; auth-collections
 ;; (re-frame/reg-sub
@@ -12,6 +12,6 @@
 ;; read from db since fb might be offline
 ;; auth-collections
 (re-frame/reg-sub
- ::collections-auth 
+ ::collections
  (fn [db]
-   (:collections db)))
+   (get-collections (:collections db))))

@@ -1,6 +1,6 @@
 (ns bbg-reframe.panels.login.login-events
   (:require [bbg-reframe.firebase.firebase-events :as firebase-events]
-            [bbg-reframe.localstorage.localstorage-events :refer [remove-fb-collections-if-signed-out remove-fb-collections-local-store-when-signed-out]]
+            [bbg-reframe.localstorage.localstorage-events :refer [remove-fb-collections-local-store-when-signed-out]]
             [bbg-reframe.network-events :as events]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
@@ -15,8 +15,8 @@
  (fn-traced [{:keys [db]} [_ _]]
             (if (get-current-user)
               {:db (-> db
-                  (assoc :email (fb-reframe/get-current-user-email))
-                  (assoc :uid (fb-reframe/get-current-user-uid)))}
+                       (assoc :email (fb-reframe/get-current-user-email))
+                       (assoc :uid (fb-reframe/get-current-user-uid)))}
               ;; for some reasons collections are still there
               {:db (-> db
                        (dissoc :email)
@@ -89,7 +89,7 @@
 
   (re-frame/dispatch [::sign-in "dranidis@gmail.com" "password"])
   (re-frame/dispatch [::sign-in "new@gmail.com" "password"])
-  
+
   (re-frame/dispatch [::sign-out])
 
 
