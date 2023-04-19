@@ -3,8 +3,9 @@
             [bbg-reframe.localstorage.localstorage-events :refer [->fb-collections->local-store]]
             [bbg-reframe.model.collection :refer [collection-name-exists?
                                                   make-collection]]
-            [bbg-reframe.network-events :as events]
+            [bbg-reframe.network-events :as network-events]
             [day8.re-frame.tracing :refer-macros [fn-traced] :refer [defn-traced]]
+            [bbg-reframe.firebase.firebase-events :as firebase-events]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame.core :as re-frame]))
 
@@ -23,7 +24,7 @@
 ;;
 ;; (reg-cofx               ;; registration function
 ;;  :collections           ;; what cofx-id are we registering
-;;  (fn [coeffects _]      ;; second parameter not used in this case
+;;  (fn [coeffects _]      ;; second parameter not used in this caselog
 ;;    (assoc coeffects :collections @(re-frame/subscribe [::collections-subs/collections-auth]))))   ;; add :collections key, with value
 
 ;; (reg-cofx               ;; registration function
@@ -41,7 +42,7 @@
 (defn-traced new-collection-handler
   [{:keys [db]} [_ form-path]]
   (if (nil? (:uid db))
-    {:dispatch [::events/set-error "Login to save collections"]}
+    {:dispatch [::network-events/set-error "Login to save collections"]}
     (let [new-collection-name (:new-collection (get-in db form-path))
           data (make-collection new-collection-name)]
       (if (not (collection-name-exists? (:collections db) new-collection-name))
@@ -52,7 +53,7 @@
             :success #(re-frame/dispatch [::saved-collection new-collection-name])
             :key-path [:firebase :new-collection-id]}]
           [:dispatch [::add-collection-to-db {:form-path form-path :data data}]]]}
-        {:dispatch [::events/set-error "Collection with this name already exists!"]}))))
+        {:dispatch [::network-events/set-error "Collection with this name already exists!"]}))))
 
 ;;
 ;; event for adding a new collection
@@ -61,6 +62,22 @@
 ;;  [;; (inject-cofx :collections) 
 ;;   (inject-cofx :uid)]
  new-collection-handler)
+
+
+(defn-traced delete-collection-handler
+  [{:keys [db]} [_ id]]
+  (println (str "Delete collection with id: " id))
+  {:db (update-in db [:collections] dissoc id)
+   :fx [[:dispatch [::firebase-events/fb-set {:path ["collections" (name id)] :data nil}]]
+        [:navigate [:collections-view]]]})
+
+;;
+;; event for deleting a new collection
+(re-frame/reg-event-fx
+ ::delete-collection
+ [->fb-collections->local-store]
+ delete-collection-handler)
+
 
 (defn get-collection-key [db]
   (keyword (get-in db [:firebase :new-collection-id])))

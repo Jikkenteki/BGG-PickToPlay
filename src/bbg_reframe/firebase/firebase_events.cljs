@@ -64,6 +64,12 @@
   (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "games" 123] :data true}])
   (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "games" 123] :data nil}])
 
+(fb-reframe/get-current-user-uid)
+  (re-frame/dispatch [::fb-set {:path ["collections" "-NTOQH19rgxRLU4GVB0O"] :data nil}])
+  (re-frame/dispatch [::fb-set {:path ["users" 
+                                       (fb-reframe/get-current-user-uid) 
+                                       ] :data nil}])
+
   (re-frame/dispatch [::fb-push {:path ["collections"]
                                  :data {:name "aaa" :games {"123" true}}
                                  :key-path [:firebase :new-collection-id]}])
@@ -84,6 +90,7 @@
   (js/console.log @(re-frame/subscribe [::collections]))
   (console :log (str @(re-frame/subscribe [::collections])))
 
+  (name :-NTOQH19rgxRLU4GVB0O)
 
 
   ;

@@ -63,6 +63,7 @@
 (re-frame/reg-fx
  :navigate
  (fn [handler]
+   (println (str ":navigate  handler:  " handler))
    (navigate! handler)))
 
 
@@ -93,7 +94,8 @@
 
   (navigate! [:fb])
   (navigate! [:game-view :id "102680"])
-  (navigate! [:collection :id "1"])
+  (navigate! [:collection-view :id "1"])
+  (navigate! [:collections-view])
 
   (def route (parse "/game/102680"))
   route

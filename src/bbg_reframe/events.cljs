@@ -100,6 +100,7 @@
   ;; navigates to the route specified by the keyword
   (re-frame/dispatch [::navigate :home])
   (re-frame/dispatch [::navigate :fb])
+  (re-frame/dispatch [::navigate :collections-view])
   ;
   )
 
