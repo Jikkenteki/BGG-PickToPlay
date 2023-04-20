@@ -27,7 +27,7 @@
          (fn []
            (re-frame/subscribe from-sub))
          (fn [value]
-   ;; changing of the form-path should happer here so that it happens only once
+   ;; changing of the form-path should happen here so that it happens only once
    ;; and not when component rerenders due to drop-down changing the dom
    ;; and causing rerender which resets the value to the one read from 
    ;; the subscription.
@@ -38,6 +38,7 @@
         db-path))))
 
 (defn bind-form-to-value!
+  "Sets the specified path in the db to the specified value. Returns the specified path."
   [value db-path]
   (println "SUB-VAL" value db-path)
   (db-set-value! db-path value)

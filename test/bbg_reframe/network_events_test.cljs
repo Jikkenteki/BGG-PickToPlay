@@ -1,6 +1,5 @@
 (ns bbg-reframe.network-events-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            ;; [bbg-reframe.core :as core]
             [bbg-reframe.network-events
              :refer [fetch-next-from-queue-handler
                      fetched-games-ids fetched-game-handler]]

@@ -1,11 +1,11 @@
 (ns bbg-reframe.panels.collections.collections-events
-  (:require [bbg-reframe.forms.forms :refer [db-set-value!]]
+  (:require [bbg-reframe.firebase.firebase-events :as firebase-events]
+            [bbg-reframe.forms.forms :refer [db-get-ref db-set-value!]]
             [bbg-reframe.localstorage.localstorage-events :refer [->fb-collections->local-store]]
             [bbg-reframe.model.collection :refer [collection-name-exists?
                                                   make-collection]]
             [bbg-reframe.network-events :as network-events]
             [day8.re-frame.tracing :refer-macros [fn-traced] :refer [defn-traced]]
-            [bbg-reframe.firebase.firebase-events :as firebase-events]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame.core :as re-frame]))
 
@@ -79,7 +79,25 @@
  delete-collection-handler)
 
 
-(defn get-collection-key [db]
+(defn edit-collection-name-handle
+  [{:keys [db]} [_ [id form-path]]]
+  (let [new-name (get-in db form-path)]
+    (if (= new-name (get-in db [:collections id :name]))
+      {}
+      (if (not (collection-name-exists? (:collections db) new-name))
+        {:db (assoc-in db [:collections id :name] new-name)
+         :dispatch [::firebase-events/fb-set
+                    {:path ["collections" (name id) "name"] :data new-name}]}
+        {:dispatch [::network-events/set-error "Collection with this name already exists!"]}))))
+
+;;
+;; event for editing a new collection
+(re-frame/reg-event-fx
+ ::edit-collection-name
+ [->fb-collections->local-store]
+ edit-collection-name-handle)
+
+(defn- get-new-collection-key [db]
   (keyword (get-in db [:firebase :new-collection-id])))
 
 (re-frame/reg-event-db
@@ -89,7 +107,7 @@
   [db [_ {:keys [form-path data]}]]
   (-> db
       (assoc-in form-path {}) ;; clear the input form
-      (assoc-in [:collections (get-collection-key db)] data))))
+      (assoc-in [:collections (get-new-collection-key db)] data))))
 
 (re-frame/reg-event-db
  ::saved-collection
@@ -102,6 +120,14 @@
   (db-set-value! [:form :create-collection :new-collection] "ac")
   ;; the ui dispatches
   (re-frame/dispatch [::new-collection [:form :create-collection]])
+
+  ;; edit name 
+  @(db-get-ref [])
+  (def new-key (get-new-collection-key @(db-get-ref [])))
+  new-key
+
+  (re-frame/dispatch [::edit-collection-name new-key "new ac2 upd 2"])
+
 
   ;
   )
