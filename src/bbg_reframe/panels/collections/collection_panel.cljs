@@ -42,8 +42,10 @@
 
      [:div
       [:h4 "Games in collection"]
-      (map (fn [game] [:div (:name game)]) collection-games)]
-     
+      (map (fn [game]
+             ^{:key (:id game)}
+             [:div (:name game)]) collection-games)]
+
      [:div
       [:label "Add Game to collection"]
       [search-games-query-comp]
