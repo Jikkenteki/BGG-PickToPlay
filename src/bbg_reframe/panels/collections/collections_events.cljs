@@ -118,6 +118,7 @@
 
 (re-frame/reg-event-fx
  ::add-game-to-collection
+  [->fb-collections->local-store]
  (fn-traced
   [{:keys [db]} [_ [id game-id]]]
   (println "ADD GAME " id game-id)
@@ -126,6 +127,15 @@
                     {:path ["collections" (name id) "games" game-id] :data true}]]
         [:dispatch [::search-comp-events/reset-search]]]}))
 
+(re-frame/reg-event-fx
+ ::remove-game-from-collection
+  [->fb-collections->local-store]
+ (fn-traced
+  [{:keys [db]} [_ [id game-id]]]
+  (println "REMOVE GAME " id game-id)
+  {:db (update-in db [:collections id :games] dissoc (keyword game-id))
+   :fx [[:dispatch [::firebase-events/fb-set
+                    {:path ["collections" (name id) "games" game-id] :data nil}]]]}))
 
 (comment
 

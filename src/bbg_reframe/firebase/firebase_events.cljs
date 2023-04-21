@@ -1,6 +1,6 @@
 (ns bbg-reframe.firebase.firebase-events
   (:require
-   [bbg-reframe.network-events :as events]
+   [bbg-reframe.network-events :as network-events]
    [clojure.string :as string]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [re-frame-firebase-nine.fb-reframe :as fb-reframe]
@@ -21,7 +21,7 @@
  ::fetch-games
  (fn-traced [_ [_ _]]
             {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "cached-games"]
-                                         :success ::events/read-fetched-games}}))
+                                         :success ::network-events/read-fetched-games}}))
 
 ;; set event
 (re-frame/reg-event-fx
@@ -49,7 +49,7 @@
  (fn-traced
   [_ [_ _]]
   {::fb-reframe/on-value-once {:path ["users" (fb-reframe/get-current-user-uid) "collections"]
-                               :success ::events/handle-fb-fetched-collections}}))
+                               :success ::network-events/handle-fb-fetched-collections}}))
 
 
 

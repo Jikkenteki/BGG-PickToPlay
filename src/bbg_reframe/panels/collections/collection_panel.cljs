@@ -9,6 +9,17 @@
             [re-frame-firebase-nine.example.forms.bind :refer [bind-form-to-value!]]
             [re-frame.core :as re-frame]))
 
+(defn- game-in-collection
+  [id game]
+  ^{:key (:id game)}
+  [:div
+   [:div
+    [:button {:on-click
+              #(re-frame/dispatch
+                [::collections-events/remove-game-from-collection [(keyword id) (:id game)]])}
+     "x"]
+    (:name game)]])
+
 (defn collection-view-panel
   []
   (let [_ (re-frame/dispatch [::search-comp-events/reset-search])
@@ -42,9 +53,7 @@
 
      [:div
       [:h4 "Games in collection"]
-      (map (fn [game]
-             ^{:key (:id game)}
-             [:div (:name game)]) collection-games)]
+      (map #(game-in-collection id %) collection-games)]
 
      [:div
       [:label "Add Game to collection"]
