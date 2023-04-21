@@ -8,8 +8,7 @@
 
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.db :refer [default-db]]
-   [bbg-reframe.spec.db-spec :as db-spec]
-   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]))
+   [bbg-reframe.spec.db-spec :as db-spec]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -62,17 +61,7 @@
  (fn-traced [{:keys [db]} [_ val]]
             {:db (assoc db :user (trim val))}))
 
-(re-frame/reg-event-fx
- ::search-name-with-substring
- [check-spec-interceptor]
- (fn-traced [{:keys [db]} [_ val]]
-            (let [filtered
-                  (if (> (count val) 1)
-                    (->> (vals (:games db))
-                         (filter (has-name? val))
-                         (sort name-alpha?))
-                    [])]
-              {:db (assoc db :substring val :search-results filtered)})))
+
 
 (re-frame/reg-event-fx
  ::update-games

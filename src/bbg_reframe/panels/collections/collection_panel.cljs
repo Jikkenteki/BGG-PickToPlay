@@ -3,15 +3,23 @@
             [bbg-reframe.forms.forms :refer [input-element]]
             [bbg-reframe.panels.collections.collections-events :as collections-events]
             [bbg-reframe.panels.collections.collections-subs :as collection-subs]
+            [bbg-reframe.panels.home.components.search-comp :refer [search-games-query-comp search-games-results-comp]]
+            [bbg-reframe.panels.home.components.search-comp-events :as search-comp-events]
             [bbg-reframe.subs :as subs]
-            [bbg-reframe.forms.bind :refer [bind-form-to-value!]]
+            [re-frame-firebase-nine.example.forms.bind :refer [bind-form-to-value!]]
             [re-frame.core :as re-frame]))
 
 (defn collection-view-panel
   []
-  (let [route-params @(re-frame/subscribe [::subs/route-params 1])
+  (let [_ (re-frame/dispatch [::search-comp-events/reset-search])
+        route-params @(re-frame/subscribe [::subs/route-params 1])
         id (:id route-params)
-        collection @(re-frame/subscribe [::collection-subs/collection id])]
+        collection @(re-frame/subscribe [::collection-subs/collection id])
+        collection-games @(re-frame/subscribe [::collection-subs/collection-games (name id)])
+        form-path (bind-form-to-value!
+                   {:new-name (:name collection)}
+                   [:collection-form :edit-collection])]
+    (println collection)
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
      [naive-nav-bar]
      [:h1 "Collection with id: " id]
@@ -22,13 +30,21 @@
                   [::collections-events/delete-collection (keyword id)])}
        "Delete"]]
 
-     (let [form-path (bind-form-to-value! 
-                      {:new-name (:name collection)} 
-                      [:collection-form :edit-collection])]
-       [:div
-        [input-element {:class "input-box min-w-0"
-                        :type :text
-                        :placeholder "Collection name"
-                        :path (into form-path [:new-name])}]
-        [:button {:on-click #(re-frame/dispatch
-                              [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])} "Rename"]])]))
+
+     [:div
+      [:label "Rename a collection"]
+      [input-element {:class "input-box min-w-0"
+                      :type :text
+                      :placeholder "Collection name"
+                      :path (into form-path [:new-name])}]
+      [:button {:on-click #(re-frame/dispatch
+                            [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])} "Update"]]
+
+     [:div
+      [:h4 "Games in collection"]
+      (map (fn [game] [:div (:name game)]) collection-games)]
+     
+     [:div
+      [:label "Add Game to collection"]
+      [search-games-query-comp]
+      [search-games-results-comp (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]]]))

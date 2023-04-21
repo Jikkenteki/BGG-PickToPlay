@@ -91,6 +91,7 @@
   (re-frame/dispatch [::sign-in "new@gmail.com" "password"])
 
   (re-frame/dispatch [::sign-out])
+  
 
 
   (on-auth-state-changed on-auth-state-changed-callback)

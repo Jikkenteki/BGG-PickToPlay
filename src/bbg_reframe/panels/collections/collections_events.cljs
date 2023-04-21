@@ -5,6 +5,7 @@
             [bbg-reframe.model.collection :refer [collection-name-exists?
                                                   make-collection]]
             [bbg-reframe.network-events :as network-events]
+            [bbg-reframe.panels.home.components.search-comp-events :as search-comp-events]
             [day8.re-frame.tracing :refer-macros [fn-traced] :refer [defn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame.core :as re-frame]))
@@ -79,7 +80,7 @@
  delete-collection-handler)
 
 
-(defn edit-collection-name-handle
+(defn-traced edit-collection-name-handle
   [{:keys [db]} [_ [id form-path]]]
   (let [new-name (get-in db form-path)]
     (if (= new-name (get-in db [:collections id :name]))
@@ -113,6 +114,18 @@
  ::saved-collection
  (fn-traced [_ [_ name]]
             (println (str "Successfully pushed a collection in fb:" name))))
+
+
+(re-frame/reg-event-fx
+ ::add-game-to-collection
+ (fn-traced
+  [{:keys [db]} [_ [id game-id]]]
+  (println "ADD GAME " id game-id)
+  {:db (assoc-in db [:collections id :games (keyword game-id)] true)
+   :fx [[:dispatch [::firebase-events/fb-set
+                    {:path ["collections" (name id) "games" game-id] :data true}]]
+        [:dispatch [::search-comp-events/reset-search]]]}))
+
 
 (comment
 

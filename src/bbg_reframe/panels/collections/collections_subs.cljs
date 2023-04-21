@@ -1,5 +1,7 @@
 (ns bbg-reframe.panels.collections.collections-subs
-  (:require [bbg-reframe.model.collection :refer [get-collections]]
+  (:require [bbg-reframe.forms.forms :refer [db-get-ref]]
+            [bbg-reframe.model.collection :refer [get-collections]]
+            [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]))
 
 ;; ;; auth-collections
@@ -18,5 +20,36 @@
 
 (re-frame/reg-sub
  ::collection
-  (fn [db [_ id]]
+ (fn [db [_ id]]
    (get-in db [:collections (keyword id)])))
+
+(re-frame/reg-sub
+ ::collection-games
+ (fn [[_ collection-id]]
+   (println "ID: " collection-id)
+   [(re-frame/subscribe [::collection collection-id])
+    (re-frame/subscribe [::subs/games])])
+ (fn [[collection games] [_ _]]
+   (println "COL" (keys (:games collection)))
+   (map
+    (fn [game-id] (get games (name game-id)))
+    (keys (:games collection)))))
+
+(comment
+
+
+  (def collection {:games {:17133 true, :31260 true, :43111 true, :251247 true}, :name "agafds"})
+
+  (keys (:games collection))
+
+  @(db-get-ref [])
+  (get-in @(db-get-ref []) [:games :fields])
+
+  @(re-frame/subscribe [::collection :-NTYfZCrLuef0fepwFO1])
+
+  @(re-frame/subscribe [::collection-games (name :-NTYfZCrLuef0fepwFO1)])
+
+
+
+  ;
+  )
