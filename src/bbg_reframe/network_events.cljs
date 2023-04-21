@@ -518,7 +518,7 @@
  [check-spec-interceptor ->games->local-store]
  (fn-traced [{:keys [db]} [_ games]]
             {:db (assoc db :games (read-string games))
-             :dispatch [:bbg-reframe.network-events/update-result]}))
+             :dispatch [::update-result]}))
 
 (re-frame/reg-event-fx
  ::handle-fb-fetched-collections

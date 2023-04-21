@@ -1,8 +1,6 @@
 (ns bbg-reframe.subs
   (:require
-   [re-frame.core :as re-frame]
-   [bbg-reframe.panels.game.game-subs :as game-subs]
-   [bbg-reframe.events :as events]))
+   [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  ::db
@@ -24,11 +22,6 @@
  ::result
  (fn [db]
    (:result db)))
-
-;; (re-frame/reg-sub
-;;  ::fields
-;;  (fn [db]
-;;    (:fields db)))
 
 (re-frame/reg-sub
  ::form
@@ -68,11 +61,6 @@
 
 ;; routing
 
-;; (re-frame/reg-sub
-;;  ::active-panel
-;;  (fn [db _]
-;;    (:active-panel db)))
-
 (re-frame/reg-sub
  ::active-panel
  (fn [db _]
@@ -82,11 +70,4 @@
  ::route-params
  (fn [db _]
    (get-in db [:route :route-params])))
-
-(re-frame/reg-sub
- ::available-games
- :<- [::game-subs/on-auth-value ["available"]]
- (fn [games]
-   (re-frame/dispatch [::events/make-available games])
-   games))
 

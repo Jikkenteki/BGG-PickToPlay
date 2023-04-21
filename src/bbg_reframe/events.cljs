@@ -9,8 +9,7 @@
    [bbg-reframe.model.localstorage :refer [set-item!]]
    [bbg-reframe.db :refer [default-db]]
    [bbg-reframe.spec.db-spec :as db-spec]
-   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]
-   [bbg-reframe.forms.utils :refer [if-nil?->value]]))
+   [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]))
 
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
@@ -119,20 +118,5 @@
  (fn-traced [db [_ route]]
             (assoc db :route route)))
 
-(defn make-available
-  [all-games available]
-  (reduce-kv
-   (fn [m k v]
-     (-> m
-         (assoc k v)
-         (assoc-in [k :available] (if-nil?->value ((keyword k) available) false))))
-   {}
-   all-games))
 
-(re-frame/reg-event-fx
- ::make-available
- (fn-traced
-  [{:keys [db]} [_ games]]
-  {:db (assoc db :games (make-available (:games db) games))
-   :dispatch [:bbg-reframe.network-events/update-result]}))
 

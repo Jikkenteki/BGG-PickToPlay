@@ -1,7 +1,7 @@
 (ns bbg-reframe.panels.login.login-events
   (:require [bbg-reframe.firebase.firebase-events :as firebase-events]
             [bbg-reframe.localstorage.localstorage-events :refer [remove-fb-collections-local-store-when-signed-out]]
-            [bbg-reframe.network-events :as events]
+            [bbg-reframe.network-events :as network-events]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame-firebase-nine.firebase-auth :refer [get-current-user
@@ -35,7 +35,7 @@
             (.log js/console error)
             {:db (assoc db :error "Error signing in!")
              :dispatch-later {:ms 2000
-                              :dispatch [::events/reset-error]}}))
+                              :dispatch [::network-events/reset-error]}}))
 
 (re-frame/reg-event-db
  ::sign-out-success

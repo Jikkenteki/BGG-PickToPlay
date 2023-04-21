@@ -1,6 +1,6 @@
 (ns bbg-reframe.events-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
-            [bbg-reframe.events :refer [make-available]]))
+  (:require [bbg-reframe.panels.home.home-events :refer [make-available]]
+            [cljs.test :refer-macros [deftest testing is]]))
 
 (deftest test-make-available
   (testing "make-all-available"

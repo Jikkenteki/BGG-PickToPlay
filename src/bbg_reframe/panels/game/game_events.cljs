@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-            [bbg-reframe.network-events :as events]))
+            [bbg-reframe.network-events :as network-events]))
 
 (re-frame/reg-event-fx
  ::save-game
@@ -12,7 +12,7 @@
                 ]}]]
   (let [user-id (fb-reframe/get-current-user-uid)]
     (if (nil? user-id)
-      {:dispatch [::events/set-error "Login to save extra info about games"]}
+      {:dispatch [::network-events/set-error "Login to save extra info about games"]}
       {::fb-reframe/firebase-update {:path ["users" user-id]
                                      :path-data-map {["available" id] (if available available nil)
                                                      ["group-with" id] group-with
