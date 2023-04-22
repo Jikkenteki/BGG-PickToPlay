@@ -46,9 +46,12 @@
               {:db (-> db
                        (dissoc :email)
                        (dissoc :uid)
-                       (dissoc :collections)
-                       (assoc-in [:form :only-collection-ids] []))
-               :dispatch [::events/navigate [:home]]})))
+                       (dissoc :collections))
+               :fx [[:dispatch [::events/update-form :only-collection-ids []]]
+                    [:dispatch [::network-events/update-result]]
+                    [:dispatch [::events/navigate [:home]]]]})))
+
+
 
 (re-frame/reg-event-fx
  ::sign-in

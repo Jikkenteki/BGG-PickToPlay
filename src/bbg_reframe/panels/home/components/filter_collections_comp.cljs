@@ -11,7 +11,6 @@
   (let [only-collection-ids @(re-frame/subscribe [::subs/form :only-collection-ids])
         collections @(re-frame/subscribe [::collections-subs/collections])
         only (only-collections collections only-collection-ids)]
-    (println "ONLY:" only)
     [:<>
      [:div.flex
       [:div "Restrict to collections: "

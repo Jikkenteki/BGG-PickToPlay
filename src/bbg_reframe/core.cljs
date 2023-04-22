@@ -5,12 +5,10 @@
    [day8.re-frame.http-fx]
    [bbg-reframe.events :as events]
    [bbg-reframe.localstorage.localstorage :refer [init-localstorage]]
-   [bbg-reframe.model.localstorage :refer [remove-item!]]
    [bbg-reframe.network-events :as network-events]
    [bbg-reframe.routes :as views]
    [bbg-reframe.router :as routes]
    [bbg-reframe.config :as config]
-   [re-frame.loggers :refer [console]]
    [bbg-reframe.panels.login.login-events :as login-events]
    [re-frame-firebase-nine.fb-reframe :refer [set-browser-session-persistence fb-reframe-config connect-emulator]]
    [re-frame-firebase-nine.firebase-auth :refer [get-auth on-auth-state-changed on-auth-state-changed-callback]]))
@@ -35,8 +33,6 @@
   (get-auth)
   (set-browser-session-persistence)
 
-  (console :log "Deleting bbg-ui-settings from local storage (Remove me!)")
-  (remove-item! "bgg-ui-settings")
 
   (re-frame/dispatch-sync [::events/initialize-db])
   (routes/start!)

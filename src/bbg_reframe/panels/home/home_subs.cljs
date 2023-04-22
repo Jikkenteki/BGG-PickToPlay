@@ -10,3 +10,8 @@
    (when (seq games)
      (re-frame/dispatch [::home-events/make-available games]))
    games))
+
+(re-frame/reg-sub
+ ::only-collection-ids
+ (fn [db [_ _]]
+   (get-in db [:form :only-collection-ids])))
