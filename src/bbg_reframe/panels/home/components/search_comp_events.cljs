@@ -1,4 +1,4 @@
-(ns bbg-reframe.panels.home.components.search-comp-events 
+(ns bbg-reframe.panels.home.components.search-comp-events
   (:require [bbg-reframe.model.sort-filter :refer [has-name? name-alpha?]]
             [day8.re-frame.tracing :refer [fn-traced]]
             [re-frame.core :as re-frame]))
@@ -12,7 +12,7 @@
                          (filter (has-name? val))
                          (sort name-alpha?))
                     [])]
-              {:db (-> db 
+              {:db (-> db
                        (assoc-in [:search :substring] val)
                        (assoc-in [:search :search-results] filtered))})))
 

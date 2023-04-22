@@ -1,16 +1,19 @@
 (ns bbg-reframe.panels.game.game-panel
-  (:require [bbg-reframe.panels.game.components.game-css-class :refer [game-icon-players]]
+  (:require [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.events :as events]
-            [bbg-reframe.panels.collections.collections-events :as collections-events]
-            [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.forms.bind :refer [bind-form-to-sub!]]
-            [bbg-reframe.forms.forms :refer [db-get-ref dropdown-search input-element]]
+            [bbg-reframe.forms.forms :refer [db-get-ref dropdown-search
+                                             input-element]]
+            [bbg-reframe.model.plays :refer [last-played number-of-plays
+                                             played-rank]]
+            [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]
+            [bbg-reframe.panels.collections.collections-events :as collections-events]
+            [bbg-reframe.panels.collections.collections-subs :as collections-subs]
+            [bbg-reframe.panels.game.components.game-css-class :refer [game-icon-players]]
             [bbg-reframe.panels.game.game-events :as game-view-events]
             [bbg-reframe.panels.game.game-subs :as game-view-subs]
-            [bbg-reframe.model.plays :refer [last-played number-of-plays played-rank]]
-            [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]
-            [bbg-reframe.panels.collections.collections-subs :as collections-subs]
             [bbg-reframe.subs :as subs]
+            [clojure.set :refer [difference]]
             [re-frame.core :as re-frame]))
 
 (defn personal-info
@@ -46,14 +49,41 @@
                    (re-frame/dispatch
                     [::game-view-events/save-game @(db-get-ref form-path)]))} "Save"]]))
 
+(defn- collections-info
+  [game]
+  (let [game-collections @(re-frame/subscribe [::collections-subs/game-collections (:id game)])
+        collections @(re-frame/subscribe [::collections-subs/collections])]
+    [:div.border-2.p-2
+     [:h4 "In collections"]
+     [:div
+      (map (fn [collection]
+             ^{:key (:id collection)}
+             [:div
+              [:button {:on-click
+                        #(re-frame/dispatch
+                          [::collections-events/remove-game-from-collection [(:id collection) (:id game)]])
+                        :class "fa fa-minus-square"}]
+              [:button {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
+               (:name collection)]]) game-collections)]
+     [:h4 "Add to collections "]
+     [:div
+      (map (fn [collection]
+             ^{:key (:id collection)}
+             [:div [:button {:on-click
+                             #(re-frame/dispatch
+                               [::collections-events/add-game-to-collection [(:id collection) (:id game)]])
+                             :class "fa fa-plus-square"}]
+              [:button {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
+               (:name collection)]])
+           (difference (into #{} collections) (into #{} game-collections)))]]))
+
 (defn game-view-panel
   []
   (let [route-params @(re-frame/subscribe [::subs/route-params 1])
         games @(re-frame/subscribe [::subs/games])
         game @(re-frame/subscribe [::subs/game (:id route-params)])
         minplayers (:minplayers game)
-        maxplayers (:maxplayers game)
-        collections @(re-frame/subscribe [::collections-subs/game-collections (:id game)])]
+        maxplayers (:maxplayers game)]
     [:div.max-w-xl.mx-auto.flex-col.h-full.bg-stone-800.text-neutral-100
      [naive-nav-bar]
      [:img.h-50. {:src (:thumbnail game)}]
@@ -75,19 +105,7 @@
      [:div "Plays: " (number-of-plays game)
       " Last played: " (last-played game) " Ranked (plays): " (played-rank games game)]
 
-     [:div.border-2.p-2
-      [:h4 "In collections"]
-      [:div
-       (map (fn [collection]
-              ^{:key (:id collection)}
-              [:div
-               [:button {:on-click
-                         #(re-frame/dispatch
-                           [::collections-events/remove-game-from-collection [(:id collection) (:id game)]])
-                         :class "fa fa-minus-square"}
-                ]
-               [:button {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
-                (:name collection)]]) collections)]]
+     [collections-info game]
      [personal-info (:id game)]]))
 
 (comment

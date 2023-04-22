@@ -14,7 +14,7 @@
       :placeholder "Search games (type at least two characters)"
       :on-change #(re-frame/dispatch [::search-comp-events/search-game-name-with-substring (-> % .-target .-value)])}]))
 
-(defn search-games-results-comp 
+(defn search-games-results-comp
   [on-click-handle-game-id]
   (let [search-results @(re-frame/subscribe [::subs/games-search-results])]
     [:div.overflow-auto.grow.px-3
