@@ -1,6 +1,7 @@
 (ns bbg-reframe.panels.collections.collection-panel
   (:require [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.forms.forms :refer [input-element]]
+            [bbg-reframe.events :as events]
             [bbg-reframe.panels.collections.collections-events :as collections-events]
             [bbg-reframe.panels.collections.collections-subs :as collection-subs]
             [bbg-reframe.panels.home.components.search-comp :refer [search-games-query-comp search-games-results-comp]]
@@ -16,9 +17,11 @@
    [:div
     [:button {:on-click
               #(re-frame/dispatch
-                [::collections-events/remove-game-from-collection [(keyword id) (:id game)]])}
-     "x"]
-    (:name game)]])
+                [::collections-events/remove-game-from-collection [(keyword id) (:id game)]])
+              :class "fa fa-minus-square"}]
+    [:button {:on-click #(re-frame/dispatch [::events/navigate [:game-view :id (:id game)]])}
+
+     (:name game)]]])
 
 (defn collection-view-panel
   []
@@ -51,7 +54,7 @@
       [:button {:on-click #(re-frame/dispatch
                             [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])} "Update"]]
 
-     [:div
+     [:div.border-2.p-2
       [:h4 "Games in collection"]
       (map #(game-in-collection id %) collection-games)]
 

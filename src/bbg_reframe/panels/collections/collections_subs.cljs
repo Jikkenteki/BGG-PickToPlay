@@ -1,5 +1,6 @@
 (ns bbg-reframe.panels.collections.collections-subs
-  (:require [bbg-reframe.model.collection :refer [get-collections]]
+  (:require [bbg-reframe.model.collection :refer [collections-of-the-game
+                                                  get-collections]]
             [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]))
 
@@ -32,8 +33,48 @@
     (fn [game-id] (get games (name game-id)))
     (keys (:games collection)))))
 
+
+(re-frame/reg-sub
+ ::game-collections
+ (fn [[_ game-id]]
+   [(re-frame/subscribe [::subs/game game-id])
+    (re-frame/subscribe [::collections])])
+ (fn [[game collections] [_ _]]
+   (collections-of-the-game (:id game) collections)))
+
+
+;; (collections-of-game (:id game) collections)
+
 (comment
-  (def collection {:games {:17133 true, :31260 true, :43111 true, :251247 true}, :name "agafds"})
+  (def collection {:games {:17133 true, :31260 true}, :name "collection name"})
+  (def games {"17133" {:id "17133"
+                       :name "17133 name"}
+              "31260" {:id "31260"
+                       :name "31260 name"}})
+
+  (map
+   (fn [game-id] (get games (name game-id)))
+   (keys (:games collection)))
+
+  (def collections [{:id :-NT_4XNJNW3gGsUUSPHc,
+                     :name "new collection",
+                     :games {:22766 true, :31260 true}}
+                    {:id :-NT_CIY7FEBG5klVRh3N,
+                     :name "fdsafa",
+                     :games {:31260 true}}
+                    {:id :-NTc6ztoiA_6GQgPNJyA,
+                     :name "asa",
+                     :games {:6472 true}}])
+
+  (defn collections-the-game-belongs
+    [game-id]
+    (filter not-empty (map (fn [collection] (if (game-id (:games collection))
+                                              collection
+                                              nil)) collections)))
+
+  (collections-the-game-belongs :22766)
+
+
   (keys (:games collection))
 
   @(re-frame/subscribe [::collection :-NTYfZCrLuef0fepwFO1])
