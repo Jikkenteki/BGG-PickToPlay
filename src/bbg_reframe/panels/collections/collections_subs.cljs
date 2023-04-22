@@ -1,6 +1,5 @@
 (ns bbg-reframe.panels.collections.collections-subs
-  (:require [bbg-reframe.forms.forms :refer [db-get-ref]]
-            [bbg-reframe.model.collection :refer [get-collections]]
+  (:require [bbg-reframe.model.collection :refer [get-collections]]
             [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]))
 

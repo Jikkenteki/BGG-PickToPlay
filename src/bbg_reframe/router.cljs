@@ -3,6 +3,8 @@
    [bidi.bidi :as bidi]
    [pushy.core :as pushy]
    [re-frame.core :as re-frame]
+   [bbg-reframe.panels.login.login-subs :as login-subs]
+
    [bbg-reframe.events :as events]))
 
 (def routes
@@ -14,7 +16,13 @@
          "game" {"" :home
                  ["/" :id] :game-view}
          "collection" {"" :home
-                 ["/" :id] :collection-view}}]))
+                       ["/" :id] :collection-view}}]))
+
+(defn requires-auth?
+  [route]
+  (contains? #{:collections-view
+               :collection-view}
+             (:handler route)))
 
 (defn parse
   "Parse a url string and return a map with the :handler keyword according to
@@ -26,27 +34,15 @@
   [& args]
   (apply bidi/path-for (into [@routes] args)))
 
-(comment
-  (parse "/game/10")
-  (apply url-for [:games :id 10])
-
-  (parse "/")
-  (url-for :home)
-  (apply url-for [:home])
- ;
-  )
-
 (defn dispatch
   [route]
-  (let [panel (keyword (str (name (:handler route)) "-panel"))]
+  (let [panel (keyword (str (name (:handler route)) "-panel"))
+        authenticated? (seq @(re-frame/subscribe [::login-subs/email]))]
     ;; (re-frame/dispatch [::events/set-active-panel panel])
-    (re-frame/dispatch [::events/set-route {:route-params (:route-params route) :panel panel}])))
-
-(comment
-  (parse "/")
-  (dispatch (parse "/"))
-  ;
-  )
+    (if (and (requires-auth? route) (not authenticated?))
+      (do (re-frame/dispatch [::events/navigate [:home]])
+          (re-frame/dispatch [::events/set-route {:route-params {} :panel :home-panel}]))
+      (re-frame/dispatch [::events/set-route {:route-params (:route-params route) :panel panel}]))))
 
 (defonce history
   (pushy/pushy dispatch parse))
@@ -63,12 +59,22 @@
 (re-frame/reg-fx
  :navigate
  (fn [handler]
-   (println (str ":navigate  handler:  " handler))
    (navigate! handler)))
 
-
-
 (comment
+  (parse "/")
+  (dispatch (parse "/"))
+  ;
+  (parse "/game/10")
+  (url-for :collections-view)
+  (url-for :collection-view :id 3)
+  (apply url-for [:gameview :id 10])
+
+  (parse "/")
+  (url-for :home)
+  (apply url-for [:home])
+ ;
+
   history
   (def handler [:home])
   (apply url-for handler)

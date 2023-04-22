@@ -7,7 +7,6 @@
  ::available-games
  :<- [::game-subs/on-auth-value ["available"]]
  (fn [games]
-   (println "Avail sub" games)
    (when (seq games)
      (re-frame/dispatch [::home-events/make-available games]))
    games))

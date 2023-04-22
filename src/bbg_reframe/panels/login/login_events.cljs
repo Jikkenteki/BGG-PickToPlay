@@ -2,6 +2,7 @@
   (:require [bbg-reframe.firebase.firebase-events :as firebase-events]
             [bbg-reframe.localstorage.localstorage-events :refer [remove-fb-collections-local-store-when-signed-out]]
             [bbg-reframe.network-events :as network-events]
+            [bbg-reframe.events :as events]
             [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame-firebase-nine.fb-reframe :as fb-reframe]
             [re-frame-firebase-nine.firebase-auth :refer [get-current-user
@@ -37,15 +38,16 @@
              :dispatch-later {:ms 2000
                               :dispatch [::network-events/reset-error]}}))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  ::sign-out-success
  [remove-fb-collections-local-store-when-signed-out]
- (fn-traced [db [_]]
+ (fn-traced [{:keys [db]} [_ _]]
             (let [_ (println "User signed-out")]
-              (-> db
+              {:db (-> db
                   (dissoc :email)
                   (dissoc :uid)
-                  (dissoc :collections)))))
+                  (dissoc :collections))
+               :dispatch [::events/navigate [:home]]})))
 
 (re-frame/reg-event-fx
  ::sign-in
