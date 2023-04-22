@@ -36,6 +36,13 @@
                                             collection
                                             nil)) collections)))
 
+(defn only-collections
+  "Returns only the collections whose ids are in the only-collection-ids"
+  [all-collections only-collection-ids]
+  (filter
+   #(in? only-collection-ids (:id %))
+   all-collections))
+
 (comment
 
   (def collections {:-NTK-cZZcAJzjdrG6ifV {:name "ac"}
@@ -44,5 +51,8 @@
   (get-collections collections)
   (get-collection-names collections)
 
+  (def ids [])
+  (filter #(in? ids (:id %)) (get-collections collections))
   ;
+  (true? (some? (nil)))
   )

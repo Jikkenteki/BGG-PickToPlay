@@ -44,9 +44,10 @@
  (fn-traced [{:keys [db]} [_ _]]
             (let [_ (println "User signed-out")]
               {:db (-> db
-                  (dissoc :email)
-                  (dissoc :uid)
-                  (dissoc :collections))
+                       (dissoc :email)
+                       (dissoc :uid)
+                       (dissoc :collections)
+                       (assoc-in [:form :only-collection-ids] []))
                :dispatch [::events/navigate [:home]]})))
 
 (re-frame/reg-event-fx
@@ -93,7 +94,7 @@
   (re-frame/dispatch [::sign-in "new@gmail.com" "password"])
 
   (re-frame/dispatch [::sign-out])
-  
+
 
 
   (on-auth-state-changed on-auth-state-changed-callback)

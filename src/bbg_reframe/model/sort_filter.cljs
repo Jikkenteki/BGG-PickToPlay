@@ -1,5 +1,7 @@
 (ns bbg-reframe.model.sort-filter
-  (:require [bbg-reframe.model.examples.data :refer [local-storage-db]]
+  (:require [bbg-reframe.model.collection :refer [get-collections
+                                                  only-collections]]
+            [bbg-reframe.model.examples.data :refer [local-storage-db]]
             [clojure.pprint :as pp]
             [clojure.spec.alpha :as spec]
             [clojure.string :as s]
@@ -136,6 +138,14 @@
   {:pre [(spec/valid? boolean? only-available?)]}
   (fn [game]
     (if only-available? (:available game) true)))
+
+(defn should-show-only-in-collections?
+  [all-collections only-collection-ids]
+  (fn [game]
+    (if (empty? only-collection-ids)
+      true
+      (some (fn [collection] (get-in collection [:games (keyword (:id game))]))
+            (only-collections (get-collections all-collections) only-collection-ids)))))
 
 (defn is-best-with-num-of-players
   [num-players]

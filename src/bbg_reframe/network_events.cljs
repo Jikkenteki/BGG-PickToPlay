@@ -9,8 +9,8 @@
             [bbg-reframe.model.localstorage :refer [set-item!]]
             [bbg-reframe.model.sort-filter :refer
              [and-filters is-playable-with-num-of-players
-              should-show-expansions? should-show-only-available? sorting-fun
-              with-number-of-players?]]
+              should-show-expansions? should-show-only-available? should-show-only-in-collections?
+              sorting-fun with-number-of-players?]]
             [bbg-reframe.model.xmlapi :refer [clj->page clj->plays
                                               clj->total-games item-game-id
                                               item-game-type play->play xml->game]]
@@ -209,6 +209,8 @@
                             (and-filters
                              (should-show-expansions? (get-in db [:form :show-expansions?])) ;; show only 
                              (should-show-only-available? (get-in db [:form :only-available?])) ;; show only 
+                             (should-show-only-in-collections? (:collections db)
+                                                               (get-in db [:form :only-collection-ids]))
                              (with-number-of-players?
                                (read-string (get-in db [:form :players])))
                             ;;  (playingtime-between? 0 (read-string (get-in db [:form :time-available])))

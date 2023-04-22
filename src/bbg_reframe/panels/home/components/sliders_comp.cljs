@@ -5,6 +5,7 @@
    [bbg-reframe.events :as events]
    [bbg-reframe.panels.home.components.slider-comp :refer [slider-comp]]
    [bbg-reframe.panels.home.components.checkbox-with-connector-comp :refer [checkbox-with-connector-comp]]
+   [bbg-reframe.panels.home.components.filter-collections-comp :refer [filter-collections-comp]]
    [bbg-reframe.panels.login.login-subs :as login-subs]))
 
 (defn sliders-comp []
@@ -15,8 +16,9 @@
     [:<>
     ;;  [slider-comp :take "Take" 1 100 1]
      [slider-comp :players "For number of players" 1 10 1]
-    ;;  [slider-comp :threshold "Playability threshold" 0 0.95 0.05]
+    ;;  [slider-comp :threshold "Playability  threshold" 0 0.95 0.05]
      [slider-comp :time-available "Time available" 10 500 10]
+     [filter-collections-comp]
      [:div.flex
       [:div.pr-1 {:class "basis-1/2"}
        [checkbox-with-connector-comp
