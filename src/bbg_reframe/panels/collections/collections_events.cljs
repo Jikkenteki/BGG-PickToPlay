@@ -121,7 +121,6 @@
   [->fb-collections->local-store]
  (fn-traced
   [{:keys [db]} [_ [id game-id]]]
-  (println "ADD GAME " id game-id)
   {:db (assoc-in db [:collections id :games (keyword game-id)] true)
    :fx [[:dispatch [::firebase-events/fb-set
                     {:path ["collections" (name id) "games" game-id] :data true}]]
@@ -132,7 +131,6 @@
   [->fb-collections->local-store]
  (fn-traced
   [{:keys [db]} [_ [id game-id]]]
-  (println "REMOVE GAME " id game-id)
   {:db (update-in db [:collections id :games] dissoc (keyword game-id))
    :fx [[:dispatch [::firebase-events/fb-set
                     {:path ["collections" (name id) "games" game-id] :data nil}]]]}))

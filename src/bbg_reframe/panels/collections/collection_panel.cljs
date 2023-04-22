@@ -33,7 +33,6 @@
         form-path (bind-form-to-value!
                    {:new-name (:name collection)}
                    [:collection-form :edit-collection])]
-    (println collection)
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
      [naive-nav-bar]
      [:h1 "Collection with id: " id]
