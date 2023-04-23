@@ -35,18 +35,15 @@
 
 
   (re-frame/dispatch-sync [::events/initialize-db])
-  (routes/start!)
-
+  (on-auth-state-changed (fn [x]
+                           (re-frame/dispatch [::login-events/auth-state-changed])
+                           (on-auth-state-changed-callback x)
+                           (routes/start!)))
+  
   (re-frame/dispatch [::network-events/cors-check])
 
   (init-localstorage)
 
-  (re-frame/dispatch [::network-events/update-result])
-
-  ;; auth is not ready
-  (on-auth-state-changed (fn [x]
-                           (re-frame/dispatch [::login-events/auth-state-changed])
-                           (on-auth-state-changed-callback x)))
   (dev-setup)
   (mount-root))
 

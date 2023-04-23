@@ -1,11 +1,9 @@
 (ns bbg-reframe.router
-  (:require
-   [bidi.bidi :as bidi]
-   [pushy.core :as pushy]
-   [re-frame.core :as re-frame]
-   [bbg-reframe.panels.login.login-subs :as login-subs]
-
-   [bbg-reframe.events :as events]))
+  (:require [bbg-reframe.events :as events]
+            [bidi.bidi :as bidi]
+            [pushy.core :as pushy]
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+            [re-frame.core :as re-frame]))
 
 (def routes
   (atom
@@ -37,8 +35,12 @@
 (defn dispatch
   [route]
   (let [panel (keyword (str (name (:handler route)) "-panel"))
-        authenticated? (seq @(re-frame/subscribe [::login-subs/email]))]
+        authenticated? (not (nil? (fb-reframe/get-current-user-uid)))
+        ;; (seq @(re-frame/subscribe [::login-subs/email]))
+        ]
     ;; (re-frame/dispatch [::events/set-active-panel panel])
+    (println "ROUTING: authenticated?" authenticated?)
+
     (if (and (requires-auth? route) (not authenticated?))
       (do (re-frame/dispatch [::events/navigate [:home]])
           (re-frame/dispatch [::events/set-route {:route-params {} :panel :home-panel}]))
