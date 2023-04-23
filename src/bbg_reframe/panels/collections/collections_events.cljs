@@ -51,7 +51,7 @@
          [[::fb-reframe/firebase-push
            {:path ["users" (:uid db) "collections"]
             :data data
-            :success #(re-frame/dispatch [::saved-collection new-collection-name])
+            :success #(re-frame/dispatch [::new-collection-success new-collection-name])
             :key-path [:firebase :new-collection-id]}]
           [:dispatch [::add-collection-to-db {:form-path form-path :data data}]]]}
         {:dispatch [::network-events/set-error "Collection with this name already exists!"]}))))
@@ -64,6 +64,11 @@
 ;;   (inject-cofx :uid)]
  new-collection-handler)
 
+(re-frame/reg-event-fx
+ ::new-collection-success
+ [->fb-collections->local-store]
+ (fn-traced [_ [_ collection-name]]
+            (println "Saved new collection" collection-name)))
 
 (defn-traced delete-collection-handler
   [{:keys [db]} [_ id]]
@@ -76,7 +81,6 @@
 ;; event for deleting a new collection
 (re-frame/reg-event-fx
  ::delete-collection
- [->fb-collections->local-store]
  delete-collection-handler)
 
 
@@ -95,7 +99,6 @@
 ;; event for editing a new collection
 (re-frame/reg-event-fx
  ::edit-collection-name
- [->fb-collections->local-store]
  edit-collection-name-handle)
 
 (defn- get-new-collection-key [db]
@@ -103,7 +106,6 @@
 
 (re-frame/reg-event-db
  ::add-collection-to-db
- [->fb-collections->local-store]
  (fn-traced
   [db [_ {:keys [form-path data]}]]
   (-> db
@@ -118,7 +120,6 @@
 
 (re-frame/reg-event-fx
  ::add-game-to-collection
-  [->fb-collections->local-store]
  (fn-traced
   [{:keys [db]} [_ [id game-id]]]
   {:db (assoc-in db [:collections id :games (keyword game-id)] true)
@@ -128,7 +129,6 @@
 
 (re-frame/reg-event-fx
  ::remove-game-from-collection
-  [->fb-collections->local-store]
  (fn-traced
   [{:keys [db]} [_ [id game-id]]]
   {:db (update-in db [:collections id :games] dissoc (keyword game-id))

@@ -1,11 +1,12 @@
 (ns bbg-reframe.firebase.firebase-events
-  (:require
-   [bbg-reframe.network-events :as network-events]
-   [clojure.string :as string]
-   [day8.re-frame.tracing :refer-macros [fn-traced]]
-   [re-frame-firebase-nine.fb-reframe :as fb-reframe]
-   [re-frame.core :as re-frame]
-   [re-frame.loggers :refer [console]]))
+  (:require [bbg-reframe.localstorage.localstorage-events :refer [->fb-collections->local-store]]
+            [bbg-reframe.network-events :as network-events]
+            [clojure.string :as string]
+            [day8.re-frame.tracing :refer-macros [fn-traced]]
+            [re-frame-firebase-nine.fb-reframe :as fb-reframe]
+            [re-frame-firebase-nine.firebase-database :refer [on-value]]
+            [re-frame.core :as re-frame]
+            [re-frame.loggers :refer [console]]))
 
 ;; fb
 (re-frame/reg-event-fx
@@ -28,7 +29,14 @@
  ::fb-set
  (fn-traced [_ [_ {:keys [path data]}]]
             {::fb-reframe/firebase-set {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
-                                        :data data}}))
+                                        :data data
+                                        :success #(re-frame/dispatch [::fb-set-successful path data])}}))
+
+(re-frame/reg-event-fx
+ ::fb-set-successful
+  [->fb-collections->local-store]
+(fn-traced [_ [_ path data]]
+           (println "fb-set successful" path data)))
 
 ;; adds a new key-data pair under the path. The key is sored in key-path in db
 ;; note normally a :success and :error events are expected
@@ -93,5 +101,6 @@
   (name :-NTOQH19rgxRLU4GVB0O)
 
 
+  (on-value [".info/connected"] #(println %))
   ;
   )
