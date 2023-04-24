@@ -1,13 +1,13 @@
 (ns bbg-reframe.panels.login.login-panel
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :refer [trim]]
-            [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
-            [bbg-reframe.forms.forms :refer [input-element]]
-            [bbg-reframe.forms.utils :refer [if-nil?->value]]
-            [bbg-reframe.forms.subs :as form-subs]
-            [bbg-reframe.firebase.firebase-events :as firebase-events]
-            [bbg-reframe.panels.login.login-events :as login-events]
-            [bbg-reframe.panels.login.login-subs :as login-subs]))
+  (:require
+   [re-frame.core :as re-frame]
+   [clojure.string :refer [trim]]
+   [bbg-reframe.forms.forms :refer [input-element]]
+   [bbg-reframe.forms.utils :refer [if-nil?->value]]
+   [bbg-reframe.forms.subs :as form-subs]
+   [bbg-reframe.firebase.firebase-events :as firebase-events]
+   [bbg-reframe.panels.login.login-events :as login-events]
+   [bbg-reframe.panels.login.login-subs :as login-subs]))
 
 (defn save-games
   []
@@ -46,7 +46,5 @@
 (defn login-view-panel
   []
   [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-   [naive-nav-bar]
-
    [:h1 "Login"]
    [login-comp]])

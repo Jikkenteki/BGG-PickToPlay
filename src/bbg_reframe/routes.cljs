@@ -1,13 +1,14 @@
 (ns bbg-reframe.routes
-  (:require ["sax" :as sax]
-            [bbg-reframe.panels.collections.collection-panel :refer [collection-view-panel]]
-            [bbg-reframe.panels.collections.collections-panel :refer [collections-view-panel]]
-            [bbg-reframe.panels.game.game-panel :refer [game-view-panel]]
-            [bbg-reframe.panels.home.components.bottom-buttons-bar-comp :refer [bottom-buttons-bar-comp]]
-            [bbg-reframe.panels.home.home-panel :refer [home-panel]]
-            [bbg-reframe.panels.login.login-panel :refer [login-view-panel]]
-            [bbg-reframe.subs :as subs]
-            [re-frame.core :as re-frame]))
+  (:require
+   ["sax" :as sax]
+   [bbg-reframe.panels.collections.collection-panel :refer [collection-view-panel]]
+   [bbg-reframe.panels.collections.collections-panel :refer [collections-view-panel]]
+   [bbg-reframe.panels.game.game-panel :refer [game-view-panel]]
+   [bbg-reframe.panels.home.components.bottom-buttons-bar-comp :refer [bottom-buttons-bar-comp]]
+   [bbg-reframe.panels.home.home-panel :refer [home-panel]]
+   [bbg-reframe.panels.login.login-panel :refer [login-view-panel]]
+   [bbg-reframe.subs :as subs]
+   [re-frame.core :as re-frame]))
 
 ; required for tubax to work
 (js/goog.exportSymbol "sax" sax)

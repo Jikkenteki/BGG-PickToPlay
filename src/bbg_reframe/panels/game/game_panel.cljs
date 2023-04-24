@@ -1,20 +1,20 @@
 (ns bbg-reframe.panels.game.game-panel
-  (:require [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
-            [bbg-reframe.events :as events]
-            [bbg-reframe.forms.bind :refer [bind-form-to-sub!]]
-            [bbg-reframe.forms.forms :refer [db-get-ref dropdown-search
-                                             input-element]]
-            [bbg-reframe.model.plays :refer [last-played number-of-plays
-                                             played-rank]]
-            [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]
-            [bbg-reframe.panels.collections.collections-events :as collections-events]
-            [bbg-reframe.panels.collections.collections-subs :as collections-subs]
-            [bbg-reframe.panels.game.components.game-css-class :refer [game-icon-players]]
-            [bbg-reframe.panels.game.game-events :as game-view-events]
-            [bbg-reframe.panels.game.game-subs :as game-view-subs]
-            [bbg-reframe.subs :as subs]
-            [clojure.set :refer [difference]]
-            [re-frame.core :as re-frame]))
+  (:require
+   [bbg-reframe.events :as events]
+   [bbg-reframe.forms.bind :refer [bind-form-to-sub!]]
+   [bbg-reframe.forms.forms :refer [db-get-ref dropdown-search
+                                    input-element]]
+   [bbg-reframe.model.plays :refer [last-played number-of-plays
+                                    played-rank]]
+   [bbg-reframe.model.sort-filter :refer [game->best-rec-not]]
+   [bbg-reframe.panels.collections.collections-events :as collections-events]
+   [bbg-reframe.panels.collections.collections-subs :as collections-subs]
+   [bbg-reframe.panels.game.components.game-css-class :refer [game-icon-players]]
+   [bbg-reframe.panels.game.game-events :as game-view-events]
+   [bbg-reframe.panels.game.game-subs :as game-view-subs]
+   [bbg-reframe.subs :as subs]
+   [clojure.set :refer [difference]]
+   [re-frame.core :as re-frame]))
 
 (defn personal-info
   [game-id]
@@ -85,7 +85,6 @@
         minplayers (:minplayers game)
         maxplayers (:maxplayers game)]
     [:div.max-w-xl.mx-auto.flex-col.h-full.bg-stone-800.text-neutral-100
-     [naive-nav-bar]
      [:img.h-50. {:src (:thumbnail game)}]
      [:h1.text-3xl.font-bold.mb-2.px-1 (:name game)]
      [:h1 [:b (:id game)]]

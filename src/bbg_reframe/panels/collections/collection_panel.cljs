@@ -1,6 +1,5 @@
 (ns bbg-reframe.panels.collections.collection-panel
-  (:require [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
-            [bbg-reframe.forms.forms :refer [input-element]]
+  (:require [bbg-reframe.forms.forms :refer [input-element]]
             [bbg-reframe.events :as events]
             [bbg-reframe.panels.collections.collections-events :as collections-events]
             [bbg-reframe.panels.collections.collections-subs :as collection-subs]
@@ -34,7 +33,6 @@
                    {:new-name (:name collection)}
                    [:collection-form :edit-collection])]
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-     [naive-nav-bar]
      [:h1 "Collection with id: " id]
      [:div "Name: " (:name collection)]
      [:div
