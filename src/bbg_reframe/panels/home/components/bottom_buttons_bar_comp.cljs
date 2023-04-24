@@ -8,8 +8,8 @@
 
 (defn bottom-buttons-bar-comp []
   (let [open-tab @(re-frame/subscribe [::subs/ui :open-tab])]
-    [:div.bottom-overlay-box-shadow.flex.flex-col
-     (bottom-overlay-comp)
+    [:div.flex.flex-col.justify-end.bg-stone-800.border-t-2.border-slate-600
+     (and (not= open-tab "none") [bottom-overlay-comp])
      [:div.bottom-buttons
       [button-comp {:active (= open-tab :sliders-tab)
                     :on-click #(re-frame/dispatch [::events/set-open-tab :sliders-tab])

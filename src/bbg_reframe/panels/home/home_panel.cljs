@@ -3,7 +3,6 @@
             [bbg-reframe.components.nav-bar-comp :refer [naive-nav-bar]]
             [bbg-reframe.events :as events]
             [bbg-reframe.network-events :as network-events]
-            [bbg-reframe.panels.home.components.bottom-buttons-bar-comp :refer [bottom-buttons-bar-comp]]
             [bbg-reframe.panels.home.components.games-list-comp :refer [games-list-comp]]
             [bbg-reframe.panels.home.components.loading-games-info-comp :refer [loading-games-info-comp]]
             [bbg-reframe.panels.home.components.search-comp :refer [search-games-query-comp search-games-results-comp]]
@@ -17,7 +16,7 @@
 (defn home-panel []
   (let [_ (re-frame/dispatch [::network-events/update-result])
         _ @(re-frame/subscribe [::home-subs/available-games])]
-    [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
+    [:div.flex.flex-col.h-full
      [naive-nav-bar]
      [:h1.text-3xl.font-bold.mb-2.mt-4.px-1
       "PickToPlay"]
@@ -26,5 +25,4 @@
      [search-games-results-comp (fn [id]
                                   (re-frame/dispatch [::search-comp-events/reset-search])
                                   (re-frame/dispatch [::events/navigate [:game-view :id id]]))]
-     [search-games-query-comp]
-     [bottom-buttons-bar-comp]]))
+     [search-games-query-comp]]))

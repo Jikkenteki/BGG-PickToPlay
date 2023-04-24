@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply h-full bg-stone-900;
+}
+
 ::-webkit-scrollbar-thumb {
   border: 5px solid transparent;
   border-radius: 80px;
