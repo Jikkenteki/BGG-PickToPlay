@@ -12,7 +12,6 @@
      [:div.flex.items-center.mb-1;.h-full
       [:input.input-box.min-w-0.grow;.h-full
        {:type "text"
-        :id "name"
         :value user
         :placeholder "Insert BGG username"
         :on-change #(re-frame/dispatch [::events/update-user (-> % .-target .-value)])}]

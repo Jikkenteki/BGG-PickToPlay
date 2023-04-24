@@ -9,7 +9,6 @@
   (let [substring (re-frame/subscribe [::subs/game-substring-query])]
     [:input.input-box.min-w-0;.grow.h-full
      {:type "text"
-      :id "name"
       :value @substring
       :placeholder "Search games (type at least two characters)"
       :on-change #(re-frame/dispatch [::search-comp-events/search-game-name-with-substring (-> % .-target .-value)])}]))
