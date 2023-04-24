@@ -18,6 +18,7 @@
 
 (defn requires-auth?
   [route]
+  (js/console.log route)
   (contains? #{:collections-view
                :collection-view}
              (:handler route)))
