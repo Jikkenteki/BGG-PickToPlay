@@ -61,7 +61,7 @@
   border: 2px solid #833f2f;
 }
 
-.button:hover {
+.button:hover:not(.active) {
   background-color: #9e4c3a;
   border: 2px solid #9e4c3a;
 }
