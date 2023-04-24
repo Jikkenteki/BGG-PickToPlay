@@ -86,6 +86,7 @@
 
 (defn-traced edit-collection-name-handle
   [{:keys [db]} [_ [id form-path]]]
+  (println "edit-collection-name-handle" (name id))
   (let [new-name (get-in db form-path)]
     (if (= new-name (get-in db [:collections id :name]))
       {}
@@ -137,8 +138,16 @@
 
 (comment
 
+  ;; STUB an event handler
+   (re-frame/reg-event-fx
+    :bbg-reframe.firebase.firebase-events/fb-set
+    (fn-traced [_ [_ {:keys [path data]}]]
+               (println "STUB 2")
+               {:dispatch [:bbg-reframe.firebase.firebase-events/fb-set-successful path data]}))
+
+
   ;; this is performed by the UI
-  (db-set-value! [:form :create-collection :new-collection] "ac")
+  (db-set-value! [:form :create-collection :new-collection] "ac1")
   ;; the ui dispatches
   (re-frame/dispatch [::new-collection [:form :create-collection]])
 
@@ -147,7 +156,9 @@
   (def new-key (get-new-collection-key @(db-get-ref [])))
   new-key
 
-  (re-frame/dispatch [::edit-collection-name new-key "new ac2 upd 2"])
+  (db-set-value! [:form :edit-collection :new-name] "ac12")
+
+  (re-frame/dispatch [::edit-collection-name  [:-NTmeKI2CxaAD-2GmidJ [:form :edit-collection :new-name]]])
 
 
   ;

@@ -28,6 +28,7 @@
 (re-frame/reg-event-fx
  ::fb-set
  (fn-traced [_ [_ {:keys [path data]}]]
+            (println "REAL")
             {::fb-reframe/firebase-set {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
                                         :data data
                                         :success #(re-frame/dispatch [::fb-set-successful path data])}}))
