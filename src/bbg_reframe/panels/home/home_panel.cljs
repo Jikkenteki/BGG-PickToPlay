@@ -8,6 +8,7 @@
    [bbg-reframe.panels.home.components.search-comp :refer [search-games-query-comp search-games-results-comp]]
    [bbg-reframe.panels.home.components.search-comp-events :as search-comp-events]
    [bbg-reframe.panels.home.home-subs :as home-subs]
+   [bbg-reframe.subs :as subs]
    [re-frame.core :as re-frame]))
 
 ; required for tubax to work
@@ -15,11 +16,14 @@
 
 (defn home-panel []
   (let [_ (re-frame/dispatch [::network-events/update-result])
-        _ @(re-frame/subscribe [::home-subs/available-games])]
+        _ @(re-frame/subscribe [::home-subs/available-games])
+        players @(re-frame/subscribe [::subs/form :players])
+        time @(re-frame/subscribe [::subs/form :time-available])]
     [:div.flex.flex-col.h-full
      [:h1.text-3xl.font-bold.mb-2.mt-4.px-1
       "PickToPlay"]
      [loading-games-info-comp]
+     [:pre.pl-2 players " PLAYERS, TIME: " time " min"]
      [games-list-comp]
      [search-games-results-comp (fn [id]
                                   (re-frame/dispatch [::search-comp-events/reset-search])

@@ -10,22 +10,24 @@
 (defn create-collection
   []
   (let [form-path (bind-form-to-value! {} [:form :create-collection])]
-    [:div
-     [input-element {:class "input-box min-w-0"
+    [:div.flex.items-stretch.my-3
+     [input-element {:class "input-box"
                      :type :text
-                     :placeholder "Collection name"
+                     :placeholder "Create collection"
                      :path (into form-path [:new-collection])}]
-     [:button {:on-click #(re-frame/dispatch
-                           [::collections-events/new-collection form-path])} "Create"]]))
+     [:div.bg-green-700.rounded-r.flex.items-center.p-2.cursor-pointer {:on-click #(re-frame/dispatch [::collections-events/new-collection form-path])}
+      [:i.mx-auto.my-auto {:class "fa-solid fa-check fa-lg"}]]]))
 
 (defn collections-comp
   []
   (let [collections @(re-frame/subscribe [::collections-subs/collections])]
-    [:div.overflow-auto.grow.px-3
+    [:div.m-3
      [create-collection]
-     [:div
+     [:div.mt-3
       (map (fn [collection]
              ^{:key (:id collection)}
-             [:div [:a {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
-                    (:name collection)]])
+             [:div.p-2.my-3.bg-slate-700.rounded.border-2.border-dashed.border-slate-300.cursor-pointer
+              {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
+              [:p
+               (:name collection)]])
            collections)]]))

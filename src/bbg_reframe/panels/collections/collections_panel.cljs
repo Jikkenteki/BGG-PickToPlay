@@ -4,6 +4,6 @@
 
 (defn collections-view-panel
   []
-  [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-   [:h1 "Collections"]
+  [:div
+   [:h1.m-3 "Collections"]
    [collections-comp]])

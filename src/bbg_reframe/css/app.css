@@ -8,6 +8,13 @@ body {
   @apply h-full bg-stone-900;
 }
 
+h1 {
+  @apply text-2xl font-semibold;
+}
+h2 {
+  @apply text-xl;
+}
+
 ::-webkit-scrollbar-thumb {
   border: 5px solid transparent;
   border-radius: 80px;
