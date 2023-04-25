@@ -1,11 +1,13 @@
 (ns bbg-reframe.config
-  (:require [bbg-reframe.env-variables  :refer [cors-server-uri-env api-key-env]]))
+  (:require [bbg-reframe.env-variables  :refer [api-key-env
+                                                cors-server-uri-env]]
+            [clojure.string :as string]))
 
 (def debug?
   ^boolean goog.DEBUG)
 
 (def delay-between-fetches 500)
-(def cors-server-uri cors-server-uri-env)
+(def cors-server-uri (string/replace cors-server-uri-env "//$" "/")) 
 (def xml-api 2)
 
 (def fb-reframe-config-map {:temp-path [:firebase-temp-storage]
