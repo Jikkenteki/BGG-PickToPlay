@@ -51,7 +51,7 @@
       [:button {:on-click #(re-frame/dispatch
                             [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])} "Update"]]
 
-     [:div.border-2.p-2
+     [:div.border-2.p-2.overflow-auto
       [:h4 "Games in collection"]
       (map #(game-in-collection id %) collection-games)]
 
