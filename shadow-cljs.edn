@@ -1,6 +1,6 @@
 {:nrepl {:port 8777}
  :source-paths ["src" "test"]
- :dependencies [[reagent "1.1.0"]
+ :dependencies [[reagent "1.2.0"]
                 [re-frame "1.2.0"]
                 [day8.re-frame/tracing "0.6.2"]
                 [bidi "2.1.6"]
