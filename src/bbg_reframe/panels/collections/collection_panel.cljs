@@ -34,11 +34,11 @@
                    [:collection-form :edit-collection])]
     [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
      [:h1 "Collection with id: " id]
-     [:div "Name: " (:name collection)]
+     [:p (:name collection)]
      [:div
-      [:button {:on-click
-                #(re-frame/dispatch
-                  [::collections-events/delete-collection (keyword id)])}
+      [:button.button {:on-click
+                       #(re-frame/dispatch
+                         [::collections-events/delete-collection (keyword id)])}
        "Delete"]]
 
 

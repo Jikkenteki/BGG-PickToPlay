@@ -54,6 +54,7 @@
   border-radius: 6px;
   height: 40px;
   background-color: #833f2f;
+  @apply p-2;
 }
 
 .button.active {

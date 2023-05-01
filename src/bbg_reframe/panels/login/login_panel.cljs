@@ -30,17 +30,17 @@
                      :placeholder "password"
                      :path [:login-form :password]}]
 
-     [:button.button.min-w-fit.px-2.ml-1
+     [:button.button
       {:on-click #(re-frame/dispatch [::login-events/sign-in email password])} "Sign in"]
-     [:button.button.min-w-fit.px-2.ml-1
+     [:button.button
       {:on-click #(re-frame/dispatch [::login-events/sign-up email password])} "Sign up"]
-     [:button.button.min-w-fit.px-2.ml-1
+     [:button.button
       {:disabled (nil? @(re-frame/subscribe [::login-subs/email]))
        :on-click #(re-frame/dispatch
                    [::login-events/sign-out])} "Sign out"]
-     [:button.button.min-w-fit.px-2.ml-1
+     [:button.button
       {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click save-games} "Save games to account"]
-     [:button.button.min-w-fit.px-2.ml-1
+     [:button.button
       {:disabled (nil? @(re-frame/subscribe [::login-subs/email])) :on-click #(re-frame/dispatch [::firebase-events/fetch-games])} "Fetch games from account"]]))
 
 (defn login-view-panel

@@ -39,11 +39,11 @@
                         :input-placeholder "Type to find a game"
                         :select-nothing-text "(no game)"
                         :sort? true
-                        :button-class "button min-w-fit px-2 ml-1"
+                        :button-class "button"
                         :input-class "input-box min-w-0 grow h-full"
                         :option-class "option bg-stone-800 text-neutral-200"})]
 
-     [:button.button.min-w-fit.px-2.ml-1
+     [:button.button
       {:on-click (fn [_]
                      ;;  (db-set-value! [:game-form :add-to-collection (str id)] nil)
                    (re-frame/dispatch
