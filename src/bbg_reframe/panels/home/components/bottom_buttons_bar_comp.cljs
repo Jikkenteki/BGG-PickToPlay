@@ -12,12 +12,12 @@
      (when open-tab [bottom-overlay-comp])
      [:div.bottom-buttons
       [button-comp {:on-click #(re-frame/dispatch [::events/navigate [:home]])
-                    :children [:i.mx-auto.my-auto {:class "fa-solid fa-dice fa-xl"}]}]
+                    :children [:i.fa-solid.fa-dice.fa-xl]}]
       [button-comp {:active (= open-tab :sliders-tab)
                     :on-click #(re-frame/dispatch [::events/set-open-tab :sliders-tab])
-                    :children [:i.mx-auto.my-auto {:class "fa-solid fa-sliders fa-xl"}]}]
+                    :children [:i.fa-solid.fa-sliders.fa-xl]}]
       [button-comp {:on-click #(re-frame/dispatch [::events/navigate [:collections-view]])
-                    :children [:i.mx-auto.my-auto {:class "fa-solid fa-object-group fa-xl"}]}]
+                    :children [:i.fa-solid.fa-object-group.fa-xl]}]
       [button-comp {:active (= open-tab :user-name-tab)
                     :on-click #(re-frame/dispatch [::events/set-open-tab :user-name-tab])
-                    :children [:i.mx-auto.my-auto {:class "fa-solid fa-user fa-xl"}]}]]]))
+                    :children [:i.fa-solid.fa-user.fa-xl]}]]]))
