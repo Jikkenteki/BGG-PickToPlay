@@ -7,7 +7,8 @@
             [bbg-reframe.panels.home.components.search-comp-events :as search-comp-events]
             [bbg-reframe.subs :as subs]
             [re-frame-firebase-nine.example.forms.bind :refer [bind-form-to-value!]]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [reagent.core :as reagent]))
 
 (defn- game-in-collection
   [id game]
@@ -22,6 +23,7 @@
 
      (:name game)]]])
 
+
 (defn collection-view-panel
   []
   (let [_ (re-frame/dispatch [::search-comp-events/reset-search])
@@ -31,31 +33,35 @@
         collection-games @(re-frame/subscribe [::collection-subs/collection-games (name id)])
         form-path (bind-form-to-value!
                    {:new-name (:name collection)}
-                   [:collection-form :edit-collection])]
-    [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
-     [:h1 "Collection with id: " id]
-     [:p (:name collection)]
-     [:div
-      [:button.button {:on-click
-                       #(re-frame/dispatch
-                         [::collections-events/delete-collection (keyword id)])}
-       "Delete"]]
+                   [:collection-form :edit-collection])
+        component-state (reagent/atom {:collection-renaming? false})]
+    (fn [] [:div
+            [:div.flex.justify-between.items-center.m-2.gap-2
+             (if (get @component-state :collection-renaming?)
+               [:div.flex.gap-2.min-w-0
+                [input-element {:class "bg-transparent text-2xl font-semibold outline-none min-w-0"
+                                :type :text
+                                :placeholder "Collection name"
+                                :path (into form-path [:new-name])}]
+                [:button.button {:on-click #(do (re-frame/dispatch
+                                                 [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])
+                                                (reset! component-state {:collection-renaming? false}))}
+                 [:i.fa-solid.fa-check]]]
+               [:h1 (:name collection)])
 
+             [:div.flex.gap-2
+              [:button.button {:on-click
+                               #(re-frame/dispatch
+                                 [::collections-events/delete-collection (keyword id)])}
+               "Delete"]
+              [:button.button {:on-click #(reset! component-state {:collection-renaming? true})}
+               "Rename"]]]
 
-     [:div
-      [:label "Rename a collection"]
-      [input-element {:class "input-box min-w-0"
-                      :type :text
-                      :placeholder "Collection name"
-                      :path (into form-path [:new-name])}]
-      [:button {:on-click #(re-frame/dispatch
-                            [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])} "Update"]]
+            [:div.border-2.p-2.overflow-auto
+             [:h4 "Games in collection"]
+             (map #(game-in-collection id %) collection-games)]
 
-     [:div.border-2.p-2.overflow-auto
-      [:h4 "Games in collection"]
-      (map #(game-in-collection id %) collection-games)]
-
-     [:div
-      [:label "Add Game to collection"]
-      [search-games-query-comp]
-      [search-games-results-comp (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]]]))
+            [:div
+             [:label "Add Game to collection"]
+             [search-games-query-comp]
+             [search-games-results-comp (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]]])))

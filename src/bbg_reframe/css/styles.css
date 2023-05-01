@@ -54,7 +54,8 @@
   border-radius: 6px;
   height: 40px;
   background-color: #833f2f;
-  @apply p-2;
+  border: 2px solid transparent;
+  @apply p-2 inline-flex justify-center items-center;
 }
 
 .button.active {
@@ -64,7 +65,6 @@
 
 .button:hover:not(.active) {
   background-color: #9e4c3a;
-  border: 2px solid #9e4c3a;
 }
 
 .button:disabled {
