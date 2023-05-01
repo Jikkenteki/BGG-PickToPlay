@@ -7,4 +7,7 @@ module.exports = {
     autoprefixer: {},
     cssnano: {},
   },
+  map: {
+    absolute: true,
+  },
 };
