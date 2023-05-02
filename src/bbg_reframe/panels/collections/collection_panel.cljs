@@ -19,7 +19,7 @@
         route-params @(re-frame/subscribe [::subs/route-params 1])
         id (:id route-params)
         collection (re-frame/subscribe [::collection-subs/collection id])
-        collection-games @(re-frame/subscribe [::collection-subs/collection-games (name id)])
+        collection-games (re-frame/subscribe [::collection-subs/collection-games (name id)])
         form-path (bind-form-to-value!
                    {:new-name (:name @collection)}
                    [:collection-form :edit-collection])
@@ -52,7 +52,7 @@
              [:h2 "Games in collection"]
             ;;  WIP
             ;;  [:button.button {:on-click #(swap! component-state assoc :games-searching fn([] !value))}
-              "Add Game to collection"]]
+              "Add Game to collection"]
 
             (when (get @component-state :games-searching?)
               [:div
@@ -61,4 +61,4 @@
 
 
             [:div.overflow-auto
-             (map #(game-in-collection id %) collection-games)]])))
+             (map #(game-in-collection id %) @collection-games)]])))
