@@ -15,10 +15,6 @@
                     :on-click #(re-frame/dispatch
                                 [::events/navigate [:home]])
                     :children [:i.fa-solid.fa-dice.fa-xl]}]
-      [button-comp {:active (= open-tab :sliders-tab)
-                    :on-click #(re-frame/dispatch
-                                [::events/set-open-tab :sliders-tab])
-                    :children [:i.fa-solid.fa-sliders.fa-xl]}]
       [button-comp {:active (= route-path :collections-view)
                     :on-click #(re-frame/dispatch
                                 [::events/navigate [:collections-view]])

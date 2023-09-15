@@ -93,3 +93,19 @@
   height: 2px;
   background-color: rgb(0, 0, 0, 0.6);
 }
+
+#games-list-sliders-button {
+  border-top-left-radius: 50%;
+  border: 2px solid transparent;
+  /* On the left of the scrollbar height */
+  right: 20px;
+  @apply cursor-pointer w-12 h-12 pl-1 pt-1 bg-primary absolute bottom-0 inline-flex justify-center items-center;
+}
+
+#games-list-sliders-button.active {
+  @apply bg-primary-dark border-2 border-primary;
+}
+
+#games-list-sliders-button:hover:not(.active) {
+  @apply bg-primary-light;
+}

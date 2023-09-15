@@ -29,7 +29,6 @@
                      :type :password
                      :placeholder "password"
                      :path [:login-form :password]}]
-
      [:button.button
       {:on-click #(re-frame/dispatch [::login-events/sign-in email password])} "Sign in"]
      [:button.button
