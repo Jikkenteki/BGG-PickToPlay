@@ -7,8 +7,9 @@
 
 (defn fetch-collection-comp []
   (let [user @(re-frame/subscribe [::subs/user])]
-    [:div.flex.items-center.mb-1;.h-full
-     [:input.input-box.min-w-0.grow;.h-full
+    [:div.flex.flex-col.gap-2
+     [:h2 "BGG account"]
+     [:input.input-box.min-w-0.grow
       {:type "text"
        :value user
        :placeholder "Insert BGG username"
