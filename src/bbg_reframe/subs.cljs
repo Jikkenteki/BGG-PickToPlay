@@ -69,4 +69,3 @@
  ::route-path
  (fn [db _]
    (get-in db [:route :path])))
-
