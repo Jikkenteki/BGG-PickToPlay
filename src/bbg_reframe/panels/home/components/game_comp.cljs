@@ -9,7 +9,8 @@
 (defn game-comp
   [game players time]
   (let [rating (gstring/format "%.1f"  (:rating game))]
-    [:div.p-2.my-2.bg-slate-700.rounded.border-2.border-slate-300
+    [:div.p-2.my-2.bg-slate-700.rounded.cursor-pointer
+     {:class "hover:bg-slate-600"}
      (game-icon-span game players time rating)
      [:a {:on-click #(re-frame/dispatch [::events/navigate [:game-view :id (:id game)]])}
       (:name game)]]))

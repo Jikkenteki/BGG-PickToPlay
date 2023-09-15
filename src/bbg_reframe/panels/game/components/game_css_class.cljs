@@ -16,13 +16,13 @@
         difference (.abs js/Math (- time game-time))]
     (cond
       (< difference 15)
-      [:i.mr-1 {:class "fa-solid fa-clock text-green-600"}]
+      [:i.mr-2 {:class "fa-solid fa-clock text-green-600"}]
       (< difference 30)
-      [:i.mr-1 {:class (str "fa-regular fa-clock " (if (> time game-time) "text-green-400" "text-orange-400"))}]
+      [:i.mr-2 {:class (str "fa-regular fa-clock " (if (> time game-time) "text-green-400" "text-orange-400"))}]
       :else
-      [:i.mr-1 {:class (str "fa-regular fa-clock " (if (> time game-time) "text-green-900" "text-red-900"))}])))
+      [:i.mr-2 {:class (str "fa-regular fa-clock " (if (> time game-time) "text-green-900" "text-red-900"))}])))
 
 (defn game-icon-span
   [game players available-time rating]
-  [:span.mr-2 [:span {:class "mr-2 text-sm font-bold"} rating] [game-icon-players game players] [game-icon-time game available-time]] ;"B"
+  [:span [:span {:class "mr-2 text-sm font-bold"} rating] [game-icon-players game players] [game-icon-time game available-time]] ;"B"
   )

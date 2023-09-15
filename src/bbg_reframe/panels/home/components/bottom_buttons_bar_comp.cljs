@@ -8,7 +8,7 @@
 (defn bottom-buttons-bar-comp []
   (let [open-tab @(re-frame/subscribe [::subs/ui :open-tab])
         route-path @(re-frame/subscribe [::subs/route-path])]
-    [:div.flex.flex-col.justify-end.bg-stone-800.border-t-2.border-slate-600
+    [:div.flex.flex-col.justify-end.bg-stone-800
      (when open-tab [bottom-overlay-comp])
      [:div.bottom-buttons
       [button-comp {:active (= route-path :home)
