@@ -1,13 +1,13 @@
 (ns bbg-reframe.panels.login.login-panel
-  (:require
-   [re-frame.core :as re-frame]
-   [clojure.string :refer [trim]]
-   [bbg-reframe.forms.forms :refer [input-element]]
-   [bbg-reframe.forms.utils :refer [if-nil?->value]]
-   [bbg-reframe.forms.subs :as form-subs]
-   [bbg-reframe.firebase.firebase-events :as firebase-events]
-   [bbg-reframe.panels.login.login-events :as login-events]
-   [bbg-reframe.panels.login.login-subs :as login-subs]))
+  (:require [bbg-reframe.firebase.firebase-events :as firebase-events]
+            [bbg-reframe.forms.forms :refer [input-element]]
+            [bbg-reframe.forms.subs :as form-subs]
+            [bbg-reframe.forms.utils :refer [if-nil?->value]]
+            [bbg-reframe.panels.home.components.fetch-collection-comp :refer [fetch-collection-comp]]
+            [bbg-reframe.panels.login.login-events :as login-events]
+            [bbg-reframe.panels.login.login-subs :as login-subs]
+            [clojure.string :refer [trim]]
+            [re-frame.core :as re-frame]))
 
 (defn save-games
   []
@@ -17,7 +17,7 @@
   []
   (let [email @(re-frame/subscribe [::form-subs/get-value [:login-form :email]])
         password @(re-frame/subscribe [::form-subs/get-value [:login-form :password]])]
-    [:div
+    [:<>
      [:h1 "HMPWTP account"]
      [:h1 " Signed-in user email: " (if-nil?->value @(re-frame/subscribe [::login-subs/email]) "(not signed-in)")]
      [input-element {:class "input-box min-w-0 grow h-full"
@@ -47,4 +47,5 @@
   []
   [:div.max-w-xl.mx-auto.flex.flex-col.h-full.bg-stone-800.text-neutral-200
    [:h1 "Login"]
-   [login-comp]])
+   [login-comp]
+   [fetch-collection-comp]])

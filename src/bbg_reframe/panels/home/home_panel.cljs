@@ -18,14 +18,15 @@
   (let [_ (re-frame/dispatch [::network-events/update-result])
         _ @(re-frame/subscribe [::home-subs/available-games])
         players @(re-frame/subscribe [::subs/form :players])
-        time @(re-frame/subscribe [::subs/form :time-available])]
+        time @(re-frame/subscribe [::subs/form :time-available])
+        has-search-results? @(re-frame/subscribe [::subs/has-search-results?])]
     [:div.flex.flex-col.h-full
      [:h1.text-3xl.font-bold.mb-2.mt-4.px-1
       "PickToPlay"]
      [loading-games-info-comp]
      [:pre.pl-2 players " PLAYERS, TIME: " time " min"]
      [games-list-comp]
-     [search-games-results-comp (fn [id]
-                                  (re-frame/dispatch [::search-comp-events/reset-search])
-                                  (re-frame/dispatch [::events/navigate [:game-view :id id]]))]
+     (when has-search-results? [search-games-results-comp (fn [id]
+                                                            (re-frame/dispatch [::search-comp-events/reset-search])
+                                                            (re-frame/dispatch [::events/navigate [:game-view :id id]]))])
      [search-games-query-comp]]))

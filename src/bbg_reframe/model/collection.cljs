@@ -54,5 +54,4 @@
   (def ids [])
   (filter #(in? ids (:id %)) (get-collections collections))
   ;
-  (true? (some? (nil)))
-  )
+  (true? (some? (nil))))

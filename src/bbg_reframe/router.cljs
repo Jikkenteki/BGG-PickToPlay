@@ -6,19 +6,17 @@
             [re-frame.core :as re-frame]))
 
 (def routes
-  (atom
-   ["/" {""   :home
-         "fb" :fb
-         "login" :login-view
-         "collections" :collections-view
-         "game" {"" :home
-                 ["/" :id] :game-view}
-         "collection" {"" :home
-                       ["/" :id] :collection-view}}]))
+  ["/" {""   :home
+        "fb" :fb
+        "login" :login-view
+        "collections" :collections-view
+        "game" {"" :home
+                ["/" :id] :game-view}
+        "collection" {"" :home
+                      ["/" :id] :collection-view}}])
 
 (defn requires-auth?
   [route]
-  (js/console.log route)
   (contains? #{:collections-view
                :collection-view}
              (:handler route)))
@@ -27,15 +25,16 @@
   "Parse a url string and return a map with the :handler keyword according to
    the @routes table."
   [url]
-  (bidi/match-route @routes url))
+  (bidi/match-route routes url))
 
 (defn url-for
   [& args]
-  (apply bidi/path-for (into [@routes] args)))
+  (apply bidi/path-for (into [routes] args)))
 
 (defn dispatch
   [route]
   (let [panel (keyword (str (name (:handler route)) "-panel"))
+        path (:handler route)
         authenticated? (not (nil? (fb-reframe/get-current-user-uid)))
         ;; (seq @(re-frame/subscribe [::login-subs/email]))
         ]
@@ -44,8 +43,8 @@
 
     (if (and (requires-auth? route) (not authenticated?))
       (do (re-frame/dispatch [::events/navigate [:home]])
-          (re-frame/dispatch [::events/set-route {:route-params {} :panel :home-panel}]))
-      (re-frame/dispatch [::events/set-route {:route-params (:route-params route) :panel panel}]))))
+          (re-frame/dispatch [::events/set-route {:params {} :panel :home-panel :path :home}]))
+      (re-frame/dispatch [::events/set-route {:params (:params route) :panel panel :path path}]))))
 
 (defonce history
   (pushy/pushy dispatch parse))
@@ -54,6 +53,12 @@
   [handler]
   ;; (pushy/set-token! history (url-for handler))
   (pushy/set-token! history (apply url-for handler)))
+
+(defn is-route-current?
+  [route]
+  (= route
+     (:handler (bidi/match-route routes (.. js/window -location -pathname)))))
+
 
 (defn start!
   []
@@ -98,6 +103,7 @@
   (def route (parse "/game/1"))
   (keyword (str (name (:handler route)) "-panel")) ;; :home-panel
 
+  (:handler (bidi/match-route routes (.. js/window -location -pathname)))
 
   (navigate! [:home])
 
@@ -117,7 +123,11 @@
 
   (keyword (str (name (:handler route)) "-panel"))
 
+  (is-route-current? :login-view)
 
   (dispatch route)
   ;
   )
+
+
+

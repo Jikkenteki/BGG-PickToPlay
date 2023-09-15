@@ -1,6 +1,5 @@
 (ns bbg-reframe.subs
-  (:require
-   [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  ::db
@@ -48,6 +47,11 @@
  (fn [db [_ id]]
    (get-in db [:ui id])))
 
+(re-frame/reg-sub
+ ::has-search-results?
+ (fn [db _]
+   (> (count (get-in db [:search :search-results])) 0)))
+
 
 ;; routing
 
@@ -59,5 +63,10 @@
 (re-frame/reg-sub
  ::route-params
  (fn [db _]
-   (get-in db [:route :route-params])))
+   (get-in db [:route :params])))
+
+(re-frame/reg-sub
+ ::route-path
+ (fn [db _]
+   (get-in db [:route :path])))
 

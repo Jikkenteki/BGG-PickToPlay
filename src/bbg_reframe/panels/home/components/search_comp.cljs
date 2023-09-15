@@ -16,7 +16,8 @@
 (defn search-games-results-comp
   [on-click-handle-game-id]
   (let [search-results @(re-frame/subscribe [::subs/games-search-results])]
-    [:div.overflow-auto.grow.px-3
+    [:div.overflow-auto.shrink-0.min-h-fit.px-3.py-2.bg-slate-700
+     {:class "max-h-[40%]"}
      [:ul
       (map
        (fn [game]
