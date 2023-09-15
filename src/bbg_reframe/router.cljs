@@ -10,10 +10,10 @@
         "fb" :fb
         "login" :login-view
         "collections" :collections-view
-        "game" {"" :home
-                ["/" :id] :game-view}
-        "collection" {"" :home
-                      ["/" :id] :collection-view}}])
+        "game/" {"" :home
+                 [:id ""] :game-view}
+        "collection/" {"" :home
+                       [:id ""] :collection-view}}])
 
 (defn requires-auth?
   [route]
@@ -23,7 +23,7 @@
 
 (defn parse
   "Parse a url string and return a map with the :handler keyword according to
-   the @routes table."
+   the routes table."
   [url]
   (bidi/match-route routes url))
 
@@ -35,6 +35,7 @@
   [route]
   (let [panel (keyword (str (name (:handler route)) "-panel"))
         path (:handler route)
+        params (:route-params route)
         authenticated? (not (nil? (fb-reframe/get-current-user-uid)))
         ;; (seq @(re-frame/subscribe [::login-subs/email]))
         ]
@@ -44,7 +45,7 @@
     (if (and (requires-auth? route) (not authenticated?))
       (do (re-frame/dispatch [::events/navigate [:home]])
           (re-frame/dispatch [::events/set-route {:params {} :panel :home-panel :path :home}]))
-      (re-frame/dispatch [::events/set-route {:params (:params route) :panel panel :path path}]))))
+      (re-frame/dispatch [::events/set-route {:params params :panel panel :path path}]))))
 
 (defonce history
   (pushy/pushy dispatch parse))
@@ -73,10 +74,10 @@
   (parse "/")
   (dispatch (parse "/"))
   ;
-  (parse "/game/10")
+  (parse "/game/28720")
   (url-for :collections-view)
   (url-for :collection-view :id 3)
-  (apply url-for [:gameview :id 10])
+  (apply url-for [:game-view :id 10])
 
   (parse "/")
   (url-for :home)
@@ -86,6 +87,12 @@
   history
   (def handler [:home])
   (apply url-for handler)
+
+  (bidi/match-route routes "/")
+  (bidi/match-route routes "/game")
+  (bidi/match-route routes "/game/123")
+
+
 
   (def handler [:game-view :id 10])
   handler
@@ -108,7 +115,7 @@
   (navigate! [:home])
 
   (navigate! [:fb])
-  (navigate! [:game-view :id "102680"])
+  (navigate! [:game-view :id "28720"])
   (navigate! [:collection-view :id "1"])
   (navigate! [:collections-view])
 
