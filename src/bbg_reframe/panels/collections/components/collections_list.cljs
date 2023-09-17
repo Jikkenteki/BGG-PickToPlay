@@ -9,8 +9,9 @@
     [:div.mt-3
      (map (fn [collection]
             ^{:key (:id collection)}
-            [:div.p-2.my-3.bg-slate-700.rounded.border-2.border-dashed.border-slate-300.cursor-pointer
-             {:on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
+            [:div.p-2.my-3.bg-slate-700.rounded.cursor-pointer
+             {:class "hover:bg-slate-600"
+              :on-click #(re-frame/dispatch [::events/navigate [:collection-view :id (:id collection)]])}
              [:p
               (:name collection)]])
           collections)]))

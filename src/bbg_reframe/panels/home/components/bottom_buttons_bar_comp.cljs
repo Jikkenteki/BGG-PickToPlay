@@ -1,15 +1,12 @@
 (ns bbg-reframe.panels.home.components.bottom-buttons-bar-comp
   (:require [bbg-reframe.components.button-comp :refer [button-comp]]
             [bbg-reframe.events :as events]
-            [bbg-reframe.panels.home.components.bottom-overlay-comp :refer [bottom-overlay-comp]]
             [bbg-reframe.subs :as subs]
             [re-frame.core :as re-frame]))
 
 (defn bottom-buttons-bar-comp []
-  (let [open-tab @(re-frame/subscribe [::subs/ui :open-tab])
-        route-path @(re-frame/subscribe [::subs/route-path])]
+  (let [route-path @(re-frame/subscribe [::subs/route-path])]
     [:div.flex.flex-col.justify-end.bg-stone-800
-     (when open-tab [bottom-overlay-comp])
      [:div.bottom-buttons
       [button-comp {:active (= route-path :home)
                     :on-click #(re-frame/dispatch

@@ -25,40 +25,40 @@
                    [:collection-form :edit-collection])
         component-state (reagent/atom {:collection-renaming? false
                                        :games-searching? false})]
-    (fn [] [:div.flex.flex-col.gap-2.p-3.h-full
-            [:div.flex.justify-between.items-center.gap-2.pb-2.border-b-2.border-b-slate-600
-             (if (get @component-state :collection-renaming?)
-               [:div.flex.gap-2.min-w-0
-                [input-element {:class "bg-transparent text-2xl font-semibold outline-none min-w-0"
-                                :type :text
-                                :placeholder "Collection name"
-                                :path (into form-path [:new-name])}]
-                [:button.button {:on-click #(do (re-frame/dispatch
-                                                 [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])
-                                                (reset! component-state {:collection-renaming? false}))}
-                 [:i.fa-solid.fa-check]]]
-               [:h1
-                [:i.mr-1.font-normal.fa.fa-sm.fa-object-group] (:name @collection)])
+    [:div.flex.flex-col.gap-2.p-3.h-full
+     [:div.flex.justify-between.items-center.gap-2.pb-2
+      (if (get @component-state :collection-renaming?)
+        [:div.flex.gap-2.min-w-0
+         [input-element {:class "bg-transparent text-2xl font-semibold outline-none min-w-0"
+                         :type :text
+                         :placeholder "Collection name"
+                         :path (into form-path [:new-name])}]
+         [:button.button {:on-click #(do (re-frame/dispatch
+                                          [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])
+                                         (reset! component-state {:collection-renaming? false}))}
+          [:i.fa-solid.fa-check]]]
+        [:h1
+         [:i.mr-1.font-normal.fa.fa-sm.fa-object-group] (:name @collection)])
 
-             [:div.flex.gap-2
-              [:button.button.text-slate-950.bg-orange-400 {:on-click
-                                                            #(re-frame/dispatch
-                                                              [::collections-events/delete-collection (keyword id)])}
-               "Delete"]
-              [:button.button {:on-click #(reset! component-state {:collection-renaming? true})}
-               "Rename"]]]
+      [:div.flex.gap-2
+       [:button.button.text-slate-950.bg-orange-400 {:on-click
+                                                     #(re-frame/dispatch
+                                                       [::collections-events/delete-collection (keyword id)])}
+        "Delete"]
+       [:button.button {:on-click #(reset! component-state {:collection-renaming? true})}
+        "Rename"]]]
 
-            [:div.flex.justify-between.items-center
-             [:h2 "Games in collection"]
-             [:button.button {:on-click #(swap! component-state update-in [:games-searching?] not)}
-              "Add Game to collection"]]
+     [:div.flex.justify-between.items-center
+      [:h2 "Games in collection"]
+      [:button.button {:on-click #(swap! component-state update-in [:games-searching?] not)}
+       "Add Game to collection"]]
 
-            [:div.flex-1.overflow-auto.relative
-             (when (get @component-state :games-searching?)
-               [:div.absolute.flex.flex-col.h-full.w-full
-                [search-games-query-comp]
-                [search-games-results-comp (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]])
-             (map #(game-in-collection id %) @collection-games)]])))
+     [:div.flex-1.overflow-auto.relative
+      (when (get @component-state :games-searching?)
+        [:div.absolute.flex.flex-col.h-full.w-full
+         [search-games-query-comp]
+         [search-games-results-comp (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]])
+      (map #(game-in-collection id %) @collection-games)]]))
 
 
 (comment
