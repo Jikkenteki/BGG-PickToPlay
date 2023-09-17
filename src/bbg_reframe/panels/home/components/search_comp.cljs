@@ -6,12 +6,20 @@
 
 (defn search-games-query-comp
   []
-  (let [substring (re-frame/subscribe [::subs/game-substring-query])]
-    [:input.input-box.min-w-0
-     {:type "text"
-      :value @substring
-      :placeholder "Search games (type at least two characters)"
-      :on-change #(re-frame/dispatch [::search-comp-events/search-game-name-with-substring (-> % .-target .-value)])}]))
+  (let [substring @(re-frame/subscribe [::subs/game-substring-query])]
+    [:div.p-2
+     [:div.flex.relative
+      [:input.input-box.grow
+       {:type "text"
+        :value substring
+        :placeholder "Search games (type at least two characters)"
+        :on-change #(re-frame/dispatch [::search-comp-events/search-game-name-with-substring (-> % .-target .-value)])}]
+      (when (not (nil? substring))
+        [:button.absolute.right-4.bottom-0.top-0.text-slate-400.px-3
+         {:class "hover:text-slate-200"
+          :on-click #(re-frame/dispatch
+                      [::search-comp-events/reset-search])}
+         [:i.fa-solid.fa-times.fa-xl]])]]))
 
 (defn search-games-results-comp
   []

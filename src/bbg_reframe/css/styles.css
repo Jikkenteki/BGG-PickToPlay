@@ -80,7 +80,7 @@
 
 .input-box {
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
-  @apply mt-2 mx-2 p-2 outline-none bg-slate-700;
+  @apply p-2 outline-none bg-slate-700;
 }
 
 .error-box {
@@ -95,11 +95,14 @@
 }
 
 #games-list-sliders-button {
-  border-top-left-radius: 50%;
+  /* border-top-left-radius: 50%; */
+  border-radius: 100%;
   border: 2px solid transparent;
   /* On the left of the scrollbar height */
-  right: 20px;
-  @apply cursor-pointer w-12 h-12 pl-1 pt-1 bg-primary absolute bottom-0 inline-flex justify-center items-center;
+  right: 30px;
+  bottom: 10px;
+  @apply cursor-pointer w-12 h-12 bg-primary absolute
+    inline-flex justify-center items-center;
 }
 
 #games-list-sliders-button.active {
