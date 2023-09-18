@@ -47,9 +47,10 @@
 
 (defmulti input-element (fn [{:keys [type]}] type))
 
-(defmethod input-element :default [{:keys [type path post-fn class placeholder]}]
+(defmethod input-element :default [{:keys [type path post-fn class placeholder auto-focus?]}]
   (let [post-fn (if-nil?->value post-fn identity)]
-    [:input {:class class
+    [:input {:auto-focus auto-focus?
+             :class class
              :type (name type) :value @(db-get-ref path)
              :placeholder placeholder
              :on-change #(dispatch type path (post-fn (-> % .-target .-value)))}]))
