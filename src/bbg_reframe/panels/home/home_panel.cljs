@@ -28,6 +28,8 @@
      [games-list-comp]
      (when has-search-results?
        [search-games-results-comp
+        false
+        false
         (fn [id]
           (re-frame/dispatch [::search-comp-events/reset-search])
           (re-frame/dispatch [::events/navigate [:game-view :id id]]))])

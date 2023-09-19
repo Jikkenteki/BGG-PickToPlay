@@ -1,5 +1,6 @@
 (ns bbg-reframe.panels.home.components.search-comp
-  (:require [bbg-reframe.panels.home.components.game-comp-with-info :refer [game-comp-with-info]]
+  (:require [bbg-reframe.panels.home.components.game-comp :refer [game-comp]]
+            [bbg-reframe.panels.home.components.game-comp-with-info :refer [game-comp-with-info]]
             [bbg-reframe.panels.home.components.search-comp-events :as search-comp-events]
             [bbg-reframe.panels.home.components.search-comp-subs :as subs]
             [re-frame.core :as re-frame]))
@@ -10,7 +11,8 @@
     [:div.p-2
      [:div.flex.relative
       [:input.input-box.grow
-       {:type "text"
+       {:auto-focus true
+        :type "text"
         :value substring
         :placeholder "Search games (type at least two characters)"
         :on-change #(re-frame/dispatch [::search-comp-events/search-game-name-with-substring (-> % .-target .-value)])}]
@@ -22,13 +24,14 @@
          [:i.fa-solid.fa-times.fa-xl]])]]))
 
 (defn search-games-results-comp
-  []
-  (let [search-results @(re-frame/subscribe [::subs/games-search-results])]
-    [:div.overflow-auto.shrink-0.min-h-fit.px-2
-     {:class "max-h-[40%]"}
+  [full-height? with-simple-game-comp? on-click]
+  (let [search-results @(re-frame/subscribe [::subs/games-search-results])
+        game-comp-to-use (if with-simple-game-comp? game-comp game-comp-with-info)]
+    [:div.overflow-auto.min-h-fit.px-2
+     {:class (if full-height? "max-h-full" "max-h-[40%] shrink-0")}
      [:ul
       (map
        (fn [game]
          ^{:key (:id game)}
-         [game-comp-with-info game])
+         [game-comp-to-use game on-click])
        search-results)]]))

@@ -29,13 +29,16 @@
    [(re-frame/subscribe [::collection collection-id])
     (re-frame/subscribe [::subs/games])])
  (fn [[collection games] [_ _]]
-   (map
-    (fn [game-id] (let [game (get games (name game-id))] 
-                    (println "GAME in collection" )
-                    (if (nil? (:name game))
-                      {:name "GAME NOT FETCHED YET" :id game-id}
-                      game)))
-    (keys (:games collection)))))
+   (let [game-keys (keys (:games collection))]
+     (when (sequential? game-keys)
+       (map
+        (fn [game-id]
+          (let [game (get games (name game-id))]
+            (println "GAME in collection")
+            (if (nil? (:name game))
+              {:name "GAME NOT FETCHED YET" :id game-id}
+              game)))
+        (filter (comp not nil?) game-keys))))))
 
 
 (re-frame/reg-sub

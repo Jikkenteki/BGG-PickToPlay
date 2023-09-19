@@ -10,9 +10,6 @@
             [re-frame.core :as re-frame]
             [reagent.core :as r]))
 
-(def state (r/atom {:collection-renaming? false
-                    :games-searching? false}))
-
 (defn collection-view-panel
   []
   (let [_ (re-frame/dispatch [::search-comp-events/reset-search])
@@ -22,45 +19,59 @@
         collection-games (re-frame/subscribe [::collection-subs/collection-games (name id)])
         form-path (bind-form-to-value!
                    {:new-name (:name @collection)}
-                   [:collection-form :edit-collection])]
-    [:div.flex.flex-col.gap-2.p-3.h-full
-     [:div.flex.justify-between.items-center.gap-2.pb-2
-      (if (:collection-renaming? @state)
-        [:div.flex.gap-2.min-w-0
-         [input-element {:class "input-box"
-                         :type :text
-                         :placeholder "Collection name"
-                         :path (into form-path [:new-name])
-                         :auto-focus? true}]
-         [:button.button {:on-click #(do (re-frame/dispatch
-                                          [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])
-                                         (reset! state {:collection-renaming? false}))}
-          [:i.fa-solid.fa-check]]]
-        [:h1
-         [:i.mr-1.font-normal.fa.fa-sm.fa-object-group] (:name @collection)])
+                   [:collection-form :edit-collection])
+        state (r/atom {:collection-renaming? false
+                       :games-searching? false})]
+    (println id)
+    (fn []
+      [:div.flex.flex-col.gap-2.p-3.h-full
+       (if (:collection-renaming? @state)
+         [:div.flex.gap-2.min-w-0
+          [input-element {:class "input-box text-2xl font-semibold"
+                          :type :text
+                          :placeholder "Collection name"
+                          :path (into form-path [:new-name])
+                          :auto-focus? true}]
+          [:button.button.h-full {:on-click #(do (re-frame/dispatch
+                                                  [::collections-events/edit-collection-name [(keyword id) (into form-path [:new-name])]])
+                                                 (reset! state {:collection-renaming? false}))}
+           [:i.fa-solid.fa-check]]]
+         [:h1.cursor-default.py-2
+          [:i.mr-1.font-normal.fa.fa-sm.fa-object-group] (:name @collection)])
 
-      [:div.flex.gap-2
-       [:button.button.text-slate-950.bg-orange-400 {:on-click
-                                                     #(re-frame/dispatch
-                                                       [::collections-events/delete-collection (keyword id)])}
-        "Delete"]
-       [:button.button {:on-click
-                        #(swap! state assoc-in
-                                [:collection-renaming?]
-                                (not (:collection-renaming? @state)))}
-        (if (:collection-renaming? @state) "Cancel rename" "Rename")]]]
+       [:div.flex.justify-between.items-center.gap-2.pb-2
+        [:div.flex.gap-2
+         [:button.button.bg-slate-500
+          {:class "hover:!bg-slate-400"
+           :on-click
+           #(re-frame/dispatch
+             [::collections-events/delete-collection (keyword id)])}
+          "Delete"]
+         [:button.button {:class (when
+                                  (:collection-renaming? @state) "bg-primary-dark  hover:!bg-primary-dark")
+                          :on-click
+                          #(swap! state assoc-in
+                                  [:collection-renaming?]
+                                  (not (:collection-renaming? @state)))}
+          (if (:collection-renaming? @state) "Cancel rename" "Rename")]]]
 
-     [:div.flex.justify-between.items-center
-      [:h2 "Games in collection"]
-      [:button.button {:on-click #(swap! state update-in [:games-searching?] not)}
-       "Add Game to collection"]]
+       [:div.flex.justify-between.items-center
+        [:h2 "Games in collection"]
+        [:button.button {:class (when (:games-searching? @state) "active")
+                         :on-click #(swap! state update-in [:games-searching?] not)}
+         "Add Game to collection"]]
 
-     [:div.flex-1.overflow-auto.relative
-      (when (get @state :games-searching?)
-        [:div.absolute.flex.flex-col.h-full.w-full
-         [search-games-query-comp]
-         [search-games-results-comp (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]])
-      (map #(game-in-collection id %) @collection-games)]]))
+       [:div.flex-1.overflow-auto.relative
+        (when (:games-searching? @state)
+          [:div.absolute.flex.flex-col.w-full.bg-stone-750.rounded-xl.py-1.shadow-2xl
+           {:class "h-1/2 top-1/4"}
+           [search-games-query-comp]
+           [search-games-results-comp
+            true
+            true
+            (fn [game-id] (re-frame/dispatch [::collections-events/add-game-to-collection [(keyword id) game-id]]))]])
+        (map #(game-in-collection id %) @collection-games)]])))
+
 
 
 (comment

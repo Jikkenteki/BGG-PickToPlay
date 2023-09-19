@@ -14,7 +14,7 @@
        [:div.absolute.inset-0
         {:class "bg-black/50"}])
      (when (= open-tab :sliders-tab)
-       [:div.absolute.bg-stone-800.bottom-20.left-8.right-8.p-4.rounded-lg.shadow-2xl
+       [:div.absolute.bg-stone-750.bottom-20.left-8.right-8.p-4.rounded-lg.shadow-2xl
         [sliders-comp]])
      [:div
       {:id "games-list-sliders-button"

@@ -11,6 +11,9 @@ module.exports = {
           DEFAULT: "#833f2f",
           dark: "#582a1f",
         },
+        stone: {
+          750: "#312c2b",
+        },
       },
     },
   },
