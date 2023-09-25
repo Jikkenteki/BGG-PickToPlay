@@ -32,7 +32,7 @@
 (s/def ::ui (s/keys :req-un [::open-tab]))
 (s/def ::queue (s/coll-of ::id))
 (s/def ::fetching (s/coll-of ::id))
-(s/def ::network (s/keys :req-un [::cors-running ::fetches]))
+(s/def ::network (s/keys :req-un [::cors-running ::fetches ::queue ::fetching]))
 
 (comment
   #{}
@@ -48,8 +48,6 @@
           [::result
            ::form
            ::games
-           ::queue
-           ::fetching
            ::bg-loading
            ::error
            ::network

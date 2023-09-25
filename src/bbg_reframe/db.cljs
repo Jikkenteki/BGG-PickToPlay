@@ -12,11 +12,11 @@
           :only-available? false}
    :games {}
    :collections []
-   :queue #{}
-   :fetching #{}
-
    :bg-loading false
    :error nil
-   :network {:cors-running false :fetches 0}
+   :network {:cors-running false
+             :fetches 0
+             :queue #{}
+             :fetching #{}}
    :user nil
    :ui {:open-tab nil}})

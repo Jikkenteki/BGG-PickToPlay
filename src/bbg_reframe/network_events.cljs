@@ -38,6 +38,8 @@
 ;; 
 (def cors-running-path [:network :cors-running])
 (def fetches-path [:network :fetches])
+(def queue-path [:network :queue])
+(def fetching-path [:network :fetching])
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::cors-check                      ;; usage:  (dispatch [:handler-with-http])
@@ -179,22 +181,18 @@
  [check-spec-interceptor]
  (fn-traced [{:keys [db]} [_ response]]
             (console :debug "FAILURE: " response)
-            (merge (cond
-                     (= 0 (:status response))
-                     {:db  (-> db
-                               (assoc-in cors-running-path false)
-                               (assoc
-                                :queue #{}
-                                :fetching #{}
-                                :loading false))}
-                     :else
-                     {:db (assoc db
-                                 :queue #{}
-                                 :fetching #{}
-                                 :loading false)})
-                   {:dispatch [::set-error (if (= 0 (:status response))
-                                             "CORS server is not responding"
-                                             (:status-text response))]})))
+            {:db  (-> db
+                      ((fn [db]
+                         (if (= 0 (:status response))
+                           (assoc-in db cors-running-path false)
+                           db)))
+                      (assoc-in queue-path #{})
+                      (assoc-in fetching-path #{})
+                      (assoc :loading false))
+             :dispatch [::set-error (if (= 0 (:status response))
+                                      "CORS server is not responding"
+                                      (:status-text response))]}))
+
 ;;
 ;; Update form result
 ;;
@@ -246,14 +244,17 @@
 (re-frame/reg-event-fx
  ::update-queue
  [check-spec-interceptor]
- (fn-traced [{:keys [db] {:keys [queue fetching games]} :db} [_ results]]
-            (let [new-to-fetch (new-to-fetch results games queue fetching)]
-              {:db (assoc db
-                          :queue (reduce #(conj %1 %2) queue
+ (fn-traced [{:keys [db] {:keys [games]} :db} [_ results]]
+            (let [queue (get-in db queue-path)
+                  fetching (get-in db fetching-path)
+                  new-to-fetch (new-to-fetch results games queue fetching)]
+              {:db (assoc-in db
+                             queue-path
+                             (reduce #(conj %1 %2) queue
                                 ;; do not queue all ids; just the first one
                                 ;; the rest might not be needed
                                 ;; especially if the results change rapidly
-                                         (if (first new-to-fetch) [(first new-to-fetch)] [])))
+                                     (if (first new-to-fetch) [(first new-to-fetch)] [])))
                :dispatch [::fetch-next-from-queue]})))
 
 
@@ -261,10 +262,12 @@
 ;; Handler for dispatching the fetch for the next game
 ;; either from the queue or from the rest of the unfetched games
 ;;
-(defn-traced fetch-next-from-queue-handler [{:keys [db] {:keys [queue fetching games]} :db} _]
-  (if (and (empty? queue) (seq fetching)) ;; non-empty fetching
+(defn-traced fetch-next-from-queue-handler [{:keys [db] {:keys [games]} :db} _]
+  (let [queue (get-in db queue-path)
+        fetching (get-in db fetching-path)]
+    (if (and (empty? queue) (seq fetching)) ;; non-empty fetching
     ;; nothing to do; there are still games being fetched
-    {}
+      {}
     ;; else
     ;;   queue is not empty
     ;;   or
@@ -274,42 +277,41 @@
     ;;   queue not empty ; fetching not empty
     ;;   queue not empty ; fetching empty
     ;;   queue empty     ; fetching empty
-    (let [fetch-now (if (empty? queue)
-                      (first
+      (let [fetch-now (if (empty? queue)
+                        (first
                       ;;  (remove 
                       ;;         (fn [id] ((union 
                       ;;                    (fetched-games-ids games) 
                       ;;                    queue 
                       ;;                    fetching) id)) 
                       ;;         (keys games)) 
-                       (new-to-fetch (keys games) games queue fetching)
+                         (new-to-fetch (keys games) games queue fetching)
                       ;;  (->> (keys games)
                       ;;             (remove #((fetched-games-ids games) %))
                       ;;             (remove #(queue %))
                       ;;             (remove #(fetching %)))
 ) ;; will be nil if all fetched
-                      (first queue)) ;; if fetching not empty, queue is not empty
+                        (first queue)) ;; if fetching not empty, queue is not empty
 
-          new-fetching (if fetch-now
-                         (conj fetching fetch-now)
-                         fetching)]
-      (when fetch-now
-        (console :debug
-                 (if (and (empty? queue) (empty? fetching))
-                   "New to fetch (background): "
-                   "fetch-next-from-queue: fetching ")
-                 fetch-now))
-      (merge
-       {:db (assoc db
-                   :queue (disj queue fetch-now)
-                   :fetching new-fetching
-                  ;;  :loading (> (+ (count queue) (count fetching)) 0)
-                   :loading (> (count queue) 0))}
-       (if fetch-now
-         {:dispatch-later
-          {:ms (* (inc (count fetching)) delay-between-fetches)
-           :dispatch [::fetch-game fetch-now]}}
-         {})))))
+            new-fetching (if fetch-now
+                           (conj fetching fetch-now)
+                           fetching)]
+        (when fetch-now
+          (console :debug
+                   (if (and (empty? queue) (empty? fetching))
+                     "New to fetch (background): "
+                     "fetch-next-from-queue: fetching ")
+                   fetch-now))
+        (merge
+         {:db (-> db
+                  (assoc-in queue-path (disj queue fetch-now))
+                  (assoc-in fetching-path new-fetching)
+                  (assoc :loading (> (count queue) 0)))}
+         (if fetch-now
+           {:dispatch-later
+            {:ms (* (inc (count fetching)) delay-between-fetches)
+             :dispatch [::fetch-game fetch-now]}}
+           {}))))))
 
 (re-frame/reg-event-fx
  ::fetch-next-from-queue
@@ -350,15 +352,17 @@
 ;; Handler for successfully fetched game
 ;;
 (defn fetched-game-handler
-  [{:keys [db] {:keys [fetching queue]} :db} game-id game-votes game-type game-weight]
-  (let [_  (console :debug "SUCCESS" game-id)]
+  [{:keys [db]} game-id game-votes game-type game-weight]
+  (let [queue (get-in db queue-path)
+        fetching (get-in db fetching-path)
+        _  (console :debug "SUCCESS" game-id)]
     {:db (-> db
              (assoc-in [:games game-id :votes] game-votes)
              (assoc-in [:games game-id :type] game-type)
              (assoc-in [:games game-id :weight] game-weight)
              (update-in fetches-path inc)
-             (assoc :error nil
-                    :fetching (disj fetching game-id)))
+             (assoc-in fetching-path (disj fetching game-id))
+             (assoc :error nil))
      :fx (if (empty? queue)
            [[:dispatch [::update-result]]]
            [[:dispatch [::fetch-next-from-queue]]])}))
@@ -393,9 +397,9 @@
   (cond (= 0 (:status response))
         {:db (-> db
                  (assoc-in cors-running-path false)
+                 (assoc-in queue-path  #{})
+                 (assoc-in fetching-path #{})
                  (assoc
-                  :queue #{}
-                  :fetching #{}
                   :error "CORS server is not responding"
                   :loading false))}
         (#{500 503 429} (:status response))
@@ -410,18 +414,20 @@
            :dispatch-later {:ms 3000
                             :dispatch [::fetch-game game-id]}})
         (= 404 (:status response))
-        {:db (assoc db
-                    :queue #{}
-                    :fetching #{}
-                    :error (str "Game not found or bad address!")
-                    :loading false)
+        {:db (-> db
+                 (assoc-in queue-path  #{})
+                 (assoc-in fetching-path #{})
+                 (assoc
+                  :error (str "Game not found or bad address!")
+                  :loading false))
          :dispatch [::fetch-next-from-queue]}
         :else
-        {:db (assoc db
-                    :queue #{}
-                    :fetching #{}
-                    :error "Problem with BGG??"
-                    :loading false)
+        {:db (-> db
+                 (assoc-in queue-path  #{})
+                 (assoc-in fetching-path #{})
+                 (assoc
+                  :error "Problem with BGG??"
+                  :loading false))
          :dispatch [::fetch-next-from-queue]})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
