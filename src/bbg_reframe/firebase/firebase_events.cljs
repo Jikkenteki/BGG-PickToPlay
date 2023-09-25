@@ -35,15 +35,15 @@
 
 (re-frame/reg-event-fx
  ::fb-set-successful
-  [->fb-collections->local-store]
-(fn-traced [_ [_ path data]]
-           (println "fb-set successful" path data)))
+ [->fb-collections->local-store]
+ (fn-traced [_ [_ path data]]
+            (println "fb-set successful" path data)))
 
 ;; adds a new key-data pair under the path. The key is sored in key-path in db
 ;; note normally a :success and :error events are expected
 (re-frame/reg-event-fx
  ::fb-push
- (fn-traced [_ [_ {:keys [path data key-path success]}]]
+ (fn-traced [_ [_ {:keys [path data key-path]}]]
             {::fb-reframe/firebase-push {:path (into ["users" (fb-reframe/get-current-user-uid)] path)
                                          :data data
                                          :success #(println (str "Successfully pushed: " data %))
@@ -73,11 +73,10 @@
   (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "games" 123] :data true}])
   (re-frame/dispatch [::fb-set {:path ["collections" "new collection" "games" 123] :data nil}])
 
-(fb-reframe/get-current-user-uid)
+  (fb-reframe/get-current-user-uid)
   (re-frame/dispatch [::fb-set {:path ["collections" "-NTOQH19rgxRLU4GVB0O"] :data nil}])
-  (re-frame/dispatch [::fb-set {:path ["users" 
-                                       (fb-reframe/get-current-user-uid) 
-                                       ] :data nil}])
+  (re-frame/dispatch [::fb-set {:path ["users"
+                                       (fb-reframe/get-current-user-uid)] :data nil}])
 
   (re-frame/dispatch [::fb-push {:path ["collections"]
                                  :data {:name "aaa" :games {"123" true}}

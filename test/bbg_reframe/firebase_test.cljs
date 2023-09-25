@@ -53,41 +53,12 @@
        (rf-test/wait-for [::login-events/sign-in-success]
                          (is (= email (fb-reframe/get-current-user-email))))))))
 
-;; (deftest test-new-collection
-;;   (testing "new collection"
-;;     (rf-test/run-test-async
-;;      (let [db (re-frame/subscribe [::subs/db])
-;;            email "dranidis@gmail.com"
-;;            _ (connect-fb-emulator-empty-db)
-;;            _ (re-frame/dispatch-sync [::events/initialize-db])
-;;            _ (re-frame/dispatch [::login-events/sign-in email "password"])]
-;;        (rf-test/wait-for
-;;         [::login-events/sign-in-success]
-;;         (let [;; this is performed by the UI
-;;               name "ac"
-;;               _ (db-set-value! [:form :create-collection :new-collection] name)
-;;               ;; the ui dispatches
-;;               _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
-;;           (rf-test/wait-for
-;;            [::collections-events/saved-collection]
-;;            (println (str "COLL " (:collections @db)))
-;;           ;;  (is (in? (get-collection-names (:collections @db)) name))
-;;            (is (nil? (:error @db)))
-;;            (is (= (get-in @db [:form :create-collection]) {}))
-;;            (let [_ (db-set-value! [:form :create-collection :new-collection] name)
-;;               ;; the ui dispatches
-;;                  _ (re-frame/dispatch [::collections-events/new-collection [:form :create-collection]])]
-;;              (rf-test/wait-for
-;;               [::network-events/set-error]
-;;               (println (str "COLL " (:collections @db)))
-;;               (println (:error @db))
-;;               (is (not (nil? (:error @db)))))))))))))
 
 (comment
   (re-frame/dispatch [::login-events/sign-in "dranidis@gmail.com" "password"])
 
 
-1
+  1
 
   (run-tests)
 

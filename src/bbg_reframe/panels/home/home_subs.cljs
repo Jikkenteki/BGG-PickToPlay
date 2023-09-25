@@ -1,4 +1,4 @@
-(ns bbg-reframe.panels.home.home-subs 
+(ns bbg-reframe.panels.home.home-subs
   (:require [bbg-reframe.panels.home.home-events :as home-events]
             [bbg-reframe.panels.game.game-subs :as game-subs]
             [re-frame.core :as re-frame]))
@@ -11,7 +11,3 @@
      (re-frame/dispatch [::home-events/make-available games]))
    games))
 
-(re-frame/reg-sub
- ::only-collection-ids
- (fn [db [_ _]]
-   (get-in db [:form :only-collection-ids])))

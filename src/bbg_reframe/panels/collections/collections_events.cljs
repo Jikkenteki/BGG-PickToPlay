@@ -113,12 +113,6 @@
       (assoc-in form-path {}) ;; clear the input form
       (assoc-in [:collections (get-new-collection-key db)] data))))
 
-(re-frame/reg-event-db
- ::saved-collection
- (fn-traced [_ [_ name]]
-            (println (str "Successfully pushed a collection in fb:" name))))
-
-
 (re-frame/reg-event-fx
  ::add-game-to-collection
  (fn-traced
@@ -139,11 +133,11 @@
 (comment
 
   ;; STUB an event handler
-   (re-frame/reg-event-fx
-    :bbg-reframe.firebase.firebase-events/fb-set
-    (fn-traced [_ [_ {:keys [path data]}]]
-               (println "STUB 2")
-               {:dispatch [:bbg-reframe.firebase.firebase-events/fb-set-successful path data]}))
+  (re-frame/reg-event-fx
+   :bbg-reframe.firebase.firebase-events/fb-set
+   (fn-traced [_ [_ {:keys [path data]}]]
+              (println "STUB 2")
+              {:dispatch [:bbg-reframe.firebase.firebase-events/fb-set-successful path data]}))
 
 
   ;; this is performed by the UI
