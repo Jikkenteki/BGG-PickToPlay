@@ -1,9 +1,9 @@
 (ns bbg-reframe.network-events-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
+  (:require [bbg-reframe.config :refer [delay-between-fetches]]
             [bbg-reframe.network-events
-             :refer [fetch-next-from-queue-handler
-                     fetched-games-ids fetched-game-handler]]
-            [bbg-reframe.config :refer [delay-between-fetches]]))
+             :refer [fetch-next-from-queue-handler fetched-game-handler
+                     fetched-games-ids]]
+            [cljs.test :refer-macros [deftest testing is]]))
 
 ;;
 ;; fetch-next-from-queue-handler
@@ -24,7 +24,7 @@
                         :fetching #{}}
               :game {}}}
         response (fetch-next-from-queue-handler cofx nil)]
-    (is (= true (get-in response [:db :loading])))
+    (is (= true (get-in response [:db :network :loading])))
     (is (= #{} (get-in response [:db :network :queue])))
     (is (= #{"1"} (get-in response [:db :network :fetching])))
     (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "1"]
@@ -39,7 +39,7 @@
                       "1" {:id "1" :votes nil} ;; non fetched will be fetched
                       "2" {:id "2" :votes {}}}}}
         response (fetch-next-from-queue-handler cofx nil)]
-    (is (= false (get-in response [:db :loading])))
+    (is (= false (get-in response [:db :network :loading])))
     (is (= #{"1"} (get-in response [:db :network :fetching])))
     (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "1"]
             :ms delay-between-fetches} (get response :dispatch-later)))))
@@ -53,7 +53,7 @@
                       "1" {:id "1" :votes nil}
                       "2" {:id "2" :votes nil}}}}
         response (fetch-next-from-queue-handler cofx nil)]
-    (is (= true (get-in response [:db :loading])))
+    (is (= true (get-in response [:db :network :loading])))
     (is (= #{"1" "2"} (get-in response [:db :network :fetching])))
     (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "1"]
             :ms (* 2 delay-between-fetches)} (get response :dispatch-later)))))
@@ -69,7 +69,7 @@
                       "3" {:votes nil}
                       "4" {:votes nil}}}}
         response (fetch-next-from-queue-handler cofx nil)]
-    (is (= true (get-in response [:db :loading])))
+    (is (= true (get-in response [:db :network :loading])))
     (is (= #{"1" "4"} (get-in response [:db :network :queue])))
     (is (= #{"3" "2"} (get-in response [:db :network :fetching])))
     (is (= {:dispatch [:bbg-reframe.network-events/fetch-game "3"]
@@ -86,7 +86,7 @@
                       "3" {:id "3" :votes {}}
                       "4" {:id "4" :votes {}}}}}
         response (fetch-next-from-queue-handler cofx nil)]
-    (is (= false (get-in response [:db :loading])))
+    (is (= false (get-in response [:db :network :loading])))
     (is (= #{} (get-in response [:db :network :queue])))
     (is (= #{} (get-in response [:db :network :fetching])))
     (is (= nil (get response :dispatch-later)))))

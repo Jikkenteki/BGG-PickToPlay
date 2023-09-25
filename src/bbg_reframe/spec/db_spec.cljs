@@ -18,6 +18,7 @@
 
 (s/def ::user string-or-nil?)
 (s/def ::cors-running boolean?)
+(s/def ::loading boolean?)
 (s/def ::fetches non-negative-number?)
 (s/def ::form (s/keys :req-un
                       [::sort-id
@@ -32,7 +33,7 @@
 (s/def ::ui (s/keys :req-un [::open-tab]))
 (s/def ::queue (s/coll-of ::id))
 (s/def ::fetching (s/coll-of ::id))
-(s/def ::network (s/keys :req-un [::cors-running ::fetches ::queue ::fetching]))
+(s/def ::network (s/keys :req-un [::cors-running ::fetches ::queue ::fetching ::loading]))
 
 (comment
   #{}

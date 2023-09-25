@@ -32,14 +32,20 @@
 (def ->games->local-store (re-frame/after games->local-store))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-;; 
-;; Checking CORS server
-;; 
+;;
+;; paths in the db
+;;
 (def cors-running-path [:network :cors-running])
 (def fetches-path [:network :fetches])
 (def queue-path [:network :queue])
 (def fetching-path [:network :fetching])
+(def loading-path [:network :loading])
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;; 
+;; Checking CORS server
+;; 
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::cors-check                      ;; usage:  (dispatch [:handler-with-http])
@@ -129,9 +135,8 @@
  (fn-traced [{:keys [db] {:keys [user]} :db} [_ _]]                    ;; the first param will be "world"
             {:db   (-> db
                        (assoc-in fetches-path 0)
-                       (assoc
-                        :loading true
-                        :error nil))
+                       (assoc-in loading-path true)
+                       (assoc :error nil))
              :dispatch [::cors-check]
              :http-xhrio {:method          :get
                           :uri             (collection-api-uri user)
@@ -150,14 +155,14 @@
   [{:keys [db]} [_ response]]
   (if-let [indexed-games (indexed-games response)]
     (let [_ (console :debug "SUCCESS: collection fetched: " (count indexed-games) " games.")]
-      {:db (assoc db
-                  :games indexed-games
-                  :loading false)
+      {:db (-> db
+               (assoc-in loading-path false)
+               (assoc :games indexed-games))
        :dispatch [::update-result]})
     (let [_ (console :debug (str "ERROR: " response))]
-      {:db (assoc db
-                  :error (str "Error reading collection. Invalid user? Try again")
-                  :loading false)
+      {:db (-> db
+               (assoc-in loading-path false)
+               (assoc :error (str "Error reading collection. Invalid user? Try again")))
        :dispatch-later {:ms 3000
                         :dispatch [::reset-error]}}))))
 
@@ -188,7 +193,7 @@
                            db)))
                       (assoc-in queue-path #{})
                       (assoc-in fetching-path #{})
-                      (assoc :loading false))
+                      (assoc-in loading-path false))
              :dispatch [::set-error (if (= 0 (:status response))
                                       "CORS server is not responding"
                                       (:status-text response))]}))
@@ -306,7 +311,7 @@
          {:db (-> db
                   (assoc-in queue-path (disj queue fetch-now))
                   (assoc-in fetching-path new-fetching)
-                  (assoc :loading (> (count queue) 0)))}
+                  (assoc-in loading-path (> (count queue) 0)))}
          (if fetch-now
            {:dispatch-later
             {:ms (* (inc (count fetching)) delay-between-fetches)
@@ -335,8 +340,7 @@
  [check-spec-interceptor]
  (fn-traced [{:keys [db]} [_ game-id]]                    ;; the first param will be "world"
             (if (get-in db cors-running-path)
-              {;;  :db   (assoc db :loading true)
-               :http-xhrio {:method          :get
+              {:http-xhrio {:method          :get
                             :uri             (api-game-uri game-id)
                             :timeout         8000                                           ;; optional see API docs
                             :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
@@ -399,9 +403,8 @@
                  (assoc-in cors-running-path false)
                  (assoc-in queue-path  #{})
                  (assoc-in fetching-path #{})
-                 (assoc
-                  :error "CORS server is not responding"
-                  :loading false))}
+                 (assoc-in loading-path false)
+                 (assoc :error "CORS server is not responding"))}
         (#{500 503 429} (:status response))
         ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
         ;; the server will give you 500 or 503 return codes, reporting that it is too busy.
@@ -417,17 +420,16 @@
         {:db (-> db
                  (assoc-in queue-path  #{})
                  (assoc-in fetching-path #{})
-                 (assoc
-                  :error (str "Game not found or bad address!")
-                  :loading false))
+                 (assoc-in loading-path false)
+
+                 (assoc :error (str "Game not found or bad address!")))
          :dispatch [::fetch-next-from-queue]}
         :else
         {:db (-> db
                  (assoc-in queue-path  #{})
                  (assoc-in fetching-path #{})
-                 (assoc
-                  :error "Problem with BGG??"
-                  :loading false))
+                 (assoc-in loading-path false)
+                 (assoc :error "Problem with BGG??"))
          :dispatch [::fetch-next-from-queue]})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -501,9 +503,8 @@
   (console :debug "Response: " response)
   (cond (= 0 (:status response))
         {:db (-> db (assoc-in cors-running-path false)
-                 (assoc
-                  :error "CORS server is not responding"
-                  :loading false))}
+                 (assoc-in loading-path false)
+                 (assoc :error "CORS server is not responding"))}
         (#{500 503 429} (:status response))
         ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
         ;; the server will give you 500 or 503 return codes, reporting that it is too busy.
@@ -512,13 +513,13 @@
            :dispatch-later {:ms 3000
                             :dispatch [::fetch-plays (:page db)]}})
         (= 404 (:status response))
-        {:db (assoc db
-                    :error (str "Page not found or bad address!")
-                    :loading false)}
+        {:db (-> db
+                 (assoc-in loading-path false)
+                 (assoc :error (str "Page not found or bad address!")))}
         :else
-        {:db (assoc db
-                    :error "Problem with BGG??"
-                    :loading false)})))
+        {:db (-> db
+                 (assoc-in loading-path false)
+                 (assoc :error "Problem with BGG??"))})))
 
 (re-frame/reg-event-fx
  ::fetch-plays-finished

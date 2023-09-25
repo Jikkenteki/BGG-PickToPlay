@@ -15,6 +15,7 @@
    :network {:cors-running false
              :fetches 0
              :queue #{}
-             :fetching #{}}
+             :fetching #{}
+             :loading false}
    :user nil
    :ui {:open-tab nil}})

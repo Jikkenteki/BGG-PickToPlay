@@ -6,6 +6,14 @@
  (fn [db]
    db))
 
+;;
+;; generic subscriber to any path in the db
+;;
+(re-frame/reg-sub
+ ::db-path
+ (fn [db [_ path]]
+   (get-in db path)))
+
 (re-frame/reg-sub
  ::games
  (fn [db]
@@ -26,11 +34,6 @@
  ::form
  (fn [db [_ id]]
    (get-in db [:form id])))
-
-(re-frame/reg-sub
- ::loading
- (fn [db]
-   (:loading db)))
 
 (re-frame/reg-sub
  ::error-msg
