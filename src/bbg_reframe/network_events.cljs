@@ -37,6 +37,7 @@
 ;; Checking CORS server
 ;; 
 (def cors-running-path [:network :cors-running])
+(def fetches-path [:network :fetches])
 
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::cors-check                      ;; usage:  (dispatch [:handler-with-http])
@@ -124,10 +125,11 @@
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  [check-spec-interceptor]
  (fn-traced [{:keys [db] {:keys [user]} :db} [_ _]]                    ;; the first param will be "world"
-            {:db   (assoc db
-                          :loading true
-                          :error nil
-                          :fetches 0)
+            {:db   (-> db
+                       (assoc-in fetches-path 0)
+                       (assoc
+                        :loading true
+                        :error nil))
              :dispatch [::cors-check]
              :http-xhrio {:method          :get
                           :uri             (collection-api-uri user)
@@ -348,15 +350,15 @@
 ;; Handler for successfully fetched game
 ;;
 (defn fetched-game-handler
-  [{:keys [db] {:keys [fetches fetching queue]} :db} game-id game-votes game-type game-weight]
+  [{:keys [db] {:keys [fetching queue]} :db} game-id game-votes game-type game-weight]
   (let [_  (console :debug "SUCCESS" game-id)]
     {:db (-> db
              (assoc-in [:games game-id :votes] game-votes)
              (assoc-in [:games game-id :type] game-type)
              (assoc-in [:games game-id :weight] game-weight)
+             (update-in fetches-path inc)
              (assoc :error nil
-                    :fetching (disj fetching game-id)
-                    :fetches (inc fetches)))
+                    :fetching (disj fetching game-id)))
      :fx (if (empty? queue)
            [[:dispatch [::update-result]]]
            [[:dispatch [::fetch-next-from-queue]]])}))

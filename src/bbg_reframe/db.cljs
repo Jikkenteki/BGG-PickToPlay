@@ -14,9 +14,9 @@
    :collections []
    :queue #{}
    :fetching #{}
-   :fetches 0
+
    :bg-loading false
    :error nil
-   :network {:cors-running false}
+   :network {:cors-running false :fetches 0}
    :user nil
    :ui {:open-tab nil}})
