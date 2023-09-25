@@ -2,7 +2,6 @@
 
 (def default-db
   {:result []
-   :fields ["name"]
    :form {:sort-id :playability-time
           :take "200"
           :players "4"
@@ -12,7 +11,6 @@
           :only-available? false}
    :games {}
    :collections []
-   :bg-loading false
    :error nil
    :network {:cors-running false
              :fetches 0

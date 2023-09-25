@@ -48,7 +48,6 @@
           [::result
            ::form
            ::games
-           ::bg-loading
            ::error
            ::network
            ::user
