@@ -36,10 +36,12 @@
 ;; 
 ;; Checking CORS server
 ;; 
+(def cors-running-path [:network :cors-running])
+
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::cors-check                      ;; usage:  (dispatch [:handler-with-http])
  (fn-traced [{:keys [db]} _]                    ;; the first param will be "world"
-            {:db   (assoc db :cors-running false)   ;; causes the twirly-waiting-dialog to show??
+            {:db   (assoc-in db cors-running-path false)   ;; causes the twirly-waiting-dialog to show??
              :http-xhrio {:method          :get
                           :uri             cors-server-uri
                           :timeout         8000                                           ;; optional see API docs
@@ -52,7 +54,7 @@
  [check-spec-interceptor]
  (fn-traced [{:keys [db]} _]
             (console :debug (str "CORS server at " cors-server-uri " up!"))
-            {:db (assoc db :cors-running true)
+            {:db (assoc-in db cors-running-path  true)
              :dispatch [::update-result]}))
 
 ;; status 0 Request failed. <-- (no network)
@@ -60,13 +62,16 @@
 (re-frame/reg-event-fx
  ::bad-cors
  [check-spec-interceptor]
- (fn-traced [{:keys [db]} [_ response]]
+ (fn-traced [_ [_ response]]
             (console :error (str "CORS server at " cors-server-uri " down..."))
             (console :debug "status: " (:status response))
             (console :debug "status-text: " (:status-text response))
-            {:db (assoc db :error "CORS server down")
-             :dispatch-later {:ms 3000
-                              :dispatch [::reset-error]}}))
+            {:dispatch [::set-error "CORS server down"]}))
+
+(comment
+  (re-frame/dispatch [::cors-check])
+;
+  )
 
 (re-frame/reg-event-db
  ::reset-error
@@ -84,7 +89,7 @@
  ::set-error
  (fn-traced [{:keys [db]} [_ error-message]]
             {:db (assoc db :error error-message)
-             :dispatch-later {:ms 1000
+             :dispatch-later {:ms 3000
                               :dispatch [::reset-error]}}))
 
 
@@ -119,25 +124,21 @@
  ::fetch-collection                      ;; usage:  (dispatch [:handler-with-http])
  [check-spec-interceptor]
  (fn-traced [{:keys [db] {:keys [user]} :db} [_ _]]                    ;; the first param will be "world"
-            ;; (if cors-running
             {:db   (assoc db
                           :loading true
                           :error nil
                           :fetches 0)
+             :dispatch [::cors-check]
              :http-xhrio {:method          :get
                           :uri             (collection-api-uri user)
                           :timeout         8000                                           ;; optional see API docs
                           :response-format (ajax/text-response-format)  ;; IMPORTANT!: You must provide this.
                           :on-success      [::success-fetch-collection]
-                          :on-failure      [::bad-http-collection]}}
-              ;; {:db (assoc db
-              ;;             :error "CORS server not responding. Trying again in 2 seconds")
-              ;; ;;  :dispatch [::cors-check]
-              ;;  :dispatch-later {:ms 2000
-              ;;                   :dispatch [::fetch-collection user]}}
-            ;; )
-            ))
+                          :on-failure      [::bad-http-collection]}}))
 
+
+;; Overwrites the games in the db with the newly fetched games from the BGG collection
+;;
 (re-frame/reg-event-fx
  ::success-fetch-collection
  [check-spec-interceptor ->games->local-store]
@@ -178,20 +179,20 @@
             (console :debug "FAILURE: " response)
             (merge (cond
                      (= 0 (:status response))
-                     {:db (assoc db
-                                 :queue #{}
-                                 :fetching #{}
-                                 :error "CORS server is not responding"
-                                 :loading false
-                                 :cors-running false)}
+                     {:db  (-> db
+                               (assoc-in cors-running-path false)
+                               (assoc
+                                :queue #{}
+                                :fetching #{}
+                                :loading false))}
                      :else
                      {:db (assoc db
                                  :queue #{}
                                  :fetching #{}
-                                 :error (:status-text response)
                                  :loading false)})
-                   {:dispatch-later {:ms 3000
-                                     :dispatch [::reset-error]}})))
+                   {:dispatch [::set-error (if (= 0 (:status response))
+                                             "CORS server is not responding"
+                                             (:status-text response))]})))
 ;;
 ;; Update form result
 ;;
@@ -219,19 +220,21 @@
                               (get-in db [:form :threshold])))
                             (vals (get db :games)))))]
     (merge {:db (assoc db :result result :error nil)}
-           (if (:cors-running db)
+           (if (get-in db cors-running-path)
              {:dispatch [::update-queue (map :id result)]}
              {})))))
 
 
 (defn fetched-games-ids
+  "Returns the ids of the games that have beed fetched. 
+   The games that have been fetched have not nil :votes"
   [games]
   (into #{} (->> (vals games)
                  (remove #(nil? (:votes %)))
                  (map :id))))
 
 (defn new-to-fetch
-  "Remove from results ids the ids of the fetched games, queue, and fetching"
+  "Remove from results ids the ids of the fetched games (those with votes), queue, and fetching"
   [results games queue fetching]
   (->> results
        (remove #((fetched-games-ids games) %))
@@ -326,8 +329,8 @@
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-game                      ;; usage:  (dispatch [:handler-with-http])
  [check-spec-interceptor]
- (fn-traced [{:keys [db] {:keys [cors-running]} :db} [_ game-id]]                    ;; the first param will be "world"
-            (if cors-running
+ (fn-traced [{:keys [db]} [_ game-id]]                    ;; the first param will be "world"
+            (if (get-in db cors-running-path)
               {;;  :db   (assoc db :loading true)
                :http-xhrio {:method          :get
                             :uri             (api-game-uri game-id)
@@ -386,12 +389,13 @@
   (console :debug "BAD REQUEST")
   (console :debug "Response: " response)
   (cond (= 0 (:status response))
-        {:db (assoc db
-                    :queue #{}
-                    :fetching #{}
-                    :error "CORS server is not responding"
-                    :loading false
-                    :cors-running false)}
+        {:db (-> db
+                 (assoc-in cors-running-path false)
+                 (assoc
+                  :queue #{}
+                  :fetching #{}
+                  :error "CORS server is not responding"
+                  :loading false))}
         (#{500 503 429} (:status response))
         ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
         ;; the server will give you 500 or 503 return codes, reporting that it is too busy.
@@ -431,9 +435,9 @@
 (re-frame/reg-event-fx                             ;; note the trailing -fx
  ::fetch-plays                      ;; usage:  (dispatch [:handler-with-http])
  [check-spec-interceptor]
- (fn-traced [{:keys [db] {:keys [user cors-running]} :db} [_ page]]                    ;; the first param will be "world"
+ (fn-traced [{:keys [db] {:keys [user]} :db} [_ page]]                    ;; the first param will be "world"
             (console :debug "Fetching plays")
-            (if cors-running
+            (if (get-in db cors-running-path)
               {:db   (assoc db :page page)
                :http-xhrio {:method          :get
                             :uri             (api-plays-uri user (str page))
@@ -488,10 +492,10 @@
   (console :debug "BAD REQUEST")
   (console :debug "Response: " response)
   (cond (= 0 (:status response))
-        {:db (assoc db
-                    :error "CORS server is not responding"
-                    :loading false
-                    :cors-running false)}
+        {:db (-> db (assoc-in cors-running-path false)
+                 (assoc
+                  :error "CORS server is not responding"
+                  :loading false))}
         (#{500 503 429} (:status response))
         ;; BGG throttles the requests now, which is to say that if you send requests too frequently, 
         ;; the server will give you 500 or 503 return codes, reporting that it is too busy.

@@ -17,6 +17,6 @@
    :fetches 0
    :bg-loading false
    :error nil
-   :cors-running true
+   :network {:cors-running false}
    :user nil
    :ui {:open-tab nil}})
