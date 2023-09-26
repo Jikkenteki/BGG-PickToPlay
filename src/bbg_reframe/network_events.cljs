@@ -4,8 +4,8 @@
                                         xml-api]]
             [bbg-reframe.events :refer [check-spec-interceptor]]
             [bbg-reframe.localstorage.localstorage-events :refer [->fb-collections->local-store]]
-            [bbg-reframe.model.db :refer [game-votes game-weight indexed-games
-                                          update-plays-in-games]]
+            [bbg-reframe.model.bgg-api :refer [game-votes game-weight indexed-games
+                                               update-plays-in-games]]
             [bbg-reframe.model.localstorage :refer [set-item!]]
             [bbg-reframe.model.sort-filter :refer
              [and-filters is-playable-with-num-of-players

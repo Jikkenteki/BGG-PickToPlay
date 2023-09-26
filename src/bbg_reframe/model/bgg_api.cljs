@@ -1,4 +1,4 @@
-(ns bbg-reframe.model.db
+(ns bbg-reframe.model.bgg-api
   (:require [bbg-reframe.model.examples.collection2 :refer [collection-2]]
             [bbg-reframe.model.examples.game2 :refer [powergrid2]]
             [bbg-reframe.model.localstorage :refer [get-item]]
@@ -56,7 +56,8 @@
 ;; 
 ;; API - DB
 ;; 
-(defn  create-game-from-collection-item
+(defn- create-game-from-collection-item
+  "Parses a single game from the XML collection fetched by BGG. Game is in clj format"
   [collection-item]
   {:post [(is (s/valid? ::game-spec/game %))]}
   (try {:id (game-id collection-item)
@@ -100,6 +101,7 @@
                 (list-results-of-votes-per-playernum game-item))))
 
 (defn indexed-games
+  "Parses the XML response for games in the user collection from BGG and returns a map indexed by id"
   [response-xml]
   (let [response-clj (xml->clj response-xml)]
     ;; tag is expected to be items; otherwise an error occured

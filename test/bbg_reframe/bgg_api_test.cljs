@@ -1,6 +1,6 @@
-(ns bbg-reframe.db-test
+(ns bbg-reframe.bgg-api-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            [bbg-reframe.model.db :refer [update-plays-in-games update-games-with-play]]))
+            [bbg-reframe.model.bgg-api :refer [update-plays-in-games update-games-with-play]]))
 
 (deftest update-games-with-play-test
   (testing "no plays"
